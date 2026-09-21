@@ -84,7 +84,7 @@
     margin: 0.4rem 0 1.5rem;
     position: relative;
     z-index: 1;
-    min-height: 56px;
+    min-height: 72px;
   }
   .logo-title {
     font-family: var(--font-display);
@@ -110,6 +110,46 @@
   }
   .logo-sub {
     display: none;
+  }
+
+  /* Admin online — neo trái dưới account badge, không khung */
+  .admin-online-badge {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: calc(50% + 32px);
+    z-index: 2;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--dim);
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .admin-online-badge .admin-online-num {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .admin-online-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success);
+    flex-shrink: 0;
+  }
+  @media (max-width: 420px) {
+    .admin-online-badge {
+      top: calc(50% + 26px);
+      font-size: 0.65rem;
+    }
   }
 
   /* ── Account badge: neo trái, tách khỏi luồng logo ── */
@@ -2198,6 +2238,21 @@
   .sys-alert-btn::after { display: none; }
   .sys-alert-btn:hover { background: var(--accent-hover); filter: none; }
   .sys-alert-btn:active { transform: scale(0.97); }
+  .sys-alert-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .sys-alert-btn.secondary {
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+  }
+  .sys-alert-btn.secondary:hover {
+    background: var(--surface-2);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
 
   button { font-family: inherit; color: inherit; }
 
@@ -2389,6 +2444,11 @@
       </div>
     </div>
     <h1 class="logo-title"><span class="logo-word">WORD</span><span class="logo-war">WAR</span></h1>
+    <!-- Admin-only: số người online — neo trái dưới avatar -->
+    <div id="admin-online-badge" class="admin-online-badge" style="display:none;" title="Chỉ admin thấy">
+      <span class="admin-online-dot"></span>
+      <span>Online <strong class="admin-online-num">0</strong></span>
+    </div>
   </div>
   <div class="lobby-grid">
     <!-- 1. Ghép trận -->
@@ -2756,6 +2816,19 @@
   </div>
 </div>
 
+<!-- Xác nhận chung (vd. cảnh báo tạo acc 24h) -->
+<div class="sys-alert-overlay" id="confirm-overlay" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="sys-alert-box">
+    <div class="sys-alert-icon" id="confirm-icon">⚠️</div>
+    <div class="sys-alert-title" id="confirm-title">Xác nhận</div>
+    <div class="sys-alert-msg" id="confirm-msg"></div>
+    <div class="sys-alert-actions">
+      <button type="button" class="sys-alert-btn" id="confirm-ok-btn">Tiếp tục</button>
+      <button type="button" class="sys-alert-btn secondary" id="confirm-cancel-btn">Hủy</button>
+    </div>
+  </div>
+</div>
+
 <input type="file" id="file-myDefault" accept="image/*" onchange="loadImg(this,'myDefault')">
 
 <!-- iOS-style Sound FAB + Sheet (chỉ hiện ở Lobby) -->
@@ -3105,6 +3178,9 @@ function renderAccountBadge() {
     if (nameEl) nameEl.textContent = '';
     if (wpmEl) wpmEl.textContent = '0';
   }
+  // Cập nhật badge admin + presence khi login/logout
+  if (typeof syncAdminPresenceState === 'function') syncAdminPresenceState();
+  else if (typeof updateAdminOnlineUI === 'function') updateAdminOnlineUI();
 }
 
 async function refreshAccountFromServer() {
@@ -3403,6 +3479,59 @@ window.submitAuth = async function() {
       closeAuthModal();
       showToast('Xin chào, ' + currentUser.displayName + '!');
     } else {
+      // ── Chống tạo acc clone tràn lan ──
+      // 1) Mật khẩu tối thiểu 6 ký tự khi đăng ký mới
+      if (pass.length < 6) {
+        if (errEl) errEl.textContent = 'Tạo tài khoản mới cần mật khẩu tối thiểu 6 ký tự';
+        return;
+      }
+      // 2) Giới hạn 1 tài khoản / thiết bị / 24 giờ (local + Firebase)
+      const SIGNUP_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+      let deviceId = null;
+      try { deviceId = localStorage.getItem('wwb_device_id'); } catch (e) {}
+      if (!deviceId) {
+        deviceId = 'd_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 12);
+        try { localStorage.setItem('wwb_device_id', deviceId); } catch (e) {}
+      }
+      try {
+        const lastLocal = parseInt(localStorage.getItem('wwb_last_signup_at') || '0', 10);
+        if (lastLocal && (Date.now() - lastLocal) < SIGNUP_COOLDOWN_MS) {
+          const leftH = Math.ceil((SIGNUP_COOLDOWN_MS - (Date.now() - lastLocal)) / 3600000);
+          if (errEl) errEl.textContent = 'Thiết bị này đã tạo tài khoản gần đây. Thử lại sau ~' + leftH + ' giờ.';
+          return;
+        }
+      } catch (e) {}
+      // Kiểm tra Firebase (chống xóa localStorage rồi spam lại)
+      try {
+        const guardRef = ref(db, 'signupGuard/' + deviceId);
+        const guardSnap = await get(guardRef);
+        if (guardSnap.exists()) {
+          const g = guardSnap.val() || {};
+          const lastTs = typeof g.ts === 'number' ? g.ts : 0;
+          if (lastTs && (Date.now() - lastTs) < SIGNUP_COOLDOWN_MS) {
+            const leftH = Math.ceil((SIGNUP_COOLDOWN_MS - (Date.now() - lastTs)) / 3600000);
+            if (errEl) errEl.textContent = 'Thiết bị này đã tạo tài khoản gần đây. Thử lại sau ~' + leftH + ' giờ.';
+            try { localStorage.setItem('wwb_last_signup_at', String(lastTs)); } catch (e2) {}
+            return;
+          }
+        }
+      } catch (e) { /* mạng lỗi → vẫn cho tạo, tránh khóa người dùng hợp lệ */ }
+
+      // Cảnh báo trước khi tạo: thiết bị sẽ bị khóa tạo acc 24 giờ
+      if (btn) { btn.disabled = false; btn.textContent = 'XÁC NHẬN'; }
+      const confirmed = await showConfirmDialog({
+        icon: '',
+        title: 'Tạo tài khoản mới?',
+        message: 'Mỗi thiết bị chỉ tạo được 1 tài khoản trong 24 giờ. Sau khi xác nhận, bạn sẽ không thể tạo thêm tài khoản khác trên máy này trong 24 giờ tới.',
+        okText: 'Tạo tài khoản',
+        cancelText: 'Hủy'
+      });
+      if (!confirmed) {
+        if (errEl) errEl.textContent = '';
+        return;
+      }
+      if (btn) { btn.disabled = true; btn.textContent = 'Đang tạo…'; }
+
       const disp = defaultNameFromEmail(email);
       const recoveryPlain = generateRecoveryCode();
       const recoveryCodeHash = await hashRecoveryCode(recoveryPlain);
@@ -3417,6 +3546,14 @@ window.submitAuth = async function() {
         updatedAt: Date.now()
       };
       await set(userRef, payload);
+      // Ghi nhận cooldown sau khi tạo thành công
+      try {
+        localStorage.setItem('wwb_last_signup_at', String(Date.now()));
+        await set(ref(db, 'signupGuard/' + deviceId), {
+          ts: Date.now(),
+          emailKey: key
+        });
+      } catch (e) {}
       currentUser = {
         emailKey: key,
         email: payload.email,
@@ -3492,9 +3629,153 @@ function getMyDisplayName() {
   return currentUser.displayName || defaultNameFromEmail(currentUser.email) || 'Bạn';
 }
 
+// ── Admin: chỉ tài khoản được liệt kê mới thấy số người online ──
+// emailKey của PhamQuan.wordwar.vn → phamquan_wordwar_vn
+const ADMIN_KEYS = ['phamquan_wordwar_vn'];
+function isAdmin() {
+  return !!(currentUser && currentUser.emailKey && ADMIN_KEYS.includes(currentUser.emailKey));
+}
+
+// ── Presence: đếm người đang mở web (lobby / game / practice…) ──
+// Tối ưu: mọi client chỉ GHI node của mình; chỉ ADMIN mới lắng nghe cả cây presence.
+const PRESENCE_PATH = 'presence';
+const PRESENCE_HEARTBEAT_MS = 60000; // 60s — đủ để nhận diện online, giảm write
+let _presenceSid = null;
+let _presenceUnsub = null;
+let _presenceHeartbeat = null;
+let _onlineCount = 0;
+let _lastOnlineShown = -1;
+
+function getOrCreatePresenceSid() {
+  try {
+    let sid = sessionStorage.getItem('wwb_presence_sid');
+    if (!sid) {
+      sid = 's_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      sessionStorage.setItem('wwb_presence_sid', sid);
+    }
+    return sid;
+  } catch (e) {
+    return 's_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+  }
+}
+
+function presencePayload() {
+  return {
+    ts: Date.now(),
+    account: (currentUser && currentUser.emailKey) ? currentUser.emailKey : null
+  };
+}
+
+function writePresenceNow() {
+  if (!_presenceSid) return;
+  set(ref(db, PRESENCE_PATH + '/' + _presenceSid), presencePayload()).catch(() => {});
+}
+
+async function startPresence() {
+  if (_presenceSid) return;
+  _presenceSid = getOrCreatePresenceSid();
+  const myRef = ref(db, PRESENCE_PATH + '/' + _presenceSid);
+  try {
+    await set(myRef, presencePayload());
+    await onDisconnect(myRef).remove();
+  } catch (e) {}
+  if (_presenceHeartbeat) clearInterval(_presenceHeartbeat);
+  _presenceHeartbeat = setInterval(() => {
+    // Tab ẩn → bỏ heartbeat, giảm tải; hiện lại sẽ ghi ngay
+    if (typeof document !== 'undefined' && document.hidden) return;
+    writePresenceNow();
+  }, PRESENCE_HEARTBEAT_MS);
+}
+
+function stopPresence() {
+  if (_presenceHeartbeat) { clearInterval(_presenceHeartbeat); _presenceHeartbeat = null; }
+  if (_presenceSid) {
+    remove(ref(db, PRESENCE_PATH + '/' + _presenceSid)).catch(() => {});
+    try { onDisconnect(ref(db, PRESENCE_PATH + '/' + _presenceSid)).cancel(); } catch (e) {}
+    _presenceSid = null;
+  }
+}
+
+function updateAdminOnlineUI() {
+  const el = document.getElementById('admin-online-badge');
+  if (!el) return;
+  if (isAdmin()) {
+    el.style.display = 'flex';
+    if (_onlineCount !== _lastOnlineShown) {
+      _lastOnlineShown = _onlineCount;
+      const num = el.querySelector('.admin-online-num');
+      if (num) num.textContent = String(_onlineCount);
+    }
+  } else {
+    el.style.display = 'none';
+    _lastOnlineShown = -1;
+  }
+}
+
+function stopAdminOnlineListener() {
+  if (_presenceUnsub) {
+    try { _presenceUnsub(); } catch (e) {}
+    _presenceUnsub = null;
+  }
+  _onlineCount = 0;
+  _lastOnlineShown = -1;
+}
+
+function startAdminOnlineListener() {
+  // Chỉ admin mới subscribe — tránh mọi client tải toàn bộ /presence
+  if (!isAdmin()) {
+    stopAdminOnlineListener();
+    updateAdminOnlineUI();
+    return;
+  }
+  if (_presenceUnsub) {
+    updateAdminOnlineUI();
+    return;
+  }
+  const r = ref(db, PRESENCE_PATH);
+  _presenceUnsub = onValue(r, (snap) => {
+    if (!isAdmin()) return;
+    const val = snap.val();
+    // Đếm theo NGƯỜI, không theo máy:
+    // - Có đăng nhập → gom theo account (1 acc trên nhiều máy = 1)
+    // - Chưa đăng nhập → mỗi session (tab/máy khách) = 1
+    const seen = new Set();
+    if (val && typeof val === 'object') {
+      const now = Date.now();
+      const freshMs = PRESENCE_HEARTBEAT_MS * 2.5;
+      for (const k of Object.keys(val)) {
+        const row = val[k];
+        if (!row || typeof row.ts !== 'number' || (now - row.ts) >= freshMs) continue;
+        if (row.account) seen.add('a:' + row.account);
+        else seen.add('s:' + k);
+      }
+    }
+    _onlineCount = seen.size;
+    updateAdminOnlineUI();
+  }, () => {});
+}
+
+/** Gọi khi login/logout — bật/tắt listener admin + cập nhật account trên presence */
+function syncAdminPresenceState() {
+  writePresenceNow();
+  if (isAdmin()) startAdminOnlineListener();
+  else stopAdminOnlineListener();
+  updateAdminOnlineUI();
+}
+
+// Tab hiện lại → heartbeat ngay (không chờ đủ 60s)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && _presenceSid) writePresenceNow();
+});
+
 currentUser = loadSessionUser();
 renderAccountBadge();
 if (currentUser) refreshAccountFromServer();
+
+// Presence: mọi người ghi node mình; chỉ admin lắng nghe đếm
+startPresence();
+if (isAdmin()) startAdminOnlineListener();
+updateAdminOnlineUI();
 
 // Enter trong form auth / sửa tên
 (function bindAuthKeys() {
@@ -3784,8 +4065,10 @@ const quotesReady = (async function loadExtraQuotes() {
     let added = 0;
     for (let i = 0; i < list.length; i++) {
       const item = list[i];
-      const words = item && item.words;
+      let words = item && item.words;
       if (Array.isArray(words) && words.length) {
+        // Sửa lỗi chính tả: "dũa" → "giũa" (rèn giũa)
+        words = words.map(w => (w === 'dũa' ? 'giũa' : w));
         QUOTES.push(words);
         added++;
       }
@@ -4455,6 +4738,49 @@ window.dismissSysAlert = function() {
   }
   location.reload();
 };
+
+/** Hộp xác nhận 2 nút — trả về Promise<boolean> */
+function showConfirmDialog(opts) {
+  opts = opts || {};
+  return new Promise(function(resolve) {
+    const ov = document.getElementById('confirm-overlay');
+    const title = document.getElementById('confirm-title');
+    const msg = document.getElementById('confirm-msg');
+    const icon = document.getElementById('confirm-icon');
+    const okBtn = document.getElementById('confirm-ok-btn');
+    const cancelBtn = document.getElementById('confirm-cancel-btn');
+    if (!ov || !okBtn || !cancelBtn) {
+      resolve(false);
+      return;
+    }
+    if (title) title.textContent = opts.title || 'Xác nhận';
+    if (msg) msg.textContent = opts.message || '';
+    if (icon) {
+      const ic = (opts.icon != null) ? opts.icon : '⚠️';
+      if (ic) {
+        icon.textContent = ic;
+        icon.style.display = '';
+      } else {
+        icon.textContent = '';
+        icon.style.display = 'none';
+      }
+    }
+    okBtn.textContent = opts.okText || 'Tiếp tục';
+    cancelBtn.textContent = opts.cancelText || 'Hủy';
+
+    function cleanup(result) {
+      ov.classList.remove('open');
+      okBtn.onclick = null;
+      cancelBtn.onclick = null;
+      ov.onclick = null;
+      resolve(result);
+    }
+    okBtn.onclick = function() { cleanup(true); };
+    cancelBtn.onclick = function() { cleanup(false); };
+    ov.onclick = function(e) { if (e.target === ov) cleanup(false); };
+    ov.classList.add('open');
+  });
+}
 
 function getDefaultSvg() {
   return `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23111'/><text x='50' y='68' text-anchor='middle' font-size='55'>🧑‍💻</text></svg>`;

@@ -132,7 +132,7 @@
     color: var(--dim);
     letter-spacing: 0.03em;
     white-space: nowrap;
-    pointer-events: none;
+    pointer-events: auto;
   }
   .admin-online-badge .admin-online-num {
     color: var(--accent);
@@ -145,11 +145,358 @@
     background: var(--success);
     flex-shrink: 0;
   }
+  .admin-online-list-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    margin-left: 0.15rem;
+    padding: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--dim);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .admin-online-list-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  .admin-online-list-btn:active { transform: scale(0.92); }
+  .admin-online-list-btn svg {
+    width: 12px;
+    height: 12px;
+    display: block;
+    pointer-events: none;
+  }
+  .admin-online-list-btn.active {
+    color: var(--on-accent);
+    background: var(--accent);
+    border-color: transparent;
+  }
   @media (max-width: 420px) {
     .admin-online-badge {
       top: calc(50% + 26px);
       font-size: 0.65rem;
     }
+    .admin-online-list-btn {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  /* ── Admin Online Users panel (hệ thống quản lý) ── */
+  .online-users-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 460;
+    background: rgba(14,14,17,0.72);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 4.5rem 1rem 1.5rem;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.22s ease, visibility 0.22s ease;
+  }
+  .online-users-overlay.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .online-users-panel {
+    width: 100%;
+    max-width: 420px;
+    max-height: min(78vh, 640px);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    transform: translateY(12px) scale(0.97);
+    transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .online-users-overlay.show .online-users-panel {
+    transform: translateY(0) scale(1);
+  }
+  .online-users-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.1rem 0.75rem;
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .online-users-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .online-users-title-sub {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--dim);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    margin-top: 0.15rem;
+  }
+  .online-users-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--dim);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .online-users-close:hover { color: var(--ink); border-color: var(--accent); }
+  .online-users-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+    padding: 0.7rem 1.1rem 0.55rem;
+    flex-shrink: 0;
+  }
+  .online-users-stat {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.55rem 0.4rem 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
+  }
+  .online-users-stat:hover {
+    border-color: var(--accent);
+  }
+  .online-users-stat:active { transform: scale(0.97); }
+  .online-users-stat.active {
+    border-color: var(--accent);
+    background: rgba(232,178,91,0.12);
+    box-shadow: 0 0 0 1px rgba(232,178,91,0.25);
+  }
+  .online-users-stat .v {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+  .online-users-stat.active .v { color: var(--accent); }
+  .online-users-stat .l {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 0.18rem;
+  }
+  .online-users-stat.active .l { color: var(--accent); }
+  .online-users-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.45rem 1.1rem 0.7rem;
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .online-users-search {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 700;
+    outline: none;
+  }
+  .online-users-search:focus { border-color: var(--accent); }
+  .online-users-search::placeholder { color: var(--dim); opacity: 0.7; font-weight: 600; }
+  .online-users-list {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.25rem 0.65rem 0.7rem;
+    min-height: 120px;
+  }
+  .online-users-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--dim);
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .online-user-row {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 0.7rem;
+    padding: 0.6rem 0.55rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .online-user-row + .online-user-row {
+    margin-top: 0.15rem;
+  }
+  .online-user-row:hover {
+    background: var(--surface-2);
+    border-color: var(--line);
+  }
+  .online-user-av {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    color: var(--dim);
+  }
+  .online-user-av.is-guest {
+    border-color: var(--line);
+    color: var(--dim);
+    opacity: 0.85;
+  }
+  .online-user-av.is-logged {
+    border-color: rgba(123,196,127,0.45);
+    color: var(--success);
+  }
+  .online-user-av svg {
+    width: 18px;
+    height: 18px;
+  }
+  .online-user-av img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    /* 40px hiển thị — ảnh đã có sẵn, không scale nặng */
+  }
+  .online-user-info {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+  }
+  .online-user-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+  .online-user-name {
+    font-family: var(--font-display);
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+  .online-user-tag {
+    flex-shrink: 0;
+    padding: 0.12rem 0.4rem;
+    border-radius: 99px;
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: 1px solid var(--line-strong);
+    color: var(--dim);
+    line-height: 1.2;
+  }
+  .online-user-tag.logged {
+    border-color: rgba(123,196,127,0.5);
+    color: var(--success);
+    background: rgba(123,196,127,0.08);
+  }
+  .online-user-tag.admin {
+    border-color: rgba(232,178,91,0.55);
+    color: var(--accent);
+    background: rgba(232,178,91,0.12);
+  }
+  .online-user-meta {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+  .online-user-side {
+    flex-shrink: 0;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+    min-width: 3.2rem;
+  }
+  .online-user-wpm {
+    font-family: var(--font-mono);
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+  }
+  .online-user-wpm.empty {
+    color: var(--dim);
+    font-weight: 600;
+    opacity: 0.55;
+  }
+  .online-user-wpm span {
+    font-size: 0.58rem;
+    font-weight: 600;
+    color: var(--dim);
+    margin-left: 0.12rem;
+  }
+  .online-user-ago {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--dim);
+    line-height: 1.2;
+  }
+  .online-users-foot {
+    flex-shrink: 0;
+    padding: 0.55rem 1.1rem 0.75rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--dim);
+    text-align: center;
+    letter-spacing: 0.02em;
   }
 
   /* ── Account badge: neo trái, tách khỏi luồng logo ── */
@@ -530,6 +877,76 @@
     margin-bottom: 0.85rem;
     text-align: center;
   }
+  .recovery-pin-field {
+    margin-bottom: 0.75rem;
+    text-align: left;
+  }
+  .recovery-pin-field label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--dim);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    margin-bottom: 0.35rem;
+  }
+  .recovery-pin-wrap {
+    position: relative;
+    display: block;
+  }
+  .recovery-pin-wrap input {
+    width: 100%;
+    padding: 0.75rem 2.75rem 0.75rem 0.9rem;
+    border-radius: var(--radius-btn);
+    border: 1px solid var(--line-strong);
+    background: var(--surface-2);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .recovery-pin-wrap input:focus { border-color: var(--accent); }
+  .recovery-pin-wrap input::placeholder {
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    opacity: 0.55;
+    font-weight: 600;
+  }
+  .recovery-pin-toggle {
+    position: absolute;
+    right: 0.35rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .recovery-pin-toggle:hover { color: var(--ink); background: rgba(236,231,221,0.06); }
+  .recovery-pin-toggle svg { width: 18px; height: 18px; display: block; pointer-events: none; }
+  .recovery-pin-error {
+    font-size: 0.82rem;
+    color: var(--danger);
+    text-align: center;
+    min-height: 1.2em;
+    margin-bottom: 0.45rem;
+  }
+  #recovery-old-field { display: none; }
+  .recovery-overlay-change #recovery-old-field { display: block; }
+
 
   /* Edit name modal — reuse auth-overlay styles */
   .edit-name-panel { max-width: 320px; }
@@ -901,7 +1318,7 @@
     justify-content: center;
     cursor: pointer;
     overflow: hidden;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color 0.2s, background 0.2s, opacity 0.2s;
     position: relative;
     text-align: center;
     font-size: 0.7rem;
@@ -912,6 +1329,16 @@
     border-color: var(--accent);
     background: var(--surface-2);
     box-shadow: none;
+  }
+  .img-slot.locked {
+    cursor: not-allowed;
+    pointer-events: none;
+    border-style: solid;
+    border-color: rgba(232,178,91,0.45);
+    opacity: 0.95;
+  }
+  .img-slot.locked:hover {
+    border-color: rgba(232,178,91,0.45);
   }
   .img-slot img {
     width: 100%; height: 100%;
@@ -1274,7 +1701,7 @@
     position: relative;
     top: 0;
     transform: translate3d(0, 0, 0);
-    transition: transform 0.14s ease-out;
+    transition: transform 0.1s ease-out;
     will-change: transform;
   }
   .word {
@@ -1286,7 +1713,7 @@
     padding: 0 8px;
     border-radius: 8px;
     color: rgba(236,231,221,0.28);
-    transition: color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+    transition: color 0.06s ease, background 0.06s ease;
     display: inline-block;
     font-family: var(--font-body);
     font-weight: 700;
@@ -1313,7 +1740,7 @@
     text-align: center;
     font-family: var(--font-body);
     font-weight: 700;
-    transition: border-color 0.2s, background 0.2s;
+    transition: border-color 0.08s ease, background 0.08s ease;
     margin-top: 0.9rem;
     box-shadow: none;
   }
@@ -2328,8 +2755,8 @@
   .vs-avatar-box {
     width: 90px;
     height: 90px;
-    border-radius: 50%;
-    background: #18181E;
+    border-radius: 12px;
+    background: var(--surface-2);
     border: 2px solid var(--line-strong);
     display: flex;
     align-items: center;
@@ -2341,12 +2768,12 @@
     color: var(--dim);
   }
   .player1 .vs-avatar-box {
-    border-color: #5BE8E8;
-    box-shadow: 0 0 20px rgba(91, 232, 232, 0.2);
+    border-color: var(--p1);
+    box-shadow: none;
   }
   .player2 .vs-avatar-box {
-    border-color: #E85B5B;
-    box-shadow: 0 0 20px rgba(232, 91, 91, 0.2);
+    border-color: var(--p2);
+    box-shadow: none;
   }
   .vs-avatar-box img {
     width: 100%;
@@ -2416,7 +2843,7 @@
   }
   @media (max-width: 480px) {
     .vs-container { gap: 16px; }
-    .vs-avatar-box { width: 72px; height: 72px; }
+    .vs-avatar-box { width: 72px; height: 72px; border-radius: 10px; }
     .vs-name { font-size: 16px; max-width: 120px; }
     .vs-badge { font-size: 28px; }
     .vs-title { font-size: 16px; margin-bottom: 28px; letter-spacing: 3px; }
@@ -2445,9 +2872,12 @@
     </div>
     <h1 class="logo-title"><span class="logo-word">WORD</span><span class="logo-war">WAR</span></h1>
     <!-- Admin-only: số người online — neo trái dưới avatar -->
-    <div id="admin-online-badge" class="admin-online-badge" style="display:none;" title="Chỉ admin thấy">
+    <div id="admin-online-badge" class="admin-online-badge" style="display:flex;" title="Người đang online — bấm để xem danh sách">
       <span class="admin-online-dot"></span>
       <span>Online <strong class="admin-online-num">0</strong></span>
+      <button type="button" class="admin-online-list-btn" id="admin-online-list-btn" onclick="event.stopPropagation(); toggleOnlineUsersPanel()" title="Danh sách online" aria-label="Danh sách người online">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </button>
     </div>
   </div>
   <div class="lobby-grid">
@@ -2661,10 +3091,44 @@
 
 <div class="countdown-overlay" id="countdown-overlay">
   <div class="countdown-label">SẴN SÀNG NÀO!</div>
-  <div class="countdown-num" id="countdown-num">3</div>
+  <div class="countdown-num" id="countdown-num"></div>
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- Danh sách người đang online (mọi người xem được) -->
+<div id="online-users-overlay" class="online-users-overlay" aria-hidden="true" onclick="if(event.target===this)closeOnlineUsersPanel()">
+  <div class="online-users-panel" role="dialog" aria-labelledby="online-users-title" onclick="event.stopPropagation()">
+    <div class="online-users-head">
+      <div>
+        <div class="online-users-title" id="online-users-title">Người đang online</div>
+      </div>
+      <button type="button" class="online-users-close" onclick="closeOnlineUsersPanel()" aria-label="Đóng">×</button>
+    </div>
+    <div class="online-users-stats" role="tablist" aria-label="Lọc theo loại">
+      <button type="button" class="online-users-stat active" data-filter="all" onclick="setOnlineUsersFilter('all')" role="tab" aria-selected="true">
+        <div class="v" id="ou-stat-total">0</div>
+        <div class="l">Tất cả</div>
+      </button>
+      <button type="button" class="online-users-stat" data-filter="logged" onclick="setOnlineUsersFilter('logged')" role="tab" aria-selected="false">
+        <div class="v" id="ou-stat-logged">0</div>
+        <div class="l">Đã login</div>
+      </button>
+      <button type="button" class="online-users-stat" data-filter="guest" onclick="setOnlineUsersFilter('guest')" role="tab" aria-selected="false">
+        <div class="v" id="ou-stat-guest">0</div>
+        <div class="l">Khách</div>
+      </button>
+    </div>
+    <div class="online-users-tools">
+      <input type="search" id="online-users-search" class="online-users-search" placeholder="Tìm tên / tài khoản…" autocomplete="off" oninput="renderOnlineUsersList()">
+    </div>
+    <div class="online-users-list" id="online-users-list">
+      <div class="online-users-empty">Chưa có dữ liệu…</div>
+    </div>
+    <div class="online-users-foot" id="online-users-foot">Realtime · heartbeat 60s</div>
+  </div>
+</div>
+
 
 <!-- VS Match Overlay — hiện khi ghép trận online thành công -->
 <div id="vs-overlay" class="vs-overlay" aria-hidden="true">
@@ -2718,8 +3182,8 @@
       </div>
     </div>
     <div class="auth-field" id="auth-recovery-field" style="display:none;">
-      <label for="auth-recovery">Mã khôi phục</label>
-      <input type="text" id="auth-recovery" maxlength="12" placeholder="XXXX-XXXX" autocomplete="off" spellcheck="false" autocapitalize="characters">
+      <label for="auth-recovery">Mã PIN khôi phục</label>
+      <input type="password" id="auth-recovery" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="6 chữ số" autocomplete="off" spellcheck="false">
     </div>
     <div class="auth-field" id="auth-pass2-field" style="display:none;">
       <label for="auth-pass2">Mật khẩu mới</label>
@@ -2736,18 +3200,45 @@
   </div>
 </div>
 
-<!-- Mã khôi phục (hiện 1 lần sau khi tạo tài khoản) -->
-<div class="auth-overlay" id="recovery-overlay" onclick="if(event.target===this){}">
+<!-- Đặt / đổi mã PIN khôi phục -->
+<div class="auth-overlay" id="recovery-overlay" onclick="if(event.target===this){ if(typeof tryCloseRecoveryModal==='function') tryCloseRecoveryModal(); }">
   <div class="auth-panel" onclick="event.stopPropagation()">
-    <div class="auth-title">Mã khôi phục</div>
-    <p class="recovery-warn">Lưu mã này ở nơi an toàn. Nếu quên mật khẩu, bạn cần mã để đặt lại. <strong style="color:var(--accent)">Chỉ hiện một lần.</strong></p>
-    <div class="recovery-code-box">
-      <div class="recovery-code-label">Mã của bạn</div>
-      <div class="recovery-code-value" id="recovery-code-value">————</div>
+    <button type="button" class="auth-close" id="recovery-close-btn" onclick="tryCloseRecoveryModal()" aria-label="Đóng" style="display:none;">×</button>
+    <div class="auth-title" id="recovery-title">Đặt mã PIN</div>
+    <p class="recovery-warn" id="recovery-warn">Tạo mã PIN <strong style="color:var(--accent)">6 chữ số</strong> để khôi phục mật khẩu khi quên.</p>
+    <div class="recovery-pin-field" id="recovery-old-field">
+      <label for="recovery-old">Mã PIN cũ</label>
+      <div class="recovery-pin-wrap">
+        <input type="password" id="recovery-old" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••••" autocomplete="off" spellcheck="false">
+        <button type="button" class="recovery-pin-toggle" onclick="toggleRecoveryPinVis('recovery-old')" title="Hiện/ẩn" aria-label="Hiện ẩn PIN">
+          <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
     </div>
+    <div class="recovery-pin-field" id="recovery-pin-field">
+      <label for="recovery-pin">Mã PIN (6 số)</label>
+      <div class="recovery-pin-wrap">
+        <input type="password" id="recovery-pin" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••••" autocomplete="off" spellcheck="false">
+        <button type="button" class="recovery-pin-toggle" onclick="toggleRecoveryPinVis('recovery-pin')" title="Hiện/ẩn" aria-label="Hiện ẩn PIN">
+          <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="recovery-pin-field" id="recovery-pin2-field">
+      <label for="recovery-pin2">Xác nhận mã PIN</label>
+      <div class="recovery-pin-wrap">
+        <input type="password" id="recovery-pin2" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="••••••" autocomplete="off" spellcheck="false">
+        <button type="button" class="recovery-pin-toggle" onclick="toggleRecoveryPinVis('recovery-pin2')" title="Hiện/ẩn" aria-label="Hiện ẩn PIN">
+          <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="recovery-pin-error" id="recovery-pin-error"></div>
     <div class="auth-actions">
-      <button type="button" class="btn btn-blue" id="recovery-copy-btn" onclick="copyRecoveryCode()">Sao chép mã</button>
-      <button type="button" class="btn btn-orange" id="recovery-done-btn" onclick="closeRecoveryModal()">Đã lưu — Tiếp tục</button>
+      <button type="button" class="btn btn-orange" id="recovery-done-btn" onclick="submitRecoveryPin()">Lưu mã PIN</button>
     </div>
   </div>
 </div>
@@ -2778,7 +3269,7 @@
     <button type="button" onclick="openAuthAvatarOnly()">Đổi avatar</button>
     <button type="button" onclick="openEditName(); closeAccountMenu();">Sửa tên</button>
     <button type="button" onclick="openChangePass(); closeAccountMenu();">Đổi mật khẩu</button>
-    <button type="button" onclick="regenerateRecoveryCode(); closeAccountMenu();">Mã khôi phục mới</button>
+    <button type="button" onclick="openChangeRecoveryPin(); closeAccountMenu();">Đổi mã PIN</button>
     <button type="button" class="danger" onclick="logoutAccount()">Đăng xuất</button>
   </div>
 </div>
@@ -2888,6 +3379,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getDatabase(app);
 
+// ── Đồng bộ giờ server: bù lệch đồng hồ hệ thống giữa các máy (mobile/laptop) ──
+// serverTimeOffset = (giờ server) - (giờ máy local). Firebase tự cập nhật liên tục.
+let serverTimeOffset = 0;
+onValue(ref(db, '.info/serverTimeOffset'), snap => {
+  const v = snap.val();
+  if (typeof v === 'number') serverTimeOffset = v;
+});
+/** Giờ hiện tại theo server (đồng nhất giữa mọi thiết bị), dùng thay Date.now() cho mọi mốc đồng bộ trận đấu */
+function nowServer() { return Date.now() + serverTimeOffset; }
+
 // ══════════════════════════════════════════════════════════════════════════
 // TÀI KHOẢN — Firebase users/{emailKey}  (đăng nhập bằng địa chỉ .wordwar.vn, tên hiển thị riêng)
 // ══════════════════════════════════════════════════════════════════════════
@@ -2896,40 +3397,53 @@ const DISPLAY_NAME_MAX = 15;
 let currentUser = null; // { emailKey, email, displayName, avatar, bestWpm }
 let _authAvatarDataUrl = null;
 
-/** Key Firebase an toàn từ email (không chứa . # $ [ ] /) */
+/** Key Firebase an toàn từ email (không chứa . # $ [ ] /).
+ *  Phân biệt HOA/thường: PhamQuan ≠ phamquan → key khác nhau.
+ */
 function emailKey(email) {
-  return String(email || '').trim().toLowerCase()
+  return String(email || '').trim()
     .replace(/[.#$\[\]\/]/g, '_')
     .slice(0, 80);
 }
 
-/** Chuẩn hoá tài khoản → dạng local.wordwar.vn (chấp nhận nhập ngắn "tenban" hoặc đủ "tenban.wordwar.vn") */
+/** Chuẩn hoá tài khoản → dạng local.wordwar.vn
+ *  - Giữ nguyên HOA/thường của phần tên (local)
+ *  - Đuôi domain luôn .wordwar.vn (chữ thường)
+ *  - Chấp nhận nhập ngắn "TenBan" hoặc đủ "TenBan.wordwar.vn" / "TenBan@wordwar.vn"
+ */
 function normalizeAccountId(raw) {
-  let s = String(raw || '').trim().toLowerCase();
+  let s = String(raw || '').trim();
   if (!s) return '';
-  // Cho phép người dùng gõ nhầm @wordwar.vn → chuyển thành .wordwar.vn
-  if (s.endsWith('@wordwar.vn')) s = s.slice(0, -'@wordwar.vn'.length) + '.wordwar.vn';
-  if (!s.endsWith('.wordwar.vn')) s = s + '.wordwar.vn';
-  return s;
+  const lower = s.toLowerCase();
+  let local = s;
+  if (lower.endsWith('@wordwar.vn')) {
+    local = s.slice(0, s.length - '@wordwar.vn'.length);
+  } else if (lower.endsWith('.wordwar.vn')) {
+    local = s.slice(0, s.length - '.wordwar.vn'.length);
+  }
+  local = local.trim();
+  if (!local) return '';
+  return local + '.wordwar.vn';
 }
 
-/** Local-part hợp lệ: 3–32 ký tự, bắt đầu/kết thúc bằng chữ hoặc số, giữa cho phép . _ - */
+/** Local-part hợp lệ: 3–32 ký tự, chữ HOA/thường/số, bắt đầu/kết thúc chữ hoặc số, giữa cho phép . _ - */
 function isValidAccountLocal(local) {
-  return /^[a-z0-9](?:[a-z0-9._-]{1,30}[a-z0-9])?$/.test(local) && local.length >= 3 && local.length <= 32;
+  return /^[a-zA-Z0-9](?:[a-zA-Z0-9._-]{1,30}[a-zA-Z0-9])?$/.test(local) && local.length >= 3 && local.length <= 32;
 }
 
 function isValidEmail(email) {
   // Giữ tên hàm cũ để ít đụng code — thực chất kiểm tra địa chỉ .wordwar.vn
   const full = normalizeAccountId(email);
-  if (!full.endsWith('.wordwar.vn')) return false;
+  if (!full.toLowerCase().endsWith('.wordwar.vn')) return false;
   const local = full.slice(0, -'.wordwar.vn'.length);
   return isValidAccountLocal(local);
 }
 
-/** Tên mặc định từ phần trước .wordwar.vn (hoặc trước @ nếu session cũ), tối đa 15 ký tự */
+/** Tên mặc định từ phần trước .wordwar.vn (hoặc trước @ nếu session cũ), tối đa 15 ký tự — giữ hoa/thường */
 function defaultNameFromEmail(email) {
-  let s = String(email || '').trim().toLowerCase();
-  if (s.endsWith('.wordwar.vn')) s = s.slice(0, -'.wordwar.vn'.length);
+  let s = String(email || '').trim();
+  const lower = s.toLowerCase();
+  if (lower.endsWith('.wordwar.vn')) s = s.slice(0, -'.wordwar.vn'.length);
   else if (s.includes('@')) s = s.split('@')[0];
   const cleaned = s.replace(/[._+\-]+/g, ' ').trim() || s;
   return cleaned.slice(0, DISPLAY_NAME_MAX) || 'Player';
@@ -2963,28 +3477,25 @@ async function hashPassword(pass) {
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-/** Mã khôi phục 8 ký tự (bỏ ký tự dễ nhầm 0/O/1/I) — hiện dạng XXXX-XXXX */
-function generateRecoveryCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let s = '';
-  const arr = new Uint8Array(8);
-  try { crypto.getRandomValues(arr); } catch (e) {
-    for (let i = 0; i < 8; i++) arr[i] = Math.floor(Math.random() * 256);
-  }
-  for (let i = 0; i < 8; i++) s += chars[arr[i] % chars.length];
-  return s.slice(0, 4) + '-' + s.slice(4);
+/** Mã PIN khôi phục: đúng 6 chữ số do người chơi tự đặt */
+function normalizeRecoveryPin(raw) {
+  return String(raw || '').replace(/\D/g, '').slice(0, 6);
 }
 
-function normalizeRecoveryCode(raw) {
-  return String(raw || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+function isValidRecoveryPin(pin) {
+  return /^\d{6}$/.test(String(pin || ''));
 }
 
+async function hashRecoveryPin(pin) {
+  return hashPassword(normalizeRecoveryPin(pin));
+}
+
+/** Tương thích tên cũ — hash PIN 6 số */
 async function hashRecoveryCode(code) {
-  return hashPassword(normalizeRecoveryCode(code));
+  return hashRecoveryPin(code);
 }
 
 let authForgotMode = false;
-let _pendingRecoveryPlain = null; // mã plain chỉ giữ tạm để hiện modal sau tạo TK
 
 function setAuthForgotMode(on) {
   authForgotMode = !!on;
@@ -3006,7 +3517,7 @@ function setAuthForgotMode(on) {
   if (avatarPick) avatarPick.style.display = authForgotMode ? 'none' : '';
   if (hint) {
     hint.textContent = authForgotMode
-      ? 'Nhập tài khoản + mã khôi phục (đã lưu khi tạo tài khoản) + mật khẩu mới'
+      ? 'Nhập tài khoản + mã PIN 6 số + mật khẩu mới'
       : 'Địa chỉ dạng tenban.wordwar.vn · Chưa có → tạo mới · Đã có → đăng nhập · Tên hiển thị lấy từ tài khoản (sửa sau)';
   }
   if (forgotBtn) forgotBtn.textContent = authForgotMode ? '← Quay lại đăng nhập' : 'Quên mật khẩu?';
@@ -3018,106 +3529,224 @@ window.toggleAuthForgotMode = function() {
   setAuthForgotMode(!authForgotMode);
 };
 
-function showRecoveryModal(code) {
-  _pendingRecoveryPlain = code;
-  const el = document.getElementById('recovery-code-value');
-  if (el) el.textContent = code;
-  const ov = document.getElementById('recovery-overlay');
-  if (ov) ov.classList.add('show');
+/** true = chưa có PIN, bắt buộc đặt; false = đổi PIN từ menu */
+let _recoveryPinRequired = false;
+let _recoveryPinMode = 'setup'; // 'setup' | 'change'
+
+window.toggleRecoveryPinVis = function(inputId) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const wrap = input.closest('.recovery-pin-wrap');
+  const btn = wrap && wrap.querySelector('.recovery-pin-toggle');
+  const show = input.type === 'password';
+  input.type = show ? 'text' : 'password';
+  if (btn) {
+    const open = btn.querySelector('.eye-open');
+    const off = btn.querySelector('.eye-off');
+    if (open) open.style.display = show ? 'none' : '';
+    if (off) off.style.display = show ? '' : 'none';
+  }
+};
+
+function resetRecoveryPinVisibility() {
+  ['recovery-old', 'recovery-pin', 'recovery-pin2'].forEach(id => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.type = 'password';
+    const wrap = input.closest('.recovery-pin-wrap');
+    const btn = wrap && wrap.querySelector('.recovery-pin-toggle');
+    if (btn) {
+      const open = btn.querySelector('.eye-open');
+      const off = btn.querySelector('.eye-off');
+      if (open) open.style.display = '';
+      if (off) off.style.display = 'none';
+    }
+  });
 }
 
-window.closeRecoveryModal = function() {
+/** mode: 'setup' (chưa có PIN) | 'change' (đổi PIN) */
+function showRecoveryPinModal(mode) {
+  _recoveryPinMode = (mode === 'change') ? 'change' : 'setup';
+  _recoveryPinRequired = (_recoveryPinMode === 'setup');
+  const pinOld = document.getElementById('recovery-old');
+  const pin1 = document.getElementById('recovery-pin');
+  const pin2 = document.getElementById('recovery-pin2');
+  const err = document.getElementById('recovery-pin-error');
+  const title = document.getElementById('recovery-title');
+  const warn = document.getElementById('recovery-warn');
+  const closeBtn = document.getElementById('recovery-close-btn');
+  const doneBtn = document.getElementById('recovery-done-btn');
   const ov = document.getElementById('recovery-overlay');
-  if (ov) ov.classList.remove('show');
-  _pendingRecoveryPlain = null;
-  showToast('Đăng nhập thành công — hãy giữ mã khôi phục!');
-};
-
-window.copyRecoveryCode = function() {
-  const code = _pendingRecoveryPlain || (document.getElementById('recovery-code-value') || {}).textContent;
-  if (!code || code === '————') return;
-  const done = () => showToast('Đã sao chép mã');
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(code).then(done).catch(() => {
-      try {
-        const ta = document.createElement('textarea');
-        ta.value = code; document.body.appendChild(ta); ta.select();
-        document.execCommand('copy'); ta.remove(); done();
-      } catch (e) { showToast('Sao chép thủ công giúp nhé'); }
-    });
-  } else {
-    try {
-      const ta = document.createElement('textarea');
-      ta.value = code; document.body.appendChild(ta); ta.select();
-      document.execCommand('copy'); ta.remove(); done();
-    } catch (e) { showToast('Sao chép thủ công giúp nhé'); }
+  if (pinOld) pinOld.value = '';
+  if (pin1) pin1.value = '';
+  if (pin2) pin2.value = '';
+  if (err) err.textContent = '';
+  resetRecoveryPinVisibility();
+  if (ov) {
+    ov.classList.toggle('recovery-overlay-change', _recoveryPinMode === 'change');
+    ov.classList.add('show');
   }
-};
+  const l1 = document.querySelector('label[for="recovery-pin"]');
+  const l2 = document.querySelector('label[for="recovery-pin2"]');
+  if (_recoveryPinMode === 'change') {
+    if (title) title.textContent = 'Đổi mã PIN';
+    if (warn) warn.innerHTML = 'Nhập <strong style="color:var(--accent)">PIN cũ</strong>, rồi PIN mới 6 số và xác nhận lại.';
+    if (closeBtn) closeBtn.style.display = '';
+    if (doneBtn) doneBtn.textContent = 'Đổi mã PIN';
+    if (l1) l1.textContent = 'Mã PIN mới (6 số)';
+    if (l2) l2.textContent = 'Xác nhận mã PIN mới';
+  } else {
+    if (title) title.textContent = 'Đặt mã PIN';
+    if (warn) warn.innerHTML = 'Tài khoản chưa có mã PIN. Tạo PIN <strong style="color:var(--accent)">6 chữ số</strong> để khôi phục mật khẩu khi quên.';
+    if (closeBtn) closeBtn.style.display = 'none';
+    if (doneBtn) doneBtn.textContent = 'Lưu mã PIN';
+    if (l1) l1.textContent = 'Mã PIN (6 số)';
+    if (l2) l2.textContent = 'Xác nhận mã PIN';
+  }
+  setTimeout(() => {
+    try {
+      if (_recoveryPinMode === 'change' && pinOld) pinOld.focus();
+      else if (pin1) pin1.focus();
+    } catch (e) {}
+  }, 80);
+}
 
-window.openChangePass = function() {
-  if (!currentUser) return;
-  const o = document.getElementById('change-pass-old');
-  const n = document.getElementById('change-pass-new');
-  const e = document.getElementById('change-pass-error');
-  if (o) o.value = '';
-  if (n) n.value = '';
-  if (e) e.textContent = '';
-  const ov = document.getElementById('change-pass-overlay');
-  if (ov) ov.classList.add('show');
-  setTimeout(() => { if (o) o.focus(); }, 50);
-};
+function showRecoveryModal() {
+  showRecoveryPinModal('setup');
+}
 
-window.closeChangePass = function() {
-  const ov = document.getElementById('change-pass-overlay');
-  if (ov) ov.classList.remove('show');
-};
-
-window.submitChangePass = async function() {
-  if (!currentUser || !currentUser.emailKey) return;
-  const oldEl = document.getElementById('change-pass-old');
-  const newEl = document.getElementById('change-pass-new');
-  const errEl = document.getElementById('change-pass-error');
-  const oldP = (oldEl && oldEl.value) || '';
-  const newP = (newEl && newEl.value) || '';
-  if (errEl) errEl.textContent = '';
-  if (newP.length < 4) {
-    if (errEl) errEl.textContent = 'Mật khẩu mới tối thiểu 4 ký tự';
+window.openChangeRecoveryPin = function() {
+  if (!currentUser || !currentUser.emailKey) {
+    showToast('Cần đăng nhập trước');
     return;
   }
-  try {
-    const userRef = ref(db, 'users/' + currentUser.emailKey);
-    const snap = await get(userRef);
-    if (!snap.exists()) { if (errEl) errEl.textContent = 'Không tìm thấy tài khoản'; return; }
-    const d = snap.val() || {};
-    const oldHash = await hashPassword(oldP);
-    if (d.passwordHash !== oldHash) {
-      if (errEl) errEl.textContent = 'Mật khẩu hiện tại không đúng';
+  showRecoveryPinModal('change');
+};
+
+window.tryCloseRecoveryModal = function() {
+  if (_recoveryPinRequired) {
+    showToast('Vui lòng đặt mã PIN 6 số để tiếp tục');
+    return;
+  }
+  closeRecoveryModal();
+};
+
+window.closeRecoveryModal = function() {
+  if (_recoveryPinRequired) {
+    showToast('Vui lòng đặt mã PIN 6 số để tiếp tục');
+    return;
+  }
+  const ov = document.getElementById('recovery-overlay');
+  if (ov) ov.classList.remove('show');
+};
+
+window.submitRecoveryPin = async function() {
+  const pinOldEl = document.getElementById('recovery-old');
+  const pin1El = document.getElementById('recovery-pin');
+  const pin2El = document.getElementById('recovery-pin2');
+  const err = document.getElementById('recovery-pin-error');
+  const btn = document.getElementById('recovery-done-btn');
+  const pinOld = normalizeRecoveryPin(pinOldEl && pinOldEl.value);
+  const pin1 = normalizeRecoveryPin(pin1El && pin1El.value);
+  const pin2 = normalizeRecoveryPin(pin2El && pin2El.value);
+  if (err) err.textContent = '';
+  if (!currentUser || !currentUser.emailKey) {
+    if (err) err.textContent = 'Phiên đăng nhập không hợp lệ';
+    return;
+  }
+  if (_recoveryPinMode === 'change') {
+    if (!isValidRecoveryPin(pinOld)) {
+      if (err) err.textContent = 'Nhập đủ PIN cũ (6 số)';
       return;
     }
-    const newHash = await hashPassword(newP);
-    await update(userRef, { passwordHash: newHash, updatedAt: Date.now() });
-    closeChangePass();
-    showToast('Đã đổi mật khẩu');
+  }
+  if (!isValidRecoveryPin(pin1)) {
+    if (err) err.textContent = 'PIN mới phải đủ 6 chữ số';
+    return;
+  }
+  if (pin1 !== pin2) {
+    if (err) err.textContent = 'Hai lần nhập PIN mới không khớp';
+    return;
+  }
+  if (_recoveryPinMode === 'change' && pinOld === pin1) {
+    if (err) err.textContent = 'PIN mới phải khác PIN cũ';
+    return;
+  }
+  if (btn) { btn.disabled = true; btn.textContent = 'Đang lưu…'; }
+  try {
+    if (_recoveryPinMode === 'change') {
+      const snap = await get(ref(db, 'users/' + currentUser.emailKey));
+      const d = snap.val() || {};
+      if (d.recoveryPinSet !== true || !d.recoveryCodeHash) {
+        showRecoveryPinModal('setup');
+        if (err) err.textContent = 'Tài khoản chưa có PIN — hãy đặt PIN mới';
+        return;
+      }
+      const oldHash = await hashRecoveryPin(pinOld);
+      if (oldHash !== d.recoveryCodeHash) {
+        if (err) err.textContent = 'Mã PIN cũ không đúng';
+        return;
+      }
+    }
+    const pinHash = await hashRecoveryPin(pin1);
+    await update(ref(db, 'users/' + currentUser.emailKey), {
+      recoveryCodeHash: pinHash,
+      recoveryPinSet: true, // đánh dấu đã đặt PIN 6 số (hệ thống mới)
+      updatedAt: Date.now()
+    });
+    _recoveryPinRequired = false;
+    const ov = document.getElementById('recovery-overlay');
+    if (ov) ov.classList.remove('show');
+    showToast(_recoveryPinMode === 'change' ? 'Đã đổi mã PIN' : 'Đã lưu mã PIN khôi phục');
   } catch (e) {
-    if (errEl) errEl.textContent = 'Lỗi kết nối. Thử lại.';
+    console.error(e);
+    if (err) err.textContent = 'Lỗi kết nối. Thử lại.';
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = _recoveryPinMode === 'change' ? 'Đổi mã PIN' : 'Lưu mã PIN';
+    }
   }
 };
 
-window.regenerateRecoveryCode = async function() {
+/** Acc đã login mà chưa đặt PIN 6 số (hệ thống mới) → bắt buộc hiện form */
+async function ensureRecoveryPinSet() {
   if (!currentUser || !currentUser.emailKey) return;
-  if (!confirm('Tạo mã khôi phục mới? Mã cũ sẽ không còn dùng được.')) return;
+  const ov = document.getElementById('recovery-overlay');
+  if (ov && ov.classList.contains('show') && _recoveryPinRequired) return;
   try {
-    const code = generateRecoveryCode();
-    const codeHash = await hashRecoveryCode(code);
-    await update(ref(db, 'users/' + currentUser.emailKey), {
-      recoveryCodeHash: codeHash,
-      updatedAt: Date.now()
+    const snap = await get(ref(db, 'users/' + currentUser.emailKey));
+    if (!snap.exists()) return;
+    const d = snap.val() || {};
+    // Chỉ coi là đã có PIN khi recoveryPinSet === true (acc cũ / mã khôi phục cũ không tính)
+    if (d.recoveryPinSet !== true) showRecoveryPinModal('setup');
+  } catch (e) {}
+}
+
+(function bindRecoveryPinInputs() {
+  ['recovery-old', 'recovery-pin', 'recovery-pin2', 'auth-recovery'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      const v = normalizeRecoveryPin(el.value);
+      if (el.value !== v) el.value = v;
     });
-    showRecoveryModal(code);
-  } catch (e) {
-    showToast('Không tạo được mã. Thử lại.');
-  }
-};
+    el.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
+      if (id === 'auth-recovery') return;
+      if (id === 'recovery-old') {
+        const p1 = document.getElementById('recovery-pin');
+        if (p1) p1.focus();
+      } else if (id === 'recovery-pin') {
+        const p2 = document.getElementById('recovery-pin2');
+        if (p2) p2.focus();
+      } else if (id === 'recovery-pin2') {
+        submitRecoveryPin();
+      }
+    });
+  });
+})();
 
 function loadSessionUser() {
   try {
@@ -3198,6 +3827,7 @@ async function refreshAccountFromServer() {
     };
     saveSessionUser(currentUser);
     renderAccountBadge();
+    ensureRecoveryPinSet();
   } catch (e) {}
 }
 
@@ -3369,7 +3999,7 @@ window.submitAuth = async function() {
   const pass = (passEl && passEl.value || '');
   if (errEl) errEl.textContent = '';
   if (!isValidEmail(email)) {
-    if (errEl) errEl.textContent = 'Tài khoản dạng tenban.wordwar.vn (3–32 ký tự, chữ/số/._-)';
+    if (errEl) errEl.textContent = 'Tài khoản dạng TenBan.wordwar.vn (3–32 ký tự, phân biệt hoa/thường, chữ/số/._-)';
     return;
   }
   const key = emailKey(email);
@@ -3384,8 +4014,8 @@ window.submitAuth = async function() {
     const pass2El = document.getElementById('auth-pass2');
     const codeRaw = (recEl && recEl.value) || '';
     const pass2 = (pass2El && pass2El.value) || '';
-    if (normalizeRecoveryCode(codeRaw).length < 8) {
-      if (errEl) errEl.textContent = 'Nhập đủ mã khôi phục (8 ký tự)';
+    if (!isValidRecoveryPin(normalizeRecoveryPin(codeRaw))) {
+      if (errEl) errEl.textContent = 'Nhập đủ mã PIN 6 chữ số';
       return;
     }
     if (pass.length < 4) {
@@ -3405,13 +4035,13 @@ window.submitAuth = async function() {
         return;
       }
       const d = snap.val() || {};
-      if (!d.recoveryCodeHash) {
-        if (errEl) errEl.textContent = 'Tài khoản chưa có mã khôi phục. Đăng nhập rồi tạo mã trong menu.';
+      if (d.recoveryPinSet !== true || !d.recoveryCodeHash) {
+        if (errEl) errEl.textContent = 'Tài khoản chưa đặt mã PIN khôi phục. Đăng nhập để đặt PIN trước.';
         return;
       }
       const codeHash = await hashRecoveryCode(codeRaw);
       if (codeHash !== d.recoveryCodeHash) {
-        if (errEl) errEl.textContent = 'Mã khôi phục không đúng';
+        if (errEl) errEl.textContent = 'Mã PIN không đúng';
         return;
       }
       const newHash = await hashPassword(pass);
@@ -3478,6 +4108,7 @@ window.submitAuth = async function() {
       renderAccountBadge();
       closeAuthModal();
       showToast('Xin chào, ' + currentUser.displayName + '!');
+      ensureRecoveryPinSet();
     } else {
       // ── Chống tạo acc clone tràn lan ──
       // 1) Mật khẩu tối thiểu 6 ký tự khi đăng ký mới
@@ -3533,13 +4164,12 @@ window.submitAuth = async function() {
       if (btn) { btn.disabled = true; btn.textContent = 'Đang tạo…'; }
 
       const disp = defaultNameFromEmail(email);
-      const recoveryPlain = generateRecoveryCode();
-      const recoveryCodeHash = await hashRecoveryCode(recoveryPlain);
       const payload = {
-        email: email.toLowerCase(),
+        email: email, // giữ hoa/thường như người dùng đăng ký
         displayName: disp,
         passwordHash: passHash,
-        recoveryCodeHash: recoveryCodeHash,
+        recoveryCodeHash: null,
+        recoveryPinSet: false, // đặt PIN ngay sau khi vào acc
         avatar: _authAvatarDataUrl || null,
         bestWpm: 0,
         createdAt: Date.now(),
@@ -3564,8 +4194,8 @@ window.submitAuth = async function() {
       saveSessionUser(currentUser);
       renderAccountBadge();
       closeAuthModal();
-      // Hiện mã khôi phục 1 lần — bắt buộc lưu
-      showRecoveryModal(recoveryPlain);
+      // Vào acc xong → bắt buộc đặt mã PIN 6 số
+      showRecoveryPinModal('setup');
     }
   } catch (e) {
     console.error(e);
@@ -3630,21 +4260,35 @@ function getMyDisplayName() {
 }
 
 // ── Admin: chỉ tài khoản được liệt kê mới thấy số người online ──
-// emailKey của PhamQuan.wordwar.vn → phamquan_wordwar_vn
+// Admin cố định: phamquan.wordwar.vn → emailKey phamquan_wordwar_vn (chữ thường)
+// Tài khoản hoa/thường khác (vd PhamQuan.wordwar.vn) là user thường, không phải admin
 const ADMIN_KEYS = ['phamquan_wordwar_vn'];
 function isAdmin() {
   return !!(currentUser && currentUser.emailKey && ADMIN_KEYS.includes(currentUser.emailKey));
 }
 
 // ── Presence: đếm người đang mở web (lobby / game / practice…) ──
-// Tối ưu: mọi client chỉ GHI node của mình; chỉ ADMIN mới lắng nghe cả cây presence.
+// Mọi client GHI node của mình + lắng nghe cây /presence (số online + danh sách công khai).
+// Đếm theo NGƯỜI: 1 account (kể cả nhiều tab/máy) = 1; khách = 1 / session.
 const PRESENCE_PATH = 'presence';
-const PRESENCE_HEARTBEAT_MS = 60000; // 60s — đủ để nhận diện online, giảm write
+const PRESENCE_HEARTBEAT_MS = 30000; // 30s — cập nhật thường hơn, đếm chính xác hơn
+const PRESENCE_FRESH_MS = 75000;    // 75s — quá hạn coi như offline (2.5 × heartbeat)
 let _presenceSid = null;
 let _presenceUnsub = null;
 let _presenceHeartbeat = null;
 let _onlineCount = 0;
+let _onlineLogged = 0;
+let _onlineGuest = 0;
 let _lastOnlineShown = -1;
+/** Cache presence rows cho panel admin */
+let _presenceRows = []; // [{ sid, ts, account, name, wpm, isLogged, devices }]
+let _onlineUsersFilter = 'all'; // all | logged | guest
+let _onlineUsersPanelOpen = false;
+let _onlineAgoTimer = null;
+/** Cache avatar online list: emailKey → dataUrl|null (null = đã fetch, không có avt) */
+const _onlineAvatarCache = Object.create(null);
+const _onlineAvatarLoading = new Set();
+const ONLINE_FACE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 19.5c0-3.5 2.9-6 6.5-6s6.5 2.5 6.5 6"/></svg>';
 
 function getOrCreatePresenceSid() {
   try {
@@ -3660,10 +4304,21 @@ function getOrCreatePresenceSid() {
 }
 
 function presencePayload() {
-  return {
+  const payload = {
     ts: Date.now(),
-    account: (currentUser && currentUser.emailKey) ? currentUser.emailKey : null
+    account: null,
+    name: null,
+    wpm: null
   };
+  if (currentUser && currentUser.emailKey) {
+    const key = String(currentUser.emailKey).trim();
+    if (key) {
+      payload.account = key;
+      payload.name = currentUser.displayName || defaultNameFromEmail(currentUser.email) || key;
+      payload.wpm = (typeof currentUser.bestWpm === 'number') ? currentUser.bestWpm : 0;
+    }
+  }
+  return payload;
 }
 
 function writePresenceNow() {
@@ -3681,7 +4336,6 @@ async function startPresence() {
   } catch (e) {}
   if (_presenceHeartbeat) clearInterval(_presenceHeartbeat);
   _presenceHeartbeat = setInterval(() => {
-    // Tab ẩn → bỏ heartbeat, giảm tải; hiện lại sẽ ghi ngay
     if (typeof document !== 'undefined' && document.hidden) return;
     writePresenceNow();
   }, PRESENCE_HEARTBEAT_MS);
@@ -3699,16 +4353,12 @@ function stopPresence() {
 function updateAdminOnlineUI() {
   const el = document.getElementById('admin-online-badge');
   if (!el) return;
-  if (isAdmin()) {
-    el.style.display = 'flex';
-    if (_onlineCount !== _lastOnlineShown) {
-      _lastOnlineShown = _onlineCount;
-      const num = el.querySelector('.admin-online-num');
-      if (num) num.textContent = String(_onlineCount);
-    }
-  } else {
-    el.style.display = 'none';
-    _lastOnlineShown = -1;
+  // Mọi người đều thấy số online + mở được danh sách
+  el.style.display = 'flex';
+  if (_onlineCount !== _lastOnlineShown) {
+    _lastOnlineShown = _onlineCount;
+    const num = el.querySelector('.admin-online-num');
+    if (num) num.textContent = String(_onlineCount);
   }
 }
 
@@ -3718,48 +4368,347 @@ function stopAdminOnlineListener() {
     _presenceUnsub = null;
   }
   _onlineCount = 0;
+  _onlineLogged = 0;
+  _onlineGuest = 0;
   _lastOnlineShown = -1;
+  _presenceRows = [];
+  if (_onlineUsersPanelOpen) closeOnlineUsersPanel();
+}
+
+/**
+ * Parse snapshot presence → rows + counts thống nhất (1 nguồn sự thật).
+ * - Có account hợp lệ → gom theo account (nhiều máy = 1 người, devices = số session)
+ * - Không account → mỗi session = 1 khách
+ * - Bỏ node quá hạn / dữ liệu hỏng
+ */
+function parsePresenceSnapshot(val) {
+  const rows = [];
+  const accountBest = new Map(); // emailKey → row
+  const accountDevices = new Map(); // emailKey → số session còn sống
+  const now = Date.now();
+  if (!val || typeof val !== 'object') {
+    return { rows: [], total: 0, logged: 0, guest: 0 };
+  }
+  for (const k of Object.keys(val)) {
+    if (!k || typeof k !== 'string') continue;
+    const row = val[k];
+    if (!row || typeof row !== 'object') continue;
+    const ts = typeof row.ts === 'number' ? row.ts : 0;
+    // ts tương lai quá xa (lệch đồng hồ > 5 phút) → bỏ; ts quá cũ → offline
+    if (!ts || ts > now + 300000 || (now - ts) >= PRESENCE_FRESH_MS) continue;
+
+    const rawAcc = row.account != null ? String(row.account).trim() : '';
+    if (rawAcc) {
+      accountDevices.set(rawAcc, (accountDevices.get(rawAcc) || 0) + 1);
+      const prev = accountBest.get(rawAcc);
+      if (!prev || ts > prev.ts) {
+        const name = (row.name != null && String(row.name).trim())
+          ? String(row.name).trim()
+          : rawAcc;
+        const wpm = (typeof row.wpm === 'number' && isFinite(row.wpm)) ? row.wpm : null;
+        accountBest.set(rawAcc, {
+          sid: k,
+          ts,
+          account: rawAcc,
+          name,
+          wpm,
+          isLogged: true,
+          devices: 1
+        });
+      }
+    } else {
+      rows.push({
+        sid: k,
+        ts,
+        account: null,
+        name: 'Khách',
+        wpm: null,
+        isLogged: false,
+        devices: 1
+      });
+    }
+  }
+  for (const [acc, r] of accountBest) {
+    r.devices = accountDevices.get(acc) || 1;
+    rows.push(r);
+  }
+  // Admin đầu danh sách, rồi heartbeat mới nhất
+  const adminSet = new Set(typeof ADMIN_KEYS !== 'undefined' ? ADMIN_KEYS : []);
+  rows.sort((a, b) => {
+    const aAd = a.isLogged && a.account && adminSet.has(a.account) ? 1 : 0;
+    const bAd = b.isLogged && b.account && adminSet.has(b.account) ? 1 : 0;
+    if (bAd !== aAd) return bAd - aAd;
+    return (b.ts || 0) - (a.ts || 0);
+  });
+  let logged = 0, guest = 0;
+  for (const r of rows) {
+    if (r.isLogged) logged++;
+    else guest++;
+  }
+  return { rows, total: logged + guest, logged, guest };
+}
+
+function applyPresenceParse(parsed) {
+  _presenceRows = parsed.rows;
+  _onlineCount = parsed.total;
+  _onlineLogged = parsed.logged;
+  _onlineGuest = parsed.guest;
+  updateAdminOnlineUI();
+  if (_onlineUsersPanelOpen) renderOnlineUsersList();
 }
 
 function startAdminOnlineListener() {
-  // Chỉ admin mới subscribe — tránh mọi client tải toàn bộ /presence
-  if (!isAdmin()) {
-    stopAdminOnlineListener();
-    updateAdminOnlineUI();
-    return;
-  }
+  // Public: mọi client lắng nghe presence để đếm + xem danh sách
   if (_presenceUnsub) {
     updateAdminOnlineUI();
     return;
   }
   const r = ref(db, PRESENCE_PATH);
   _presenceUnsub = onValue(r, (snap) => {
-    if (!isAdmin()) return;
-    const val = snap.val();
-    // Đếm theo NGƯỜI, không theo máy:
-    // - Có đăng nhập → gom theo account (1 acc trên nhiều máy = 1)
-    // - Chưa đăng nhập → mỗi session (tab/máy khách) = 1
-    const seen = new Set();
-    if (val && typeof val === 'object') {
-      const now = Date.now();
-      const freshMs = PRESENCE_HEARTBEAT_MS * 2.5;
-      for (const k of Object.keys(val)) {
-        const row = val[k];
-        if (!row || typeof row.ts !== 'number' || (now - row.ts) >= freshMs) continue;
-        if (row.account) seen.add('a:' + row.account);
-        else seen.add('s:' + k);
-      }
-    }
-    _onlineCount = seen.size;
-    updateAdminOnlineUI();
+    applyPresenceParse(parsePresenceSnapshot(snap.val()));
   }, () => {});
+  updateAdminOnlineUI();
 }
 
-/** Gọi khi login/logout — bật/tắt listener admin + cập nhật account trên presence */
+function formatPresenceAgo(ts) {
+  if (!ts) return '—';
+  const sec = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+  if (sec < 10) return 'vừa xong';
+  if (sec < 60) return sec + 's trước';
+  const m = Math.floor(sec / 60);
+  if (m < 60) return m + 'p trước';
+  return Math.floor(m / 60) + 'h trước';
+}
+
+function escapeOnlineHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+window.setOnlineUsersFilter = function(filter) {
+  _onlineUsersFilter = filter || 'all';
+  document.querySelectorAll('.online-users-stat').forEach(btn => {
+    const on = btn.getAttribute('data-filter') === _onlineUsersFilter;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  renderOnlineUsersList();
+};
+
+
+/** Admin không hiện avatar trong danh sách online */
+function isOnlineAdminAccount(emailKey) {
+  return !!(emailKey && typeof ADMIN_KEYS !== 'undefined' && ADMIN_KEYS.includes(emailKey));
+}
+
+function onlineAvHtml(r) {
+  // Guest / admin → icon; player có cache → img; đang tải → icon
+  if (!r.isLogged || !r.account || isOnlineAdminAccount(r.account)) {
+    return '<div class="online-user-av' + (r.isLogged ? ' is-logged' : ' is-guest') + '">' + ONLINE_FACE_SVG + '</div>';
+  }
+  const cached = _onlineAvatarCache[r.account];
+  const accAttr = escapeOnlineHtml(r.account);
+  if (typeof cached === 'string' && cached) {
+    // loading=lazy + decoding=async — tránh jank khi list dài
+    return '<div class="online-user-av is-logged" data-acc="' + accAttr + '">' +
+      '<img src="' + cached.replace(/"/g, '') + '" alt="" loading="lazy" decoding="async" width="40" height="40">' +
+      '</div>';
+  }
+  return '<div class="online-user-av is-logged" data-acc="' + accAttr + '">' + ONLINE_FACE_SVG + '</div>';
+}
+
+/** Tải avatar từ users/{key}/avatar — chỉ field avatar, cache RAM, không ghi presence */
+async function fetchOnlineAvatar(emailKey) {
+  if (!emailKey || isOnlineAdminAccount(emailKey)) return;
+  if (emailKey in _onlineAvatarCache) return;
+  if (_onlineAvatarLoading.has(emailKey)) return;
+  _onlineAvatarLoading.add(emailKey);
+  try {
+    const snap = await get(ref(db, 'users/' + emailKey + '/avatar'));
+    const v = snap.val();
+    // Chỉ nhận data URL / http(s) hợp lệ, bỏ chuỗi rác
+    if (typeof v === 'string' && v.length > 32 &&
+        (v.startsWith('data:image/') || v.startsWith('https://') || v.startsWith('http://'))) {
+      _onlineAvatarCache[emailKey] = v;
+    } else {
+      _onlineAvatarCache[emailKey] = null;
+    }
+  } catch (e) {
+    _onlineAvatarCache[emailKey] = null;
+  } finally {
+    _onlineAvatarLoading.delete(emailKey);
+  }
+  // Cập nhật DOM tại chỗ — không rebuild cả list (tránh nháy)
+  if (!_onlineUsersPanelOpen) return;
+  const url = _onlineAvatarCache[emailKey];
+  if (!url) return;
+  const listEl = document.getElementById('online-users-list');
+  if (!listEl) return;
+  listEl.querySelectorAll('.online-user-av[data-acc]').forEach(el => {
+    if (el.getAttribute('data-acc') !== emailKey) return;
+    if (el.querySelector('img')) return;
+    const img = document.createElement('img');
+    img.alt = '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.width = 40;
+    img.height = 40;
+    img.src = url;
+    el.innerHTML = '';
+    el.appendChild(img);
+  });
+}
+
+/** Queue tải avatar cho các dòng đang hiện (tối đa song song nhẹ) */
+function queueOnlineAvatars(rows) {
+  const need = [];
+  for (const r of rows) {
+    if (!r.isLogged || !r.account) continue;
+    if (isOnlineAdminAccount(r.account)) continue;
+    if (r.account in _onlineAvatarCache) continue;
+    if (_onlineAvatarLoading.has(r.account)) continue;
+    need.push(r.account);
+  }
+  // Giới hạn 6 request cùng lúc — đủ mượt, không spam Firebase
+  const batch = need.slice(0, 6);
+  batch.forEach(k => { fetchOnlineAvatar(k); });
+  // Phần còn lại trì hoãn nhẹ
+  if (need.length > 6) {
+    setTimeout(() => {
+      if (!_onlineUsersPanelOpen) return;
+      need.slice(6, 18).forEach(k => { fetchOnlineAvatar(k); });
+    }, 400);
+  }
+}
+
+function renderOnlineUsersList() {
+  const listEl = document.getElementById('online-users-list');
+  const foot = document.getElementById('online-users-foot');
+  const searchEl = document.getElementById('online-users-search');
+  if (!listEl) return;
+
+  const q = ((searchEl && searchEl.value) || '').trim().toLowerCase();
+  // Stats luôn lấy từ bộ đếm đã parse (khớp badge Online N)
+  const total = _onlineCount;
+  const logged = _onlineLogged;
+  const guest = _onlineGuest;
+  const elT = document.getElementById('ou-stat-total');
+  const elL = document.getElementById('ou-stat-logged');
+  const elG = document.getElementById('ou-stat-guest');
+  if (elT) elT.textContent = String(total);
+  if (elL) elL.textContent = String(logged);
+  if (elG) elG.textContent = String(guest);
+
+  let rows = _presenceRows;
+  if (_onlineUsersFilter === 'logged') rows = rows.filter(r => r.isLogged);
+  else if (_onlineUsersFilter === 'guest') rows = rows.filter(r => !r.isLogged);
+
+  if (q) {
+    rows = rows.filter(r => {
+      const name = (r.name || '').toLowerCase();
+      const acc = (r.account || '').toLowerCase();
+      return name.includes(q) || acc.includes(q);
+    });
+  }
+
+  if (!rows.length) {
+    listEl.innerHTML = '<div class="online-users-empty">' +
+      (total === 0 ? 'Không có ai online lúc này.' : 'Không khớp bộ lọc / tìm kiếm.') +
+      '</div>';
+  } else {
+    // Giới hạn render 200 dòng — đủ cho admin, tránh DOM phình khi spike
+    const MAX_RENDER = 200;
+    const slice = rows.slice(0, MAX_RENDER);
+    let html = '';
+    for (const r of slice) {
+      const name = escapeOnlineHtml(r.isLogged ? (r.name || r.account || 'User') : 'Khách');
+      const meta = r.isLogged
+        ? (escapeOnlineHtml(r.account || '') + (r.devices > 1 ? (' · ' + r.devices + ' máy') : ''))
+        : ('session · ' + escapeOnlineHtml((r.sid || '').slice(0, 12)));
+      const hasWpm = r.isLogged && r.wpm != null;
+      const wpmHtml = hasWpm
+        ? ('<div class="online-user-wpm">' + escapeOnlineHtml(r.wpm) + '<span>WPM</span></div>')
+        : '<div class="online-user-wpm empty">—</div>';
+      const isAdminRow = isOnlineAdminAccount(r.account);
+      const tag = isAdminRow
+        ? '<span class="online-user-tag admin">Admin</span>'
+        : (r.isLogged
+          ? '<span class="online-user-tag logged">Login</span>'
+          : '<span class="online-user-tag">Guest</span>');
+      html += '<div class="online-user-row">' +
+        onlineAvHtml(r) +
+        '<div class="online-user-info">' +
+          '<div class="online-user-name-row">' +
+            '<div class="online-user-name">' + name + '</div>' +
+            tag +
+          '</div>' +
+          '<div class="online-user-meta">' + meta + '</div>' +
+        '</div>' +
+        '<div class="online-user-side">' +
+          wpmHtml +
+          '<div class="online-user-ago">' + escapeOnlineHtml(formatPresenceAgo(r.ts)) + '</div>' +
+        '</div>' +
+      '</div>';
+    }
+    if (rows.length > MAX_RENDER) {
+      html += '<div class="online-users-empty">… và ' + (rows.length - MAX_RENDER) + ' mục nữa (dùng tìm kiếm để lọc)</div>';
+    }
+    listEl.innerHTML = html;
+    // Tải avatar nền (không block UI) — admin bị bỏ qua trong queue
+    queueOnlineAvatars(slice);
+  }
+
+  if (foot) {
+    foot.textContent = 'Realtime · heartbeat 30s · hiển thị ' + rows.length + '/' + total +
+      (_onlineUsersFilter !== 'all' ? ' · lọc: ' + _onlineUsersFilter : '');
+  }
+}
+
+window.toggleOnlineUsersPanel = function() {
+  if (_onlineUsersPanelOpen) closeOnlineUsersPanel();
+  else openOnlineUsersPanel();
+};
+
+window.openOnlineUsersPanel = function() {
+  const ov = document.getElementById('online-users-overlay');
+  const btn = document.getElementById('admin-online-list-btn');
+  if (!ov) return;
+  _onlineUsersPanelOpen = true;
+  ov.classList.add('show');
+  ov.setAttribute('aria-hidden', 'false');
+  if (btn) btn.classList.add('active');
+  renderOnlineUsersList();
+  if (_onlineAgoTimer) clearInterval(_onlineAgoTimer);
+  _onlineAgoTimer = setInterval(() => {
+    if (!_onlineUsersPanelOpen) return;
+    renderOnlineUsersList();
+  }, 10000);
+  const search = document.getElementById('online-users-search');
+  if (search) {
+    search.value = search.value || '';
+    setTimeout(() => { try { search.focus(); } catch (e) {} }, 80);
+  }
+};
+
+window.closeOnlineUsersPanel = function() {
+  const ov = document.getElementById('online-users-overlay');
+  const btn = document.getElementById('admin-online-list-btn');
+  if (ov) {
+    ov.classList.remove('show');
+    ov.setAttribute('aria-hidden', 'true');
+  }
+  if (btn) btn.classList.remove('active');
+  _onlineUsersPanelOpen = false;
+  if (_onlineAgoTimer) { clearInterval(_onlineAgoTimer); _onlineAgoTimer = null; }
+};
+
+/** Gọi khi login/logout — cập nhật account trên presence; listener luôn bật cho mọi người */
 function syncAdminPresenceState() {
   writePresenceNow();
-  if (isAdmin()) startAdminOnlineListener();
-  else stopAdminOnlineListener();
+  startAdminOnlineListener();
   updateAdminOnlineUI();
 }
 
@@ -3770,11 +4719,17 @@ document.addEventListener('visibilitychange', () => {
 
 currentUser = loadSessionUser();
 renderAccountBadge();
-if (currentUser) refreshAccountFromServer();
+if (currentUser) {
+  // Acc đã login từ trước (kể cả trước khi có hệ PIN) → kiểm tra & bắt buộc đặt PIN nếu chưa
+  ensureRecoveryPinSet();
+  refreshAccountFromServer();
+  setTimeout(() => { if (currentUser) ensureRecoveryPinSet(); }, 600);
+  setTimeout(() => { if (currentUser) ensureRecoveryPinSet(); }, 2000);
+}
 
-// Presence: mọi người ghi node mình; chỉ admin lắng nghe đếm
+// Presence: mọi người ghi node mình + lắng nghe đếm / danh sách online
 startPresence();
-if (isAdmin()) startAdminOnlineListener();
+startAdminOnlineListener();
 updateAdminOnlineUI();
 
 // Enter trong form auth / sửa tên
@@ -4787,7 +5742,18 @@ function getDefaultSvg() {
 }
 
 // ── Images (nén trước khi lưu / gửi Firebase — quan trọng trên 4G/mobile) ──
-window.pickImg = k => document.getElementById(`file-${k}`).click();
+function hasLockedAccountAvatar() {
+  return !!(typeof currentUser !== 'undefined' && currentUser && currentUser.avatar);
+}
+
+window.pickImg = function(k) {
+  if ((k === 'myDefault' || k === 'default') && hasLockedAccountAvatar()) {
+    if (typeof showToast === 'function') showToast('Đã dùng avatar tài khoản — không đổi tại đây');
+    return;
+  }
+  const el = document.getElementById('file-' + k);
+  if (el) el.click();
+};
 
 /** Nén ảnh xuống maxSide px, JPEG quality — gọn cho RTDB nhưng vẫn nét trên màn retina */
 function compressImageDataUrl(dataUrl, maxSide = 384, quality = 0.88) {
@@ -5056,21 +6022,37 @@ function applyAccountAvatarToPrepSlot() {
     const accountAvatar = (typeof currentUser !== 'undefined' && currentUser && currentUser.avatar)
       ? currentUser.avatar
       : null;
-    // Ưu tiên ảnh đã chọn trong phiên; nếu chưa có thì lấy avatar tài khoản
-    if (!myImgs.default && accountAvatar) {
+    // Có avatar tài khoản → khóa chọn ảnh, luôn dùng avatar acc
+    if (accountAvatar) {
+      myImgs.default = accountAvatar;
+    } else if (!myImgs.default && accountAvatar) {
       myImgs.default = accountAvatar;
     }
     const src = myImgs.default || accountAvatar || null;
-    if (!src) return;
-
     const img = document.getElementById('prev-myDefault');
-    if (img) {
+    const slot = document.getElementById('slot-myDefault');
+    if (src && img) {
       img.src = src;
       img.style.display = 'block';
     }
-    const slot = document.getElementById('slot-myDefault');
     if (slot) {
-      slot.querySelectorAll('.lbl, span').forEach(el => { el.style.opacity = '0'; });
+      if (src) {
+        slot.querySelectorAll('.lbl, span').forEach(el => { el.style.opacity = '0'; });
+      }
+      // Khóa slot khi đã có avatar tài khoản (không hiện chữ trên ảnh)
+      if (accountAvatar) {
+        slot.classList.add('locked');
+        slot.removeAttribute('onclick');
+        slot.title = 'Avatar tài khoản — không đổi tại đây';
+        const lockEl = slot.querySelector('.img-slot-lock');
+        if (lockEl) lockEl.remove();
+      } else {
+        slot.classList.remove('locked');
+        slot.title = '';
+        if (!slot.getAttribute('onclick')) slot.setAttribute('onclick', "pickImg('myDefault')");
+        const lockEl = slot.querySelector('.img-slot-lock');
+        if (lockEl) lockEl.remove();
+      }
     }
   } catch (e) {}
 }
@@ -5216,19 +6198,49 @@ function startMmHostNoShowWatch(watchRoomId) {
  * tự thử lại (retriesLeft) khi vừa "bắt" được đối thủ thì phát hiện họ đã hủy
  * tìm đúng lúc đó — tránh tạo phòng ma khiến bên host kẹt lại chờ mãi.
  */
+/** Account key dùng chống tự-ghép (null = khách chưa login) */
+function getMyMmAccountKey() {
+  return (typeof currentUser !== 'undefined' && currentUser && currentUser.emailKey)
+    ? currentUser.emailKey
+    : null;
+}
+
+/** Admin được phép ghép với chính mình (test); người chơi thường thì không */
+function isMmSelfMatchAllowed() {
+  return (typeof isAdmin === 'function') && isAdmin();
+}
+
+function isSameMmAccount(a, b) {
+  return !!(a && b && a === b);
+}
+
 async function attemptMatchPairing(retriesLeft) {
   let opponent = null;
+  let becameWaiter = false;
+  let selfBlocked = false;
+  const myAccount = getMyMmAccountKey();
+  const allowSelf = isMmSelfMatchAllowed();
+
   const txResult = await runTransaction(mmWaitingRef(), current => {
     opponent = null;
+    becameWaiter = false;
+    selfBlocked = false;
     // Slot chờ quá cũ (chủ nhân có thể đã rớt mạng, onDisconnect chưa kịp dọn) → coi như trống
     if (current && current.id !== mmSearchId && (Date.now() - (current.ts || 0)) > MM_WAITING_TTL_MS) {
       current = null;
     }
     if (!current) {
-      return { id: mmSearchId, ts: mmStartTs };
+      becameWaiter = true;
+      return { id: mmSearchId, ts: mmStartTs, account: myAccount };
     }
     if (current.id === mmSearchId) {
+      becameWaiter = true;
       return current; // đã là mình (transaction chạy lại) — giữ nguyên
+    }
+    // Chống tự-ghép: cùng tài khoản (2 tab/máy) — trừ admin
+    if (!allowSelf && isSameMmAccount(myAccount, current.account)) {
+      selfBlocked = true;
+      return current; // giữ nguyên slot của "mình bên kia", không ghép
     }
     opponent = current; // có người đang chờ sẵn → nhận ghép ngay
     return null; // giải phóng slot cho lượt ghép kế tiếp
@@ -5236,14 +6248,36 @@ async function attemptMatchPairing(retriesLeft) {
 
   if (!txResult || !txResult.committed) throw new Error('matchmaking-transaction-failed');
 
+  // Bị chặn tự-ghép → thử lại sau (chờ người khác vào hàng), không đụng slot
+  if (selfBlocked) {
+    if (isMatchmaking && !mmMatched) {
+      setTimeout(() => {
+        if (isMatchmaking && !mmMatched) attemptMatchPairing(2).catch(() => {});
+      }, 1400);
+    }
+    return;
+  }
+
   if (opponent && opponent.id) {
     // Xác nhận đối thủ vẫn còn đang tìm thật (chưa bấm hủy đúng lúc mình vừa "bắt" được họ)
     let stillSearching = true;
+    let oppQueueAccount = opponent.account || null;
     try {
       const oppSnap = await get(ref(db, `matchmaking/queue/${opponent.id}`));
       const oppData = oppSnap.val();
       stillSearching = !!(oppData && oppData.status === 'searching');
+      if (oppData && oppData.account) oppQueueAccount = oppData.account;
     } catch (e) { /* lỗi mạng: thử ghép vẫn tốt hơn bỏ lỡ, giữ nguyên stillSearching */ }
+
+    // Kiểm tra lại account từ queue (phòng slot cũ thiếu field)
+    if (!allowSelf && isSameMmAccount(myAccount, oppQueueAccount)) {
+      if (isMatchmaking && !mmMatched) {
+        setTimeout(() => {
+          if (isMatchmaking && !mmMatched) attemptMatchPairing(2).catch(() => {});
+        }, 1400);
+      }
+      return;
+    }
 
     if (!stillSearching) {
       if (retriesLeft > 0 && isMatchmaking && !mmMatched) {
@@ -5291,7 +6325,7 @@ async function attemptMatchPairing(retriesLeft) {
       showToast('Lỗi ghép trận, thử lại!');
       cancelMatchmaking();
     }
-  } else {
+  } else if (becameWaiter) {
     // Mình là người đang chờ (đã giữ slot) — nếu mất kết nối thì tự dọn slot để không thành "ma"
     try { await onDisconnect(mmWaitingRef()).remove(); } catch (e) {}
   }
@@ -5335,7 +6369,8 @@ async function startMatchmaking() {
     // Node cá nhân — để nhận thông báo "đã ghép trận" khi mình là người chờ
     await set(ref(db, `matchmaking/queue/${mmSearchId}`), {
       ts: mmStartTs,
-      status: 'searching'
+      status: 'searching',
+      account: getMyMmAccountKey()
     });
     try { await onDisconnect(ref(db, `matchmaking/queue/${mmSearchId}`)).remove(); } catch(e) {}
 
@@ -5939,7 +6974,7 @@ function updatePrepUI(d) {
   setReadyBadge('opp-ready-badge', myRole === 'p1' ? d.p2?.ready : d.p1?.ready);
   if (d.p1?.ready && d.p2?.ready && d.phase === 'prep' && myRole === 'p1') {
     const sharedWordSeed = Math.floor(Math.random() * 2147483647);
-    update(ref(db, `bowwow/${roomId}`), { phase: 'countdown', countdownTs: Date.now(), wordSeed: sharedWordSeed });
+    update(ref(db, `bowwow/${roomId}`), { phase: 'countdown', countdownTs: nowServer(), wordSeed: sharedWordSeed });
   }
 }
 
@@ -5970,14 +7005,18 @@ async function handleCountdown(d) {
   clearTypingInput();
   const overlay = document.getElementById('countdown-overlay');
   const num = document.getElementById('countdown-num');
+  // Xoá số tĩnh có sẵn trong HTML TRƯỚC khi mở overlay — tránh hiện "3" 2 lần
+  // (1 lần tĩnh lúc mở overlay, 1 lần khi step đầu tiên của vòng lặp chạy)
+  num.textContent = '';
   overlay.style.display = 'flex';
   showScreen('game-screen');
 
-  // Đồng bộ theo countdownTs chung (nếu có) để 2 máy kết thúc gần cùng lúc dù mạng lệch
+  // Đồng bộ theo countdownTs chung + giờ server (nowServer) để 2 máy kết thúc
+  // đúng cùng 1 mốc thời gian thật, không phụ thuộc đồng hồ hệ thống từng máy lệch nhau
   const COUNTDOWN_MS = 3 * 900 + 600; // 3-2-1 + 🚀
   const baseTs = (d && typeof d.countdownTs === 'number' && d.countdownTs > 0)
     ? d.countdownTs
-    : Date.now();
+    : nowServer();
   const endAt = baseTs + COUNTDOWN_MS;
 
   const steps = [
@@ -5989,7 +7028,7 @@ async function handleCountdown(d) {
   for (const step of steps) {
     // Nếu đã chuyển playing/result (máy kia nhanh hơn / mạng bắt kịp) → thoát countdown
     if (gameStarted || resultShown) break;
-    const wait = step.t - Date.now();
+    const wait = step.t - nowServer();
     if (wait > 0) await sleep(Math.min(wait, 1200));
     if (gameStarted || resultShown) break;
     num.textContent = step.label;
@@ -5998,22 +7037,22 @@ async function handleCountdown(d) {
   }
   // Chờ tới mốc endAt (hoặc tối đa thêm 400ms nếu máy chậm)
   if (!gameStarted && !resultShown) {
-    const left = endAt - Date.now();
+    const left = endAt - nowServer();
     if (left > 0) await sleep(Math.min(left, 400));
   }
   if (!gameStarted) overlay.style.display = 'none';
 
   if (myRole === 'p1' && !gameStarted && !resultShown) {
-    // startTs lấy Date.now() tại thời điểm cả 2 gần như đã xong countdown
+    // startTs lấy nowServer() tại thời điểm cả 2 gần như đã xong countdown — cùng mốc giờ server
     try {
       await update(ref(db, `bowwow/${roomId}`), {
-        phase: 'playing', ballPos: 50, timeLeft: GAME_DURATION, startTs: Date.now()
+        phase: 'playing', ballPos: 50, timeLeft: GAME_DURATION, startTs: nowServer()
       });
     } catch (e) {
       // Thử lại 1 lần nếu mạng yếu
       try {
         await update(ref(db, `bowwow/${roomId}`), {
-          phase: 'playing', ballPos: 50, timeLeft: GAME_DURATION, startTs: Date.now()
+          phase: 'playing', ballPos: 50, timeLeft: GAME_DURATION, startTs: nowServer()
         });
       } catch (e2) {}
     }
@@ -6039,8 +7078,8 @@ function startGameUI(d) {
   ballPos = initPos;
   _lastBallPos = -1; // force vẽ lại bar
   // Ưu tiên startTs từ Firebase để 2 client cùng mốc thời gian
-  gameStartTs = (typeof d.startTs === 'number' && d.startTs > 0) ? d.startTs : Date.now();
-  timeLeft = Math.max(0, GAME_DURATION - Math.floor((Date.now() - gameStartTs) / 1000));
+  gameStartTs = (typeof d.startTs === 'number' && d.startTs > 0) ? d.startTs : nowServer();
+  timeLeft = Math.max(0, GAME_DURATION - Math.floor((nowServer() - gameStartTs) / 1000));
   if (typeof d.timeLeft === 'number') {
     // fallback nếu startTs lệch đồng hồ máy — lấy min để không bị cộng thêm
     timeLeft = Math.min(timeLeft, d.timeLeft);
@@ -6133,12 +7172,12 @@ function spawnBarRipple(myPosPct, pushRight) {
 
 function computeTimeLeft() {
   if (!gameStartTs) return timeLeft;
-  return Math.max(0, GAME_DURATION - Math.floor((Date.now() - gameStartTs) / 1000));
+  return Math.max(0, GAME_DURATION - Math.floor((nowServer() - gameStartTs) / 1000));
 }
 
 function startGameTimer() {
   if (timerInterval) clearInterval(timerInterval);
-  if (!gameStartTs) gameStartTs = Date.now();
+  if (!gameStartTs) gameStartTs = nowServer();
   timeLeft = computeTimeLeft();
   if (_dom.timer) _dom.timer.textContent = timeLeft;
   else {
@@ -6447,12 +7486,26 @@ function pruneOldWords() {
 // Dùng sự kiện 'input' (thay vì chỉ dựa vào keydown phím SPACE) vì bàn phím ảo trên điện thoại
 // không phải lúc nào cũng bắn keydown chuẩn cho phím cách — nhưng ký tự cách luôn xuất hiện
 // thật trong giá trị input, nên bắt ở đây đảm bảo gõ được trên cả bàn phím vật lý lẫn di động.
+/** Đổi trạng thái viền ô nhập mà không ghi đè className toàn bộ (mượt hơn) */
+function setTypingClass(inputEl, state) {
+  if (!inputEl) return;
+  // state: null | 'correct' | 'wrong'
+  const wantC = state === 'correct';
+  const wantW = state === 'wrong';
+  if (inputEl.classList.contains('typing-correct') !== wantC) {
+    inputEl.classList.toggle('typing-correct', wantC);
+  }
+  if (inputEl.classList.contains('typing-wrong') !== wantW) {
+    inputEl.classList.toggle('typing-wrong', wantW);
+  }
+}
+
 function handleWordInputChange(e) {
   if (!gameActive || resultShown || (isPracticeMode && practiceFinished)) {
     // Trận đã kết thúc / chưa bắt đầu: nuốt phím gõ thừa, giữ ô trống
     if (e && e.target) {
       e.target.value = '';
-      e.target.className = 'word-type-input';
+      setTypingClass(e.target, null);
     }
     return;
   }
@@ -6466,7 +7519,7 @@ function handleWordInputChange(e) {
     const typedWord = val.slice(0, spaceIdx).trim();
     let rest = val.slice(spaceIdx + 1).replace(/^\s+/, '');
     inputEl.value = rest;
-    inputEl.className = 'word-type-input';
+    setTypingClass(inputEl, null);
     // Âm thanh: predictive keydown đã phát Space → không double; ảo thì phát tại đây
     maybePlaySoundFromInput();
     resetBarkTimeout();
@@ -6479,10 +7532,12 @@ function handleWordInputChange(e) {
   // Predictive: desktop đã phát ở keydown; mobile/IME phát ở đây
   maybePlaySoundFromInput();
   const currentTarget = wordList[currentWordIndex];
-  if (currentTarget && currentTarget.startsWith(val)) {
-    inputEl.className = 'word-type-input typing-correct';
+  if (!val) {
+    setTypingClass(inputEl, null);
+  } else if (currentTarget && currentTarget.startsWith(val)) {
+    setTypingClass(inputEl, 'correct');
   } else {
-    inputEl.className = 'word-type-input typing-wrong';
+    setTypingClass(inputEl, 'wrong');
   }
   resetBarkTimeout();
 }
@@ -6495,7 +7550,7 @@ function resetBarkTimeout() {
       // Bark off gộp vào stats flush — tránh thêm 1 write Firebase mỗi lần ngừng gõ
       if (!isPracticeMode) queuePlayerStats({ bark: false });
     }
-  }, 420);
+  }, 320);
 }
 
 // Gộp correct/wrong/bark thành 1 write Firebase mỗi ~280ms (giảm spam khi gõ nhanh trên 4G)
@@ -6710,12 +7765,15 @@ function feedbackWordHit(ok, anchorEl) {
 
 function submitWord(typedWord) {
   if (!gameActive) return;
+  // Khóa đồng bộ trong cùng tick (chống double-fire), mở lại ngay cuối hàm — không delay 35ms
   if (isSubmitting) return;
   isSubmitting = true;
-  setTimeout(() => { isSubmitting = false; }, 35);
 
   const currentTarget = wordList[currentWordIndex];
-  if (typedWord === '' || !currentTarget) return;
+  if (typedWord === '' || !currentTarget) {
+    isSubmitting = false;
+    return;
+  }
 
   const currentSpan = document.getElementById('word-' + currentWordIndex);
 
@@ -6762,7 +7820,7 @@ function submitWord(typedWord) {
   // 2) Việc gửi dame/sự kiện lên Firebase chạy nền phía sau, không chặn bàn phím
   // Chế độ luyện tập: không mất máu, không gọi Firebase, chỉ đếm số từ đúng/sai
   if (isPracticeMode) {
-    if (practiceFinished) return;
+    if (practiceFinished) { isSubmitting = false; return; }
     ensurePracticeTimerStarted();
     // WPM luyện tập: cùng cơ chế thi đấu — prefix đúng cộng, phần sai/thiếu trừ
     practiceTotalChars += netCharsForWord(currentTarget, typedWord);
@@ -6776,6 +7834,7 @@ function submitWord(typedWord) {
       setAvatarBarking('p1', false);
     }
     updateLivePracticeWpm();
+    isSubmitting = false;
     return;
   }
 
@@ -6792,6 +7851,7 @@ function submitWord(typedWord) {
     dealDamageAsync(2.5, true);
     queuePlayerStats({ bark: false, correct: matchCorrect, wrong: matchWrong, chars: matchTotalChars });
   }
+  isSubmitting = false;
 }
 
 // Phím Enter cũng nộp được từ — hữu ích khi bàn phím ảo trên điện thoại hiện nút
@@ -6815,7 +7875,7 @@ function handleWordKeydown(event) {
   const inputEl = document.getElementById('game-hidden-input');
   const typedWord = inputEl.value.trim();
   inputEl.value = '';
-  inputEl.className = 'word-type-input';
+  setTypingClass(inputEl, null);
   // Âm đã phát ở maybePlaySoundFromKeydown — không gọi lại
   resetBarkTimeout();
   submitWord(typedWord);
@@ -6908,7 +7968,7 @@ function showResult(d) {
   const finalMeChars = matchTotalChars;
   // WPM = (tổng ký tự ÷ 5) ÷ giây × 60
   const elapsedSec = gameStartTs
-    ? Math.max(1, Math.floor((Date.now() - gameStartTs) / 1000))
+    ? Math.max(1, Math.floor((nowServer() - gameStartTs) / 1000))
     : Math.max(1, GAME_DURATION - (typeof timeLeft === 'number' ? timeLeft : 0));
   const finalMeWpm = Math.max(0, Math.round(((Math.max(0, finalMeChars) / 5) / elapsedSec) * 60));
 

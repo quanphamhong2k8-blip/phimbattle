@@ -2,13 +2,13 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, interactive-widget=overlays-content">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0E0E11">
-<title>Word War Battle</title>
+<title>Typing Battle</title>
 <style>
   /* ============================================================
-     ARENA THEME — Word War Battle
+     ARENA THEME — Typing Battle
      Dark Editorial Arena · flat panels · 1px borders · gold accent
      ============================================================ */
   @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -76,7 +76,7 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
   }
 
-  /* Logo WORD WAR + Account badge */
+  /* Logo TYPING BATTLE + Account badge */
   .logo-wrap {
     display: flex;
     align-items: center;
@@ -88,28 +88,67 @@
   }
   .logo-title {
     font-family: var(--font-display);
-    font-size: clamp(2.4rem, 9vw, 3.6rem);
+    /* TYPING BATTLE dài hơn WORD WAR — thu nhỏ + chừa chỗ avatar trái */
+    font-size: clamp(1.45rem, 5.6vw, 2.55rem);
     font-weight: 800;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.035em;
     line-height: 1;
     margin: 0;
     display: inline-flex;
     align-items: baseline;
-    gap: 0.18em;
+    gap: 0.14em;
     /* Luôn chính giữa — không bị badge đẩy lệch */
     position: relative;
     z-index: 0;
+    max-width: min(100%, calc(100vw - 7.5rem));
+    padding: 0 0.2rem;
+    box-sizing: border-box;
+    justify-content: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
   }
   .logo-word {
     color: var(--ink);
   }
   .logo-war {
     color: transparent;
-    -webkit-text-stroke: 1.5px var(--ink);
-    text-stroke: 1.5px var(--ink);
+    -webkit-text-stroke: 1.35px var(--ink);
+    text-stroke: 1.35px var(--ink);
+  }
+  @media (max-width: 420px) {
+    .logo-title {
+      font-size: clamp(1.2rem, 5.2vw, 1.75rem);
+      max-width: calc(100vw - 5.5rem);
+      letter-spacing: -0.03em;
+      gap: 0.1em;
+    }
+    .logo-war {
+      -webkit-text-stroke: 1.15px var(--ink);
+      text-stroke: 1.15px var(--ink);
+    }
+  }
+  @media (min-width: 421px) and (max-width: 600px) {
+    .logo-title {
+      font-size: clamp(1.55rem, 5.4vw, 2.15rem);
+      max-width: calc(100vw - 6.5rem);
+    }
   }
   .logo-sub {
     display: none;
+  }
+
+  /* Mobile + đã đăng nhập: tạm ẩn TYPING BATTLE — chừa chỗ avatar/tên */
+  @media (max-width: 720px) {
+    .logo-wrap.user-logged-in .logo-title,
+    .logo-wrap:has(.account-badge.logged-in) .logo-title {
+      display: none;
+    }
+    .logo-wrap.user-logged-in,
+    .logo-wrap:has(.account-badge.logged-in) {
+      min-height: 56px;
+      margin-bottom: 1.1rem;
+      justify-content: flex-start;
+    }
   }
 
   /* Admin online — neo trái dưới account badge, không khung */
@@ -363,6 +402,35 @@
     background: #1c1c22;
     border-color: rgba(232,178,91,0.22);
   }
+  /* Admin: xóa từng tin */
+  .lobby-chat-bubble-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.3rem;
+    max-width: 100%;
+  }
+  .lobby-chat-row.mine .lobby-chat-bubble-wrap { flex-direction: row-reverse; }
+  .lobby-chat-del {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    margin-top: 0.2rem;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--dim);
+    font-size: 0.85rem;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0.75;
+  }
+  .lobby-chat-del:hover { color: var(--ink); opacity: 1; background: transparent; }
+  .lobby-chat-del:disabled { opacity: 0.35; cursor: not-allowed; }
   .lobby-chat-foot {
     flex-shrink: 0;
     border-top: 1px solid var(--line);
@@ -1186,6 +1254,27 @@
   }
   .screen.active { display: block; }
 
+  /* Luyện tập (desktop ≥721px): đẩy cụm nội dung lên cao hơn.
+     Mobile: giữ layout gốc — không flex/min-height (tránh xung đột bàn phím ảo). */
+  @media (min-width: 721px) {
+    #game-screen.active.practice-active {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      min-height: 100dvh;
+      min-height: 100vh;
+      box-sizing: border-box;
+      padding-top: max(2.5rem, calc(env(safe-area-inset-top) + 2rem));
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+    #game-screen.active.practice-active .practice-hud {
+      margin-top: 0;
+    }
+    #game-screen.active.practice-active .typing-section {
+      margin-top: 0.85rem;
+    }
+  }
+
   #lobby-screen {
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
@@ -1350,7 +1439,7 @@
     user-select: none;
   }
   .btn::after { display: none; }
-  .btn:hover { filter: none; transform: none; }
+  .btn:hover { filter: none; }
   .btn:active { transform: translateY(1px); }
   .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
@@ -1602,9 +1691,9 @@
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    padding: 0.7rem 1rem;
+    padding: 0.55rem 1rem;
     max-width: 920px;
-    margin: 0 auto 0.6rem;
+    margin: 0 auto 0.35rem;
   }
   .pname {
     font-family: var(--font-display);
@@ -1629,7 +1718,8 @@
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 200;
-    padding: 12px 10% 0;
+    /* Hạ thanh máu xuống một chút, không sát mép trên quá */
+    padding: calc(max(10px, env(safe-area-inset-top, 0px)) + 10px) 10% 0;
   }
   .bar-track {
     height: 22px;
@@ -1849,7 +1939,7 @@
 
   .typing-section {
     max-width: 920px;
-    margin: 1.6rem auto 0;
+    margin: 0.85rem auto 0;
     padding: 0 1rem;
   }
   .typing-container {
@@ -1974,7 +2064,8 @@
     border-color: var(--danger);
   }
 
-  #game-screen { padding-top: 72px; }
+  /* Chỉ đẩy cụm UI chiến đấu lên cao (giữ scale 100%) — đỡ phải nhìn xuống */
+  #game-screen { padding-top: 42px; }
   #result-screen { text-align: center; padding: 2rem 1rem; }
   .result-box {
     background: var(--surface);
@@ -1986,6 +2077,9 @@
     box-shadow: none;
     position: relative;
     overflow: hidden;
+    /* Scale bảng VICTORY/DEFEAT xuống 90% so với trước */
+    transform: scale(0.9);
+    transform-origin: center center;
   }
   .result-box::before { display: none; }
   .result-icon { font-size: 5rem; margin-bottom: 0.5rem; filter: none; }
@@ -2110,6 +2204,86 @@
     to { transform: scale(1); opacity: 1; }
   }
   #countdown-overlay { display: none; }
+
+  .battle-sync-banner {
+    position: fixed;
+    top: max(0.65rem, env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(-50%) translateY(-120%);
+    z-index: 9200;
+    max-width: min(92vw, 420px);
+    padding: 0.55rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid rgba(232,178,91,0.35);
+    background: rgba(20,18,14,0.92);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-align: center;
+    line-height: 1.35;
+    pointer-events: none;
+    opacity: 0;
+    transition: transform 0.28s ease, opacity 0.28s ease;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+  }
+  .battle-sync-banner.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  .battle-sync-banner.warn { border-color: rgba(232,178,91,0.45); color: var(--accent); }
+  .battle-sync-banner.bad { border-color: rgba(232,93,93,0.45); color: #f0a0a0; }
+  .battle-sync-banner.ok { border-color: rgba(90,200,140,0.4); color: var(--success, #7dcea0); }
+
+  .battle-conn-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10,10,12,0.78);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
+  .battle-conn-overlay.show { display: flex; }
+  .battle-conn-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 1.75rem;
+    max-width: min(90vw, 320px);
+    text-align: center;
+  }
+  .battle-conn-spinner {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 3px solid rgba(236,231,221,0.12);
+    border-top-color: var(--accent);
+    animation: battle-conn-spin 0.75s linear infinite;
+  }
+  @keyframes battle-conn-spin {
+    to { transform: rotate(360deg); }
+  }
+  .battle-conn-text {
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.03em;
+    line-height: 1.4;
+  }
+  .battle-conn-countdown {
+    display: none;
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
 
   .toast {
     position: fixed;
@@ -2718,13 +2892,20 @@
     transition: transform 0.18s ease-out;
     top: 0 !important;
   }
-  /* Particle feedback khi gõ đúng/sai */
+  /* Particle feedback khi gõ đúng/sai — gắn local vào chữ (absolute) để không lệch khi scale */
+  .word {
+    position: relative;
+  }
   .hit-particle {
-    position: fixed;
+    position: absolute;
+    left: 50%;
+    top: 50%;
     pointer-events: none;
     z-index: 70;
     width: 7px;
     height: 7px;
+    margin-left: -3.5px;
+    margin-top: -3.5px;
     border-radius: 50%;
     will-change: transform, opacity;
     animation: hitParticleFly 0.48s ease-out forwards;
@@ -2734,20 +2915,48 @@
     100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.15); }
   }
 
+  /* DeviceDetect body classes — hook CSS theo loại máy (bổ sung media query) */
+  body.device-phone { --device-kind: phone; }
+  body.device-tablet { --device-kind: tablet; }
+  body.device-pc { --device-kind: pc; zoom: 1.1; }
+  body.device-touch { --device-touch: 1; }
+  body.device-no-touch { --device-touch: 0; }
+  /* iOS: tránh zoom input khi focus (font >= 16px đã có; bổ sung touch-callout) */
+  body.os-ios input, body.os-ios textarea, body.os-ios button {
+    -webkit-touch-callout: none;
+  }
+
   /* Chỉ tối ưu layout khi màn thật sự hẹp — KHÔNG gắn pointer:coarse
      (laptop cảm ứng / Windows tablet mode hay bị coarse nhưng vẫn là desktop). */
   @media (max-width: 720px) {
-    .bar-fill-p1-img, .bar-fill-p2-img { opacity: 0.22; }
+    .bar-fill-p1-img, .bar-fill-p2-img { opacity: var(--fx-bar-img-opacity, 0.22); }
     .word { transition: color 0.1s ease, background 0.1s ease; }
-    /* Mobile hẹp: avatar nhỏ hơn, input dính đáy, word pool gọn */
+    /* Mobile hẹp: avatar nhỏ hơn, input dính đáy, word pool gọn — cấu trúc gần PC */
     #game-screen {
+      /* Bar nằm trong luồng (sát trên tên+đồng hồ) → không chừa chỗ fixed top */
+      padding-top: max(0.4rem, env(safe-area-inset-top, 0px));
       padding-left: 0.5rem;
       padding-right: 0.5rem;
       padding-bottom: max(0.35rem, env(safe-area-inset-bottom));
     }
+    /* Thanh máu: trong luồng, sát ngay trên hàng tên + đồng hồ (không fixed mép màn) */
+    .bar-wrap {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      z-index: 5;
+      padding: 0.2rem 4% 0.15rem;
+      margin: 0 auto;
+      max-width: 920px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .bar-track { height: 18px; }
     .game-header {
-      padding: 0.35rem 0.4rem;
-      margin-bottom: 0.35rem;
+      padding: 0.25rem 0.4rem 0.35rem;
+      margin-bottom: 0.25rem;
+      margin-top: 0.1rem;
     }
     .pname { font-size: 0.95rem; }
     .game-timer { font-size: 1.55rem; }
@@ -2758,8 +2967,15 @@
     .avatar-card { padding: 0.45rem; gap: 0.25rem; }
     .avatar-img-wrap { max-width: 104px; }
     .bark-label { font-size: 0.68rem; }
-    .word-pool-wrapper { height: 100px; padding: 8px 12px; }
-    .word { font-size: 1.15rem; line-height: 44px; height: 44px; margin-right: 8px; }
+    /* Mobile: chữ nhỏ hơn + khoảng cách hẹp → ~8–9 từ / dòng */
+    .word-pool-wrapper { height: 112px; padding: 10px 10px; }
+    .word {
+      font-size: 1.05rem;
+      line-height: 44px;
+      height: 44px;
+      margin-right: 6px;
+      padding: 0 5px;
+    }
     .typing-section {
       margin-top: 0.75rem;
       padding: 0 0.25rem 0.35rem;
@@ -2770,16 +2986,100 @@
       padding-top: 0.5rem;
     }
     .word-type-input {
-      margin-top: 0.45rem;
-      padding: 12px 14px;
-      font-size: max(1.05rem, 16px);
+      margin-top: 0.55rem;
+      padding: 14px 18px;
+      font-size: max(1.2rem, 16px);
     }
-    .bar-wrap { padding: 8px 4% 0; }
-    .bar-track { height: 18px; }
+    /* Khi phím mở trên mobile: giữ mật độ ~8–9 từ/dòng (không phóng lại size PC) */
+    body.playing-lock.kb-open #game-screen.active .word-pool-wrapper {
+      height: 112px;
+      padding: 10px 10px;
+    }
+    body.playing-lock.kb-open #game-screen.active .word {
+      font-size: 1.05rem;
+      line-height: 44px;
+      height: 44px;
+      margin-right: 6px;
+      padding: 0 5px;
+    }
   }
-  /* Màn cực hẹp (điện thoại): tắt sonic-wave nặng; laptop luôn giữ hiệu ứng */
+  /* Phone: sonic nhẹ hơn (không tắt hẳn — JS profile điều khiển) */
   @media (max-width: 480px) {
-    .sonic-wave { display: none; }
+    .sonic-wave.sonic-phone {
+      opacity: 0.22;
+      border-width: 1px;
+    }
+  }
+
+  /* ── DeviceFX: particle + hit-ring chi tiết hơn ── */
+  .hit-particle {
+    box-shadow: 0 0 6px currentColor;
+  }
+  .hit-particle.hit-ok { background: var(--success); }
+  .hit-particle.hit-bad { background: var(--danger); }
+  .hit-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    pointer-events: none;
+    z-index: 69;
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+    margin-top: -14px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    opacity: 0.7;
+    will-change: transform, opacity;
+    animation: hitRingPop 0.4s ease-out forwards;
+    transform: translate(-50%, -50%) scale(0.35);
+  }
+  .hit-ring.hit-ok { color: var(--success); border-color: var(--success); box-shadow: 0 0 12px rgba(123,196,127,0.35); }
+  .hit-ring.hit-bad { color: var(--danger); border-color: var(--danger); box-shadow: 0 0 12px rgba(224,82,82,0.3); }
+  @keyframes hitRingPop {
+    0%   { opacity: 0.85; transform: translate(-50%, -50%) scale(calc(0.35 * var(--ring-scale, 1))); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(calc(1.8 * var(--ring-scale, 1))); }
+  }
+  .sonic-wave.sonic-phone {
+    opacity: 0.28;
+  }
+  .sonic-wave.sonic-tablet {
+    opacity: 0.32;
+  }
+  .sonic-wave.sonic-pc {
+    opacity: 0.38;
+    filter: saturate(1.15);
+  }
+  /* Thanh máu: dùng biến từ DeviceFX */
+  .bar-fill-p1-img, .bar-fill-p2-img {
+    opacity: var(--fx-bar-img-opacity, 0.28);
+  }
+  /* PC: word current nổi hơn một chút */
+  body.device-pc .word.current {
+    box-shadow: 0 0 0 1px rgba(232,178,91,0.35), 0 4px 14px rgba(232,178,91,0.12);
+  }
+  body.device-pc .bar-track {
+    box-shadow: inset 0 1px 0 rgba(236,231,221,0.06);
+  }
+  body.device-pc .avatar-card.barking {
+    box-shadow: 0 0 0 1px currentColor, 0 0 18px rgba(232,178,91,0.15);
+  }
+  /* Phone: input + word pool rõ nét hơn khi gõ */
+  body.device-phone .word.current,
+  body.device-mobile-ui .word.current {
+    letter-spacing: 0.02em;
+  }
+  body.device-phone .word-type-input:focus,
+  body.device-mobile-ui .word-type-input:focus {
+    box-shadow: 0 0 0 1px rgba(232,178,91,0.35);
+  }
+  body.device-phone .bar-ripple,
+  body.device-mobile-ui .bar-ripple {
+    opacity: 0.95;
+  }
+  /* Tablet: cân giữa */
+  body.device-tablet .word.current {
+    box-shadow: 0 0 0 1px rgba(232,178,91,0.25);
   }
   /* reduced-motion: chỉ nới transition UI — KHÔNG tắt VFX game
      (Windows máy cũ hay bật “Show animations in Windows = off” → match query này) */
@@ -2801,6 +3101,153 @@
     position: fixed;
     width: 100%;
     height: 100%;
+    /* khóa bounce / scroll khi focus input trên iOS */
+    touch-action: none;
+    overscroll-behavior: none;
+  }
+
+  /* ── Keyboard lock: neo toàn màn game theo visualViewport — không bị bàn phím đẩy layout ── */
+  html.kb-open,
+  html.kb-open body {
+    overflow: hidden !important;
+    height: 100%;
+    touch-action: none;
+  }
+  body.playing-lock.kb-open #game-screen.active {
+    position: fixed;
+    top: var(--kb-top, 0px);
+    left: var(--kb-left, 0px);
+    right: 0;
+    width: 100%;
+    height: var(--kb-height, 100dvh);
+    max-height: var(--kb-height, 100dvh);
+    min-height: 0 !important; /* chặn practice-active min-height 100vh kéo lệch khi mở phím */
+    margin: 0 auto;
+    padding-top: 0.2rem;
+    padding-bottom: max(0.2rem, env(safe-area-inset-bottom));
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* dồn HUD + word pool + input sát bàn phím — hết khoảng trống giữa */
+    z-index: 30;
+    box-sizing: border-box;
+  }
+  body.playing-lock.kb-open #game-screen.active .game-header,
+  body.playing-lock.kb-open #game-screen.active #practice-info,
+  body.playing-lock.kb-open #game-screen.active #avatars-row-el {
+    flex-shrink: 0;
+  }
+  body.playing-lock.kb-open #game-screen.active .typing-section {
+    position: relative;
+    margin-top: 0.35rem;
+    margin-bottom: 0;
+    bottom: auto;
+    flex-shrink: 0;
+    padding: 0.25rem 0.25rem 0.15rem;
+    background: var(--bg);
+    z-index: 40;
+  }
+  /* Khi mở phím: vẫn giữ size chữ / dòng giống PC để nội dung gõ đồng nhất */
+  body.playing-lock.kb-open #game-screen.active .word-pool-wrapper {
+    flex-shrink: 0;
+    height: 110px;
+    padding: 10px 12px;
+  }
+  body.playing-lock.kb-open #game-screen.active .word {
+    font-size: 1.28rem;
+    line-height: 50px;
+    height: 50px;
+    margin-right: 10px;
+  }
+  body.playing-lock.kb-open #game-screen.active .word-type-input {
+    margin-top: 0.4rem;
+    padding: 12px 14px;
+    font-size: max(1.15rem, 16px);
+  }
+
+  /* ── HUD luyện tập siêu gọn khi phím mở ── */
+  body.playing-lock.kb-open #game-screen.active #practice-info {
+    margin: 0;
+    padding: 0 0.25rem;
+  }
+  /* Ẩn tiêu đề lớn — tiết kiệm chiều cao */
+  body.playing-lock.kb-open #game-screen.active #practice-info .practice-title {
+    display: none !important;
+  }
+  body.playing-lock.kb-open #game-screen.active #practice-info .practice-stats-row {
+    margin: 0;
+    gap: 0.35rem;
+  }
+  body.playing-lock.kb-open #game-screen.active #practice-info .practice-stats {
+    padding: 0.28rem 0.65rem;
+    font-size: 0.78rem;
+    gap: 0.25rem;
+  }
+  body.playing-lock.kb-open #game-screen.active #practice-info .practice-actions {
+    margin: 0.3rem auto 0;
+    gap: 0.4rem;
+  }
+  body.playing-lock.kb-open #game-screen.active #practice-info .practice-exit-btn,
+  body.playing-lock.kb-open #game-screen.active #practice-info .practice-wpm-btn {
+    padding: 0.4rem 0.7rem;
+    font-size: 0.8rem;
+    min-width: 0;
+    max-width: none;
+  }
+  body.playing-lock.kb-open #game-screen.active #practice-info .practice-timer-reveal {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* Battle + phím mở: avatar gần tỉ lệ PC hơn */
+  body.playing-lock.kb-open #game-screen.active #avatars-row-el .avatar-img-wrap {
+    max-width: 80px;
+  }
+  body.playing-lock.kb-open #game-screen.active #avatars-row-el {
+    gap: 0.35rem;
+    margin: 0;
+  }
+  body.playing-lock.kb-open #game-screen.active .game-header {
+    padding: 0.25rem 0.4rem;
+    margin-bottom: 0.2rem;
+  }
+  body.playing-lock.kb-open #game-screen.active .game-timer {
+    font-size: 1.35rem;
+  }
+  body.playing-lock.kb-open #game-screen.active .pname {
+    font-size: 0.9rem;
+  }
+  /*
+   Khi bàn phím mở: thanh máu KHÔNG fixed/absolute — trên iOS fixed sẽ neo mép trên
+   layout viewport, tách khỏi tên+đồng hồ (đang trong visualViewport / flex-end).
+   Giữ relative để luôn sát ngay trên hàng Bạn / timer / đối thủ.
+  */
+  body.playing-lock.kb-open #game-screen.active .bar-wrap {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    padding: 0.1rem 4% 0 !important;
+    margin: 0 auto !important;
+    z-index: 5;
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 920px;
+    box-sizing: border-box;
+  }
+  body.playing-lock.kb-open #game-screen.active .bar-track {
+    height: 16px;
+  }
+  body.playing-lock.kb-open #game-screen.active .game-header {
+    flex-shrink: 0;
+    margin-top: 0.1rem !important;
+    padding-top: 0.15rem;
+  }
+  /* Chặn scroll document khi focus input trong game */
+  body.playing-lock #game-hidden-input {
+    /* iOS đôi khi scroll tới input — ta kéo lại bằng visualViewport */
+    scroll-margin: 0;
   }
 
   .sys-alert-overlay {
@@ -3026,6 +3473,16 @@
     align-items: center;
     gap: 4px;
   }
+  .vs-platform {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dim);
+    opacity: 0.9;
+  }
   .vs-badge {
     font-family: var(--font-display);
     font-size: 38px;
@@ -3066,6 +3523,142 @@
     .vs-title { font-size: 16px; margin-bottom: 28px; letter-spacing: 3px; }
     .vs-timer-bar { width: 160px; margin-top: 28px; }
   }
+
+  /* ============================================================
+     PIXEL HOVER — desktop only (chuột tinh / hover thật)
+     Kiểu nút game pixel: dịch chéo + bóng cứng, không blur
+     ============================================================ */
+  @media (hover: hover) and (pointer: fine) {
+    :root {
+      --px-shadow: 3px 3px 0 rgba(0, 0, 0, 0.55);
+      --px-shadow-accent: 3px 3px 0 rgba(232, 178, 91, 0.45);
+      --px-lift: translate(-2px, -2px);
+      --px-press: translate(1px, 1px);
+      --px-ease: steps(2, end);
+    }
+
+    .btn,
+    button:not(:disabled),
+    .img-slot:not(.locked),
+    .sound-fab,
+    .prep-back-btn,
+    .prep-sound-btn,
+    .ios-toggle,
+    .sound-option,
+    .auth-close,
+    .auth-link-btn,
+    .auth-pass-toggle,
+    .auth-avatar-pick,
+    .recovery-pin-toggle,
+    .lobby-chat-btn,
+    .admin-online-list-btn,
+    .lobby-chat-send:not(:disabled),
+    .lobby-chat-clear,
+    .lobby-chat-close,
+    .lobby-chat-del,
+    .online-users-stat,
+    .online-users-close,
+    .online-user-row,
+    .mm-floating-cancel,
+    .practice-timer-reveal,
+    .practice-exit-btn,
+    .practice-wpm-btn:not(:disabled),
+    .account-menu button,
+    .auth-actions .btn,
+    a[href] {
+      transition:
+        transform 0.08s var(--px-ease),
+        box-shadow 0.08s var(--px-ease),
+        border-color 0.12s ease,
+        background 0.12s ease,
+        color 0.12s ease,
+        filter 0.12s ease !important;
+    }
+
+    .btn:not(:disabled):hover,
+    button:not(:disabled):hover,
+    .img-slot:not(.locked):hover,
+    .sound-fab:hover,
+    .prep-back-btn:hover,
+    .prep-sound-btn:hover,
+    .ios-toggle:hover,
+    .sound-option:hover,
+    .auth-close:hover,
+    .auth-link-btn:hover,
+    .auth-pass-toggle:hover,
+    .auth-avatar-pick:hover,
+    .recovery-pin-toggle:hover,
+    .lobby-chat-btn:hover,
+    .admin-online-list-btn:hover,
+    .lobby-chat-send:not(:disabled):hover,
+    .lobby-chat-clear:hover,
+    .lobby-chat-close:hover,
+    .lobby-chat-del:hover,
+    .online-users-stat:hover,
+    .online-users-close:hover,
+    .online-user-row:hover,
+    .mm-floating-cancel:hover,
+    .practice-timer-reveal:hover,
+    .practice-exit-btn:hover,
+    .practice-wpm-btn:not(:disabled):hover,
+    .account-menu button:hover,
+    a[href]:hover {
+      transform: var(--px-lift);
+      box-shadow: var(--px-shadow);
+      border-color: var(--accent);
+      filter: brightness(1.06);
+    }
+
+    /* Nút accent (cam): bóng vàng pixel + nền sáng hơn */
+    .btn-orange:not(:disabled):hover,
+    .btn-green:not(:disabled):hover,
+    .practice-wpm-btn:not(:disabled):hover,
+    .lobby-chat-send:not(:disabled):hover {
+      box-shadow: var(--px-shadow-accent);
+      filter: brightness(1.08);
+    }
+
+    /* Press = thụt xuống kiểu nút arcade */
+    .btn:not(:disabled):active,
+    button:not(:disabled):active,
+    .img-slot:not(.locked):active,
+    .sound-fab:active,
+    .prep-back-btn:active,
+    .prep-sound-btn:active,
+    .ios-toggle:active,
+    .sound-option:active,
+    .auth-close:active,
+    .auth-avatar-pick:active,
+    .lobby-chat-btn:active,
+    .admin-online-list-btn:active,
+    .lobby-chat-send:not(:disabled):active,
+    .online-users-stat:active,
+    .mm-floating-cancel:active,
+    .practice-timer-reveal:active,
+    .account-menu button:active,
+    a[href]:active {
+      transform: var(--px-press);
+      box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+      filter: brightness(0.96);
+    }
+
+    /* Disabled: không hiệu ứng */
+    .btn:disabled:hover,
+    button:disabled:hover,
+    .temp-locked:hover {
+      transform: none !important;
+      box-shadow: none !important;
+      filter: none !important;
+    }
+
+    /* Link chữ: không bóng cứng, chỉ offset nhẹ + màu */
+    .auth-link-btn:hover {
+      box-shadow: none;
+      transform: translate(-1px, -1px);
+      color: var(--accent);
+    }
+  }
+
 </style>
 
 <script src="https://sdk.crazygames.com/crazygames-sdk-v2.js"></script>
@@ -3084,10 +3677,10 @@
       </div>
       <div class="account-info">
         <div class="account-name" id="account-name" onclick="event.stopPropagation(); openEditName()"></div>
-        <div class="account-power">Lực chiến: <strong id="account-wpm">0</strong> WPM</div>
+        <div class="account-power">Lực chiến <span id="account-power-plat" style="opacity:.75;font-weight:500;"></span>: <strong id="account-wpm">0</strong> WPM</div>
       </div>
     </div>
-    <h1 class="logo-title"><span class="logo-word">WORD</span><span class="logo-war">WAR</span></h1>
+    <h1 class="logo-title"><span class="logo-word">TYPING</span><span class="logo-war">BATTLE</span></h1>
     <!-- Admin-only: số người online — neo trái dưới avatar -->
     <div id="admin-online-badge" class="admin-online-badge" style="display:flex;" title="Người đang online — bấm để xem danh sách">
       <span class="admin-online-dot"></span>
@@ -3178,11 +3771,7 @@
 </div>
 
 <div id="game-screen" class="screen">
-  <div class="game-header" id="game-header-row">
-    <div class="pname p1" id="pname-me">Bạn</div>
-    <div class="game-timer" id="game-timer">⚡</div>
-    <div class="pname p2" id="pname-opp">Đối thủ</div>
-  </div>
+  <!-- Mobile: bar nằm trong luồng, sát trên tên+đồng hồ. Desktop: vẫn fixed top. -->
   <div class="bar-wrap" id="bar-wrap-el">
     <div class="bar-track">
       <div class="bar-fill-p1" id="bar-p1" style="width:50%;"></div>
@@ -3192,6 +3781,11 @@
       <div class="bar-center-marker"></div>
       <div class="bar-ball" id="bar-ball" style="left:50%;"></div>
     </div>
+  </div>
+  <div class="game-header" id="game-header-row">
+    <div class="pname p1" id="pname-me">Bạn</div>
+    <div class="game-timer" id="game-timer">⚡</div>
+    <div class="pname p2" id="pname-opp">Đối thủ</div>
   </div>
   <div class="avatars-row" id="avatars-row-el">
     <div class="avatar-card p1" id="av-p1">
@@ -3240,8 +3834,8 @@
   <div id="practice-result-overlay" class="practice-result-overlay" onclick="if(event.target===this)closePracticeResult()">
     <div class="practice-result-card">
       <h2>Kết quả</h2>
-      <div class="practice-result-wpm" id="pr-wpm">0</div>
-      <div class="practice-result-wpm-label">WPM</div>
+      <div class="practice-result-wpm" id="pr-wpm" style="display:none;">0</div>
+      <div class="practice-result-wpm-label" style="display:none;">WPM</div>
       <div class="practice-result-grid">
         <div class="practice-result-item ok">
           <div class="v" id="pr-correct">0</div>
@@ -3281,32 +3875,20 @@
     <div class="result-title" id="result-title">THẮNG!</div>
     <div class="result-sub" id="result-sub">Bạn có tốc độ gõ thần sầu!</div>
     <div class="result-stats" id="result-stats">
-      <div class="result-stat-card me result-card-split">
-        <div class="result-split-left">
-          <div class="result-stat-label">🎮 BẠN</div>
-          <div class="result-stat-row result-stat-ok"><span>Đúng</span><span id="res-me-correct">0</span></div>
-          <div class="result-stat-row result-stat-bad"><span>Sai</span><span id="res-me-wrong">0</span></div>
-        </div>
-        <div class="result-split-right">
-          <div class="result-wpm-num" id="res-me-wpm">0</div>
-          <div class="result-wpm-label">WPM</div>
-        </div>
+      <div class="result-stat-card me">
+        <div class="result-stat-label">🎮 BẠN</div>
+        <div class="result-stat-row result-stat-ok"><span>Đúng</span><span id="res-me-correct">0</span></div>
+        <div class="result-stat-row result-stat-bad"><span>Sai</span><span id="res-me-wrong">0</span></div>
       </div>
-      <div class="result-stat-card opp result-card-split">
-        <div class="result-split-left">
-          <div class="result-stat-label">👾 ĐỐI THỦ</div>
-          <div class="result-stat-row result-stat-ok"><span>Đúng</span><span id="res-opp-correct">0</span></div>
-          <div class="result-stat-row result-stat-bad"><span>Sai</span><span id="res-opp-wrong">0</span></div>
-        </div>
-        <div class="result-split-right">
-          <div class="result-wpm-num" id="res-opp-wpm">0</div>
-          <div class="result-wpm-label">WPM</div>
-        </div>
+      <div class="result-stat-card opp">
+        <div class="result-stat-label">👾 ĐỐI THỦ</div>
+        <div class="result-stat-row result-stat-ok"><span>Đúng</span><span id="res-opp-correct">0</span></div>
+        <div class="result-stat-row result-stat-bad"><span>Sai</span><span id="res-opp-wrong">0</span></div>
       </div>
     </div>
     <button class="btn btn-orange" onclick="requestPlayAgain()" id="play-again-btn">CHƠI LẠI</button>
     <div id="play-again-status" style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin:0.4rem 0;min-height:1.2em;"></div>
-    <button class="btn btn-gray" onclick="backLobby()" id="back-lobby-btn" style="margin-top:0.2rem;">Về Lobby</button>
+    <button class="btn btn-gray" onclick="backLobby()" id="back-lobby-btn" style="margin-top:0.2rem;">Thoát</button>
   </div>
 </div>
 
@@ -3316,6 +3898,14 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="battle-sync-banner" id="battle-sync-banner" aria-live="polite"></div>
+<div class="battle-conn-overlay" id="battle-conn-overlay" aria-live="assertive" aria-hidden="true">
+  <div class="battle-conn-box">
+    <div class="battle-conn-spinner" id="battle-conn-spinner" aria-hidden="true"></div>
+    <div class="battle-conn-countdown" id="battle-conn-countdown">3</div>
+    <div class="battle-conn-text" id="battle-conn-text">Lỗi kết nối — đang chỉnh lại…</div>
+  </div>
+</div>
 
 <!-- Danh sách người đang online (mọi người xem được) -->
 <div id="online-users-overlay" class="online-users-overlay" aria-hidden="true" onclick="if(event.target===this)closeOnlineUsersPanel()">
@@ -3380,12 +3970,14 @@
       <div class="vs-avatar-box" id="p1-vs-avatar">👤</div>
       <div class="vs-name" id="p1-vs-name">???</div>
       <div class="vs-power" id="p1-vs-power">??? WPM</div>
+      <div class="vs-platform" id="p1-vs-platform">—</div>
     </div>
     <div class="vs-badge">VS</div>
     <div class="vs-player-column player2">
       <div class="vs-avatar-box" id="p2-vs-avatar">👤</div>
       <div class="vs-name" id="p2-vs-name">???</div>
       <div class="vs-power" id="p2-vs-power">??? WPM</div>
+      <div class="vs-platform" id="p2-vs-platform">—</div>
     </div>
   </div>
   <div class="vs-timer-bar">
@@ -3398,14 +3990,6 @@
   <div class="auth-panel" onclick="event.stopPropagation()">
     <button type="button" class="auth-close" onclick="closeAuthModal()" aria-label="Đóng">×</button>
     <div class="auth-title">Tạo tài khoản / Đăng nhập</div>
-    <div class="auth-avatar-pick" id="auth-avatar-pick" onclick="document.getElementById('auth-avatar-file').click()" title="Chọn ảnh đại diện">
-      <svg class="face-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="8" r="3.5"/>
-        <path d="M5.5 19.5c0-3.5 2.9-6 6.5-6s6.5 2.5 6.5 6"/>
-      </svg>
-      <img id="auth-avatar-preview" alt="" style="display:none;">
-    </div>
-    <input type="file" id="auth-avatar-file" accept="image/*" style="display:none" onchange="onAuthAvatarPick(this)">
     <div class="auth-field">
       <label for="auth-email">Tài khoản</label>
       <div class="auth-account-wrap">
@@ -3598,6 +4182,14 @@
       <span class="sound-option-check">✓</span>
     </button>
 
+    <button type="button" class="sound-option" data-sound="3" id="sound-opt-3" onclick="selectSoundType(3)">
+      <div class="sound-option-main">
+        <span class="sound-option-name">Meow</span>
+        <span class="sound-option-desc">Tiếng mèo kêu — mỗi phím một tiếng meo</span>
+      </div>
+      <span class="sound-option-check">✓</span>
+    </button>
+
     <div class="sound-close-hint">Chọn kiểu âm thanh để nghe thử · Chạm ngoài để đóng</div>
   </div>
 </div>
@@ -3630,6 +4222,13 @@ onValue(ref(db, '.info/serverTimeOffset'), snap => {
 });
 /** Giờ hiện tại theo server (đồng nhất giữa mọi thiết bị), dùng thay Date.now() cho mọi mốc đồng bộ trận đấu */
 function nowServer() { return Date.now() + serverTimeOffset; }
+
+// ── Kết nối Firebase thật (đáng tin hơn navigator.onLine — wifi có thể "online" nhưng
+//    không tới được máy chủ). Dùng kết hợp cả hai để phát hiện mất/có mạng chính xác hơn. ──
+let _fbConnected = true;
+onValue(ref(db, '.info/connected'), snap => {
+  _fbConnected = snap.val() === true;
+});
 
 // ══════════════════════════════════════════════════════════════════════════
 // TÀI KHOẢN — Firebase users/{emailKey}  (đăng nhập bằng địa chỉ .wordwar.vn, tên hiển thị riêng)
@@ -3996,7 +4595,10 @@ function loadSessionUser() {
     if (!raw) return null;
     const u = JSON.parse(raw);
     // Tương thích session cũ (usernameKey) — chỉ giữ nếu đã có emailKey
-    if (u && u.emailKey) return u;
+    if (u && u.emailKey) {
+      if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(u);
+      return u;
+    }
     return null;
   } catch (e) { return null; }
 }
@@ -4011,7 +4613,9 @@ function saveSessionUser(user) {
     email: user.email || '',
     displayName: user.displayName,
     avatar: user.avatar || null,
-    bestWpm: user.bestWpm || 0
+    bestWpm: user.bestWpm || 0,
+    bestWpmMobile: typeof user.bestWpmMobile === 'number' ? user.bestWpmMobile : (user.bestWpm || 0),
+    bestWpmPc: typeof user.bestWpmPc === 'number' ? user.bestWpmPc : (user.bestWpm || 0)
   }));
 }
 
@@ -4024,9 +4628,16 @@ function renderAccountBadge() {
   if (!badge) return;
   if (currentUser) {
     badge.classList.add('logged-in');
+    const logoWrap = badge.closest('.logo-wrap') || document.querySelector('.logo-wrap');
+    if (logoWrap) logoWrap.classList.add('user-logged-in');
     const shown = currentUser.displayName || defaultNameFromEmail(currentUser.email) || currentUser.emailKey;
     if (nameEl) nameEl.textContent = shown;
-    if (wpmEl) wpmEl.textContent = String(currentUser.bestWpm || 0);
+    if (wpmEl) wpmEl.textContent = String(typeof getMyDisplayPower === 'function' ? getMyDisplayPower() : (currentUser.bestWpm || 0));
+    const platEl = document.getElementById('account-power-plat');
+    if (platEl) {
+      const p = (typeof getPowerPlatform === 'function') ? getPowerPlatform() : 'pc';
+      platEl.textContent = p === 'pc' ? '(PC)' : '(Mobile)';
+    }
     if (currentUser.avatar && img) {
       img.src = currentUser.avatar;
       img.style.display = 'block';
@@ -4044,6 +4655,8 @@ function renderAccountBadge() {
     } catch (e) { /* goPrep/applyAccountAvatarToPrepSlot sẽ gán lại sau */ }
   } else {
     badge.classList.remove('logged-in');
+    const logoWrapOut = badge.closest('.logo-wrap') || document.querySelector('.logo-wrap');
+    if (logoWrapOut) logoWrapOut.classList.remove('user-logged-in');
     if (img) { img.removeAttribute('src'); img.style.display = 'none'; }
     if (face) face.style.display = '';
     if (nameEl) nameEl.textContent = '';
@@ -4066,8 +4679,11 @@ async function refreshAccountFromServer() {
       displayName: normalizeDisplayName(d.displayName, d.email || currentUser.email),
       avatar: d.avatar || null,
       bestWpm: typeof d.bestWpm === 'number' ? d.bestWpm : 0,
+      bestWpmMobile: typeof d.bestWpmMobile === 'number' ? d.bestWpmMobile : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
+      bestWpmPc: typeof d.bestWpmPc === 'number' ? d.bestWpmPc : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
       displayNameChangedAt: typeof d.displayNameChangedAt === 'number' ? d.displayNameChangedAt : 0
     };
+    normalizeUserPowerFields(currentUser);
     saveSessionUser(currentUser);
     renderAccountBadge();
     ensureRecoveryPinSet();
@@ -4247,6 +4863,7 @@ window.openAuthAvatarOnly = function() {
       // Đồng bộ luôn vào ảnh đại diện trận (prep / game)
       if (typeof myImgs !== 'undefined') myImgs.default = dataUrl;
       if (typeof applyAccountAvatarToPrepSlot === 'function') applyAccountAvatarToPrepSlot();
+      if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
       saveSessionUser(currentUser);
       renderAccountBadge();
       showToast('Đã đổi avatar');
@@ -4336,8 +4953,11 @@ window.submitAuth = async function() {
         email: d.email || email,
         displayName: disp,
         avatar: d.avatar || null,
-        bestWpm: typeof d.bestWpm === 'number' ? d.bestWpm : 0
+        bestWpm: typeof d.bestWpm === 'number' ? d.bestWpm : 0,
+        bestWpmMobile: typeof d.bestWpmMobile === 'number' ? d.bestWpmMobile : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
+        bestWpmPc: typeof d.bestWpmPc === 'number' ? d.bestWpmPc : (typeof d.bestWpm === 'number' ? d.bestWpm : 0)
       };
+      if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
       saveSessionUser(currentUser);
       renderAccountBadge();
       setAuthForgotMode(false);
@@ -4364,7 +4984,7 @@ window.submitAuth = async function() {
     if (snap.exists()) {
       const d = snap.val();
       if (d.passwordHash !== passHash) {
-        if (errEl) errEl.textContent = 'Sai mật khẩu';
+        if (errEl) errEl.textContent = 'Sai mật khẩu hoặc tài khoản đã tồn tại';
         return;
       }
       const disp = normalizeDisplayName(d.displayName, d.email || email);
@@ -4373,7 +4993,9 @@ window.submitAuth = async function() {
         email: d.email || email,
         displayName: disp,
         avatar: d.avatar || null,
-        bestWpm: typeof d.bestWpm === 'number' ? d.bestWpm : 0
+        bestWpm: typeof d.bestWpm === 'number' ? d.bestWpm : 0,
+        bestWpmMobile: typeof d.bestWpmMobile === 'number' ? d.bestWpmMobile : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
+        bestWpmPc: typeof d.bestWpmPc === 'number' ? d.bestWpmPc : (typeof d.bestWpm === 'number' ? d.bestWpm : 0)
       };
       if (_authAvatarDataUrl) {
         await update(userRef, { avatar: _authAvatarDataUrl, updatedAt: Date.now() });
@@ -4387,6 +5009,7 @@ window.submitAuth = async function() {
           updatedAt: Date.now()
         });
       }
+      if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
       saveSessionUser(currentUser);
       renderAccountBadge();
       closeAuthModal();
@@ -4463,6 +5086,8 @@ window.submitAuth = async function() {
         recoveryPinSet: false, // đặt PIN ngay sau khi vào acc
         avatar: _authAvatarDataUrl || null,
         bestWpm: 0,
+        bestWpmMobile: 0,
+        bestWpmPc: 0,
         createdAt: Date.now(),
         updatedAt: Date.now()
       };
@@ -4480,8 +5105,11 @@ window.submitAuth = async function() {
         email: payload.email,
         displayName: disp,
         avatar: payload.avatar,
-        bestWpm: 0
+        bestWpm: 0,
+        bestWpmMobile: 0,
+        bestWpmPc: 0
       };
+      if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
       saveSessionUser(currentUser);
       renderAccountBadge();
       closeAuthModal();
@@ -4530,6 +5158,7 @@ window.submitEditName = async function() {
     });
     currentUser.displayName = newName;
     currentUser.displayNameChangedAt = now;
+    if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
     saveSessionUser(currentUser);
     renderAccountBadge();
     // Đồng bộ tên mới lên presence + chat identity
@@ -4553,18 +5182,76 @@ window.logoutAccount = function() {
   showToast('Đã đăng xuất');
 };
 
+/** Nền tảng lực chiến: mobile vs PC độc lập */
+function getPowerPlatform() {
+  try {
+    if (typeof DeviceDetect !== 'undefined' && DeviceDetect) {
+      // Tablet tính theo mobile; chỉ desktop/laptop rộng = PC
+      if (DeviceDetect.isPC && !DeviceDetect.isMobileUI) return 'pc';
+      return 'mobile';
+    }
+  } catch (e) {}
+  // fallback: màn hẹp = mobile
+  try {
+    if (window.matchMedia && window.matchMedia('(max-width: 720px)').matches) return 'mobile';
+  } catch (e2) {}
+  return 'pc';
+}
+
+/** Lấy WPM lực chiến đúng nền tảng hiện tại (fallback bestWpm cũ) */
+function getMyBestWpmForPlatform(user, platform) {
+  const u = user || currentUser;
+  if (!u) return 0;
+  const plat = platform || getPowerPlatform();
+  if (plat === 'pc') {
+    if (typeof u.bestWpmPc === 'number') return u.bestWpmPc;
+  } else {
+    if (typeof u.bestWpmMobile === 'number') return u.bestWpmMobile;
+  }
+  return typeof u.bestWpm === 'number' ? u.bestWpm : 0;
+}
+
+function getMyDisplayPower() {
+  return getMyBestWpmForPlatform(currentUser);
+}
+
+/** Chuẩn hoá object user: tách bestWpm → mobile/pc nếu thiếu */
+function normalizeUserPowerFields(u, d) {
+  if (!u) return u;
+  const src = d || u;
+  const legacy = typeof src.bestWpm === 'number' ? src.bestWpm : 0;
+  u.bestWpmMobile = typeof src.bestWpmMobile === 'number' ? src.bestWpmMobile : legacy;
+  u.bestWpmPc = typeof src.bestWpmPc === 'number' ? src.bestWpmPc : legacy;
+  // bestWpm = max 2 nền (tương thích list online cũ)
+  u.bestWpm = Math.max(u.bestWpmMobile || 0, u.bestWpmPc || 0, legacy);
+  return u;
+}
+
 async function maybeUpdateBestWpm(wpm) {
   if (!currentUser || !currentUser.emailKey) return;
   const n = Math.max(0, Math.round(Number(wpm) || 0));
-  if (n <= (currentUser.bestWpm || 0)) return;
+  const plat = getPowerPlatform();
+  const field = plat === 'pc' ? 'bestWpmPc' : 'bestWpmMobile';
+  const curPlat = getMyBestWpmForPlatform(currentUser, plat);
+  if (n <= curPlat) return;
   try {
-    await update(ref(db, 'users/' + currentUser.emailKey), {
-      bestWpm: n,
+    const nextMobile = plat === 'mobile' ? n : getMyBestWpmForPlatform(currentUser, 'mobile');
+    const nextPc = plat === 'pc' ? n : getMyBestWpmForPlatform(currentUser, 'pc');
+    const nextMax = Math.max(nextMobile, nextPc, currentUser.bestWpm || 0);
+    const patch = {
+      [field]: n,
+      bestWpm: nextMax, // legacy / admin online
       updatedAt: Date.now()
-    });
-    currentUser.bestWpm = n;
+    };
+    await update(ref(db, 'users/' + currentUser.emailKey), patch);
+    currentUser[field] = n;
+    currentUser.bestWpmMobile = nextMobile;
+    currentUser.bestWpmPc = nextPc;
+    currentUser.bestWpm = nextMax;
+    if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
     saveSessionUser(currentUser);
     renderAccountBadge();
+    if (typeof writePresenceNow === 'function') writePresenceNow();
   } catch (e) {}
 }
 
@@ -4662,7 +5349,7 @@ function presencePayload() {
     if (key) {
       payload.account = key;
       payload.name = currentUser.displayName || defaultNameFromEmail(currentUser.email) || key;
-      payload.wpm = (typeof currentUser.bestWpm === 'number') ? currentUser.bestWpm : 0;
+      payload.wpm = (typeof getMyDisplayPower === 'function') ? getMyDisplayPower() : ((typeof currentUser.bestWpm === 'number') ? currentUser.bestWpm : 0);
     }
   } else {
     // Chế độ khách: gắn guestKey theo thiết bị
@@ -5101,8 +5788,19 @@ let _lobbyChatUnsub = null;
 let _lobbyChatOpen = false;
 let _lobbyChatMsgs = []; // [{id, text, ts, uid, name, logged}]
 let _lobbyChatLastSend = 0;
+const LOBBY_CHAT_SEEN_KEY = 'wwb_lobby_chat_seen_ts';
 let _lobbyChatSeenTs = 0;
+try {
+  const saved = parseInt(localStorage.getItem(LOBBY_CHAT_SEEN_KEY) || '0', 10);
+  if (saved > 0) _lobbyChatSeenTs = saved;
+} catch (e) {}
 let _lobbyChatUnread = 0;
+
+function persistLobbyChatSeenTs(ts) {
+  const v = Math.max(0, Number(ts) || 0);
+  if (v > _lobbyChatSeenTs) _lobbyChatSeenTs = v;
+  try { localStorage.setItem(LOBBY_CHAT_SEEN_KEY, String(_lobbyChatSeenTs)); } catch (e) {}
+}
 
 function getChatIdentity() {
   if (typeof currentUser !== 'undefined' && currentUser && currentUser.emailKey) {
@@ -5140,6 +5838,7 @@ function renderLobbyChatMsgs() {
   const box = document.getElementById('lobby-chat-msgs');
   if (!box) return;
   const me = getChatIdentity().uid;
+  const admin = (typeof isAdmin === 'function' && isAdmin());
   if (!_lobbyChatMsgs.length) {
     box.innerHTML = '<div class="lobby-chat-empty">Chưa có tin nhắn — hãy chào mọi người!</div>';
     return;
@@ -5149,9 +5848,16 @@ function renderLobbyChatMsgs() {
   for (const m of _lobbyChatMsgs) {
     const mine = m.uid === me;
     const who = mine ? 'Bạn' : escapeChatText(m.name || (m.logged ? 'User' : 'Khách'));
+    const delBtn = admin
+      ? '<button type="button" class="lobby-chat-del" title="Xóa tin này" aria-label="Xóa tin nhắn" data-id="' +
+        escapeChatText(m.id) + '" onclick="deleteLobbyChatMsg(this.getAttribute(\'data-id\'))">×</button>'
+      : '';
     html += '<div class="lobby-chat-row ' + (mine ? 'mine' : 'theirs') + '">' +
       (mine ? '' : '<div class="lobby-chat-who">' + who + '</div>') +
-      '<div class="lobby-chat-bubble">' + escapeChatText(m.text) + '</div>' +
+      '<div class="lobby-chat-bubble-wrap">' +
+        '<div class="lobby-chat-bubble">' + escapeChatText(m.text) + '</div>' +
+        delBtn +
+      '</div>' +
       '</div>';
   }
   box.innerHTML = html;
@@ -5185,9 +5891,14 @@ function startLobbyChatListener() {
         });
       }
       list.sort((a, b) => (a.ts || 0) - (b.ts || 0));
-      // Unread: tin mới hơn mốc đã xem, không phải của mình
+      // Unread: tin mới hơn mốc đã xem (localStorage), không phải của mình
       const me = getChatIdentity().uid;
-      if (!_lobbyChatOpen) {
+      if (_lobbyChatOpen) {
+        // Đang mở chat → coi như đã xem hết tin hiện có
+        if (list.length) persistLobbyChatSeenTs(Math.max(...list.map(m => m.ts || 0)));
+        _lobbyChatUnread = 0;
+        updateLobbyChatUnreadUI();
+      } else {
         let n = 0;
         for (const m of list) {
           if (m.ts > _lobbyChatSeenTs && m.uid !== me) n++;
@@ -5223,10 +5934,11 @@ window.openLobbyChat = function() {
   if (btn) btn.classList.add('active');
   if (clearBtn) clearBtn.classList.toggle('show', typeof isAdmin === 'function' && isAdmin());
   _lobbyChatUnread = 0;
+  // Đánh dấu đã xem + lưu localStorage → thoát app vào lại không báo unread lại
   if (_lobbyChatMsgs.length) {
-    _lobbyChatSeenTs = Math.max(_lobbyChatSeenTs, ..._lobbyChatMsgs.map(m => m.ts || 0));
+    persistLobbyChatSeenTs(Math.max(..._lobbyChatMsgs.map(m => m.ts || 0)));
   } else {
-    _lobbyChatSeenTs = (typeof nowServer === 'function' ? nowServer() : Date.now());
+    persistLobbyChatSeenTs((typeof nowServer === 'function' ? nowServer() : Date.now()));
   }
   updateLobbyChatUnreadUI();
   renderLobbyChatMsgs();
@@ -5279,6 +5991,38 @@ window.closeLobbyChat = function() {
   }
   if (btn) btn.classList.remove('active');
   _lobbyChatOpen = false;
+  // Đóng chat cũng cập nhật mốc đã xem (tin đang hiện không còn unread)
+  if (_lobbyChatMsgs.length) {
+    persistLobbyChatSeenTs(Math.max(..._lobbyChatMsgs.map(m => m.ts || 0)));
+  }
+  _lobbyChatUnread = 0;
+  updateLobbyChatUnreadUI();
+};
+
+/** Admin: xóa một tin nhắn chat sảnh */
+window.deleteLobbyChatMsg = async function(msgId) {
+  if (typeof isAdmin !== 'function' || !isAdmin()) {
+    showToast('Chỉ admin mới xóa được tin');
+    return;
+  }
+  const id = String(msgId || '').trim();
+  if (!id || id.indexOf('/') >= 0 || id.indexOf('.') >= 0) return;
+  const ok = await (typeof showConfirmDialog === 'function'
+    ? showConfirmDialog({
+        title: 'Xóa tin nhắn này?',
+        message: 'Tin sẽ bị xóa với mọi người trong sảnh.',
+        okText: 'Xóa',
+        cancelText: 'Hủy'
+      })
+    : Promise.resolve(confirm('Xóa tin nhắn này?')));
+  if (!ok) return;
+  try {
+    await remove(ref(db, LOBBY_CHAT_PATH + '/' + id));
+    showToast('Đã xóa tin nhắn');
+  } catch (e) {
+    console.error(e);
+    showToast('Không xóa được tin');
+  }
 };
 
 window.sendLobbyChat = async function() {
@@ -5529,7 +6273,7 @@ const QUOTES = [
   ["thành","công","không","phải","là","chìa","khóa","mở","cửa","hạnh","phúc","mà","hạnh","phúc","mới","là","chìa","khóa","dẫn","tới","thành","công"],
   ["người","không","biết","vượt","qua","khó","khăn","sẽ","mãi","mãi","dừng","chân","ở","phía","sau","của","sự","thất","bại"],
   ["mọi","nỗ","lực","âm","thầm","trong","bóng","tối","rồi","sẽ","được","đền","đáp","bằng","ánh","sáng","rực","rỡ"],
-  ["đừng","để","sự","sợ","hãi","thất","bại","lớn","hơn","niềm","khao","khat","đạt","được","thành","công","của","chính","mình"],
+  ["đừng","để","sự","sợ","hãi","thất","bại","lớn","hơn","niềm","khao","khát","đạt","được","thành","công","của","chính","mình"],
   ["hãy","bước","đi","bằng","chính","đôi","chân","của","mình","dù","con","đường","ấy","có","chông","gai","đến","đâu"],
   ["sự","tập","trung","cao","độ","chính","là","vũ","khí","sắc","bén","nhất","giúp","bạn","chinh","phục","mọi","mục","tiêu"],
   ["mỗi","khó","khăn","trải","qua","đều","mang","lại","cho","bạn","thêm","một","phần","sức","mạnh","mới"],
@@ -5575,6 +6319,11 @@ const QUOTES = [
   ["mọi","ước","mơ","vĩ","đại","đều","bắt","đầu","từ","một","người","mơ","ước","có","đủ","niềm","tin","và","sự","dũng","cảm"],
 ];
 
+// Snapshot bộ câu built-in (trước khi load thêm từ GitHub).
+// Trận online CHỈ dùng bộ này → 2 máy luôn cùng nội dung chữ dù mạng tải extra khác nhau.
+const BUILTIN_QUOTES = QUOTES.map(q => (Array.isArray(q) ? q.slice() : q));
+const BUILTIN_QUOTE_COUNT = BUILTIN_QUOTES.length;
+
 function shuffle(array) {
   let arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -5610,64 +6359,123 @@ function seededShuffle(array, seed) {
 // Chọn ngẫu nhiên (có seed) thứ tự các CÂU trong QUOTES, rồi tách từng câu
 // thành các từ đơn nối tiếp nhau cho tới khi đủ WORD_BATCH_SIZE từ.
 // Thêm câu từ GitHub raw (không nhúng JSON vào HTML — tiết kiệm dung lượng)
-const QUOTE_EXTRA_URL = 'https://raw.githubusercontent.com/quanphamhong2k8-blip/TiengViet/main/quotes_typing_game_part6_200_full_motivational.json';
+const QUOTE_EXTRA_URLS = [
+  'https://raw.githubusercontent.com/quanphamhong2k8-blip/TiengViet/main/quotes_typing_game_part6_200_full_motivational.json',
+  'https://raw.githubusercontent.com/quanphamhong2k8-blip/TiengViet/main/nature_phrases.json',
+  'https://raw.githubusercontent.com/quanphamhong2k8-blip/TiengViet/main/simple_joys_phrases.json'
+];
 let _quotesExtraLoaded = false;
-const quotesReady = (async function loadExtraQuotes() {
-  try {
-    const res = await fetch(QUOTE_EXTRA_URL, { cache: 'force-cache' });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const list = await res.json();
-    if (!Array.isArray(list)) return;
-    let added = 0;
-    for (let i = 0; i < list.length; i++) {
-      const item = list[i];
-      let words = item && item.words;
-      if (Array.isArray(words) && words.length) {
-        // Sửa lỗi chính tả: "dũa" → "giũa" (rèn giũa)
-        words = words.map(w => (w === 'dũa' ? 'giũa' : w));
+
+async function loadQuoteJsonUrl(url) {
+  const res = await fetch(url, { cache: 'force-cache' });
+  if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + url);
+  const list = await res.json();
+  if (!Array.isArray(list)) return 0;
+  let added = 0;
+  for (let i = 0; i < list.length; i++) {
+    const item = list[i];
+    let words = item && item.words;
+    if (Array.isArray(words) && words.length) {
+      // Chuẩn hoá + sửa lỗi chính tả nhẹ
+      words = words
+        .map(w => String(w == null ? '' : w).trim())
+        .filter(Boolean)
+        .map(w => (w === 'dũa' ? 'giũa' : w));
+      if (words.length) {
         QUOTES.push(words);
         added++;
       }
     }
-    _quotesExtraLoaded = true;
-    try { console.log('[QUOTES] +' + added + ' câu từ part6 (tổng ' + QUOTES.length + ')'); } catch (e) {}
-  } catch (e) {
-    try { console.warn('[QUOTES] không tải được extra:', e && e.message); } catch (e2) {}
   }
+  return added;
+}
+
+const quotesReady = (async function loadExtraQuotes() {
+  let totalAdded = 0;
+  // Tải song song các nguồn; nguồn lỗi thì bỏ qua, không chặn nguồn khác
+  const results = await Promise.allSettled(QUOTE_EXTRA_URLS.map(u => loadQuoteJsonUrl(u)));
+  results.forEach((r, idx) => {
+    if (r.status === 'fulfilled') {
+      totalAdded += r.value || 0;
+    } else {
+    }
+  });
+  _quotesExtraLoaded = true;
 })();
 
 async function ensureQuotesLoaded() {
   try { await quotesReady; } catch (e) {}
 }
 
+/**
+ * Lô từ cho trận: mỗi CÂU có xác suất ngang nhau.
+ * - Online: CHỈ dùng BUILTIN_QUOTES (cố định trong HTML) → 2 máy luôn cùng nội dung
+ * - Luyện tập: dùng QUOTES đầy đủ (built-in + extra GitHub nếu tải được)
+ * - Mỗi chu kỳ: xáo đều (Fisher–Yates có seed) → mỗi câu đúng 1 lần
+ * - 2 client cùng wordSeed + batchIndex → cùng chuỗi (fair online)
+ */
 function getWordBatch(batchIndex) {
-  const batchSeed = ((wordSeed + batchIndex * 2654435761) >>> 0);
-  const order = seededShuffle(QUOTES.map((_, i) => i), batchSeed);
-  const out = [];
+  // Trận đấu: không phụ thuộc mạng tải JSON → tránh PC/mobile ra chữ khác nhau
+  const pool = (typeof isPracticeMode !== 'undefined' && isPracticeMode)
+    ? QUOTES
+    : (typeof BUILTIN_QUOTES !== 'undefined' ? BUILTIN_QUOTES : QUOTES);
+  const usable = [];
+  for (let i = 0; i < pool.length; i++) {
+    const q = pool[i];
+    if (Array.isArray(q) && q.length > 0) usable.push(q);
+  }
+  if (!usable.length) {
+    return ['hãy', 'luyện', 'tập', 'mỗi', 'ngày', 'để', 'tiến', 'bộ', 'hơn'];
+  }
+  const n = usable.length;
+  const baseSeed = ((wordSeed + batchIndex * 2654435761) >>> 0);
+  // Hoán vị đều 0..n-1
+  function shuffleIndices(seed) {
+    const rng = mulberry32(seed >>> 0);
+    const order = new Array(n);
+    for (let i = 0; i < n; i++) order[i] = i;
+    for (let i = n - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      const tmp = order[i];
+      order[i] = order[j];
+      order[j] = tmp;
+    }
+    return order;
+  }
+  let order = shuffleIndices(baseSeed);
   let oi = 0;
+  let cycle = 0;
+  const out = [];
   while (out.length < WORD_BATCH_SIZE) {
-    const quote = QUOTES[order[oi % order.length]];
-    out.push(...quote);
-    oi++;
+    if (oi >= n) {
+      cycle++;
+      // Chu kỳ mới: seed khác, vẫn Fisher–Yates đều trên cùng tập câu
+      order = shuffleIndices((baseSeed + cycle * 1597334677) >>> 0);
+      oi = 0;
+    }
+    const quote = usable[order[oi++]];
+    // Đẩy nguyên câu — không cắt giữa câu; câu ngắn/dài vẫn được chọn đều theo lượt
+    for (let w = 0; w < quote.length; w++) out.push(quote[w]);
   }
   return out;
 }
 
-// ── Sound system (2 kiểu + mute) ──
+// ── Sound system (3 kiểu + mute) ──
 const SOUND_SRC_1 = "data:audio/mp3;base64,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"; // Cổ điển
 const SOUND_SRC_2 = "data:audio/mp3;base64,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"; // Sắc nét (virtualzero) — full clip
 
 let soundEnabled = localStorage.getItem("wwb_sound") !== "0";
 let soundType = parseInt(localStorage.getItem("wwb_sound_type") || "1", 10);
-if (soundType !== 1 && soundType !== 2) soundType = 1;
+if (soundType !== 1 && soundType !== 2 && soundType !== 3) soundType = 1;
 
 // ── Web Audio API: decode 1 lần, phát buffer (mượt trên iOS) ──
 // Predictive: phát trên keydown (trước input) → cảm giác “đoán trước thao tác”.
 // HTMLAudioElement + currentTime=0 trên iPhone rất lag; Web Audio gần như tức thì.
 // Âm lượng gõ đã giảm ~50% so với bản trước (tránh lấn át / mỏi tai).
-const SOUND_VOL = { 1: 0.34, 2: 0.46 };
+const SOUND_SRC_3 = "data:audio/mp3;base64,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YplsCOQh+43x5oDB40uHNWragbosSNg64UPTBElSkO0ZRw255Alj6f+2f/nG9SUtu1I7ZWZ/JO8f1/xjw7Y36/NtUgY/29neWix5YUSBL/nf//38/P///3///9Tx4Gpo+I0SHFniBz////wuQFTbAGkE9sAARI9HtdpdNpLG2AUPhGKrIMBmEIouYLqJAkimKYazApwHpszMhxyzERMEiFaFYwkuq3NTSG2QkQa86PQYI6cxSyqI01aIzao0z00H97I67/08srS+A55frjyh1ncp72dPT3J2Ytal9SLu6+buRKdwrUTX7nK9BLr7mX+VXHicFWJRQy+738t/zDmFSlrY5V+/F4hek0P1J6MS/HeFTesea1n/87+O+c5qlv0mV6foblJUu///mQcQfAgOgQh////4XEAqbYA0jQEEAIMMAAAAADI141kC1/+bhhmLHf7/zECA0tM//8G8YGQiXXgY5hwGQ08Bp8bK+Boq//vSZBkABxBuQs5uoAB6zaisycwAQAABpBwAACAAADSDgAAEHgZMU4CkRAz6vv8DHJyAx6HwMrFUDDg9AwEKv/AGCwNygFgWA4DCXAYJA3/4Dg2A4DgFBUAkLAPAQDQOAwEG//8AwFg4EgYFCgCQMF1YGAAGFkoewGMv//xWwYFD0CYCyIGgDD2QbGQFwUFugse///8AgHgOAIaaAKCAsSEAwbVC6ImwPWGWDoRCQwDFX////4aKJ5C2IEQIGzBgoBAHBvKHhANAQXyE5hYSHIikBBIAEBgIBAQDBAAAAAqh83gAfAIX4GYAOP5Dwbh8Cqg2YN+/AEiA4IaSAKj/DkhcYlEckfH/k8XiiUDIi3/5RMS6RxSKxDf/8mTxeMnJkxQNv//0jqEyOrLpSMjb///yZMTxNGSZdRUlRQpf////nVmpkkbGJieLxkmYowlMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU="; // Mèo kêu (meow)
+const SOUND_VOL = { 1: 0.34, 2: 0.46, 3: 0.55 };
 let audioCtx = null;
-let soundBuffers = { 1: null, 2: null }; // AudioBuffer đã decode
+let soundBuffers = { 1: null, 2: null, 3: null }; // AudioBuffer đã decode
 let soundDecodePromise = null;
 let soundUnlocked = false;
 let masterGain = null; // 1 GainNode dùng chung — giảm GC khi gõ nhanh
@@ -5804,12 +6612,19 @@ function buildHtml5Pool() {
       a.preload = "auto";
       try { a.load(); } catch (e) {}
       return a;
+    }),
+    3: Array.from({ length: 12 }, () => {
+      const a = new Audio(SOUND_SRC_3);
+      a.volume = SOUND_VOL[3];
+      a.preload = "auto";
+      try { a.load(); } catch (e) {}
+      return a;
     })
   };
 }
 
 async function ensureSoundBuffers() {
-  if (soundBuffers[1] && soundBuffers[2]) return true;
+  if (soundBuffers[1] && soundBuffers[2] && soundBuffers[3]) return true;
   if (!soundDecodePromise) {
     soundDecodePromise = (async () => {
       try {
@@ -5820,12 +6635,14 @@ async function ensureSoundBuffers() {
         // treo vô thời hạn (chặn autoplay) → kẹt cả promise, không bao giờ
         // decode xong. decodeAudioData vẫn chạy được dù ctx đang suspended.
         ctx.resume().catch(() => {});
-        const [b1, b2] = await Promise.all([
+        const [b1, b2, b3] = await Promise.all([
           decodeDataUriToBuffer(ctx, SOUND_SRC_1),
-          decodeDataUriToBuffer(ctx, SOUND_SRC_2)
+          decodeDataUriToBuffer(ctx, SOUND_SRC_2),
+          decodeDataUriToBuffer(ctx, SOUND_SRC_3)
         ]);
         soundBuffers[1] = b1;
         soundBuffers[2] = b2;
+        soundBuffers[3] = b3;
         getMasterGain(ctx);
         return true;
       } catch (e) {
@@ -5940,13 +6757,14 @@ function playKeySound() {
       // Bắt đầu rất sớm (~8ms trong quá khứ nếu API cho phép) → cảm giác “trước khi ấn”
       const startAt = Math.max(0, t0 - 0.008);
       const dur = Math.max(0.02, buf.duration || 0.12);
-      // Kiểu 2 (Mechanical): phát gần đủ clip. Kiểu 1 (Soft): envelope ngắn, gọn.
-      const attack = soundType === 2 ? 0.003 : 0.004;
-      const sustainEnd = soundType === 2
+      // Kiểu 2 (Mechanical) / 3 (Meow): phát gần đủ clip. Kiểu 1 (Soft): envelope ngắn, gọn.
+      const fullClip = soundType === 2 || soundType === 3;
+      const attack = fullClip ? 0.003 : 0.004;
+      const sustainEnd = fullClip
         ? startAt + Math.min(dur * 0.72, dur - 0.025)
         : startAt + Math.min(0.045, dur * 0.55);
-      const releaseEnd = soundType === 2
-        ? startAt + Math.min(dur, 0.19)
+      const releaseEnd = fullClip
+        ? startAt + Math.min(dur, soundType === 3 ? 0.28 : 0.19)
         : startAt + Math.min(dur, 0.09);
       gain.gain.setValueAtTime(0.0001, startAt);
       gain.gain.exponentialRampToValueAtTime(vol, startAt + attack);
@@ -6072,7 +6890,7 @@ window.toggleSoundMaster = function() {
 };
 
 window.selectSoundType = function(n) {
-  soundType = n === 2 ? 2 : 1;
+  soundType = (n === 2 || n === 3) ? n : 1;
   localStorage.setItem("wwb_sound_type", String(soundType));
   document.querySelectorAll(".sound-option").forEach(btn => {
     btn.classList.toggle("active", parseInt(btn.dataset.sound,10) === soundType);
@@ -6092,8 +6910,10 @@ updateSoundFabIcon();
 // ── State ──
 // ── State ──
 let roomId = null, myRole = null, myReady = false;
+const GAME_DURATION = 90;
+
 let gameActive = false, gameStarted = false, countdownDone = false;
-let ballPos = 50, timeLeft = 30, timerInterval = null;
+let ballPos = 50, timeLeft = GAME_DURATION, timerInterval = null;
 let gameStartTs = 0; // wall-clock khi trận bắt đầu (Date.now), dùng để tính timeLeft chính xác khi tab ẩn
 // Đồng bộ thanh máu khi mạng yếu: serverBallPos = nguồn thật từ Firebase,
 // pendingBallDelta = dame local chưa commit (optimistic). Hiển thị = clamp(server + pending).
@@ -6114,7 +6934,7 @@ let roomListenerActive = false;
 let roomUnsub = null;
 let opponentLeftHandled = false; // tránh hiện bảng thông báo nhiều lần
 let intentionallyLeaving = false; // mình chủ động rời → không hiện "đối thủ rời"
-const GAME_DURATION = 90;
+
 
 // ── Matchmaking (Ghép trận) ──
 let isMatchmaking = false;
@@ -6171,11 +6991,212 @@ function showToast(msg, dur=2500) {
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), dur);
 }
+/* ============================================================
+   KeyboardGuard — khóa layout khi bàn phím ảo mở
+   Dùng visualViewport: neo #game-screen theo khung nhìn thật,
+   chặn iOS/Android đẩy toàn trang lên khi focus ô nhập.
+   ============================================================ */
+const KeyboardGuard = (() => {
+  let _on = false;
+  let _kbOpen = false;
+  let _baselineH = 0;      // chiều cao layout khi chưa mở phím
+  let _raf = 0;
+  let _scrollLockTimer = null;
+  let _stableOpen = 0;     // chống nhấp nháy open/close
+  let _stableClose = 0;
+
+  function isGameActive() {
+    try {
+      return !!(document.body && document.body.classList.contains('playing-lock')
+        && document.getElementById('game-screen')?.classList.contains('active'));
+    } catch (e) { return false; }
+  }
+
+  function measure() {
+    const vv = window.visualViewport;
+    const layoutH = window.innerHeight || 0;
+    const visH = vv ? vv.height : layoutH;
+    const offsetTop = vv ? (vv.offsetTop || 0) : 0;
+    const offsetLeft = vv ? (vv.offsetLeft || 0) : 0;
+    return { vv, layoutH, visH, offsetTop, offsetLeft };
+  }
+
+  function captureBaseline() {
+    const m = measure();
+    // Chỉ cập nhật baseline khi phím đang đóng và chiều cao ổn định
+    if (!_kbOpen && m.visH > 0) {
+      _baselineH = Math.max(m.layoutH, m.visH);
+    }
+    if (!_baselineH) _baselineH = Math.max(m.layoutH, m.visH, 1);
+  }
+
+  function applyViewportVars() {
+    const m = measure();
+    const root = document.documentElement;
+    // Neo theo visual viewport (iOS: offsetTop > 0 khi layout bị scroll)
+    root.style.setProperty('--kb-height', Math.round(m.visH) + 'px');
+    root.style.setProperty('--kb-top', Math.round(m.offsetTop) + 'px');
+    root.style.setProperty('--kb-left', Math.round(m.offsetLeft) + 'px');
+    root.style.setProperty('--kb-layout-h', Math.round(m.layoutH) + 'px');
+    if (_baselineH) root.style.setProperty('--kb-baseline', Math.round(_baselineH) + 'px');
+  }
+
+  function setKbOpen(open) {
+    if (_kbOpen === open) {
+      applyViewportVars();
+      return;
+    }
+    _kbOpen = open;
+    try {
+      document.documentElement.classList.toggle('kb-open', open);
+      document.body.classList.toggle('kb-open', open);
+    } catch (e) {}
+    applyViewportVars();
+    hardScrollTop();
+  }
+
+  function hardScrollTop() {
+    try {
+      window.scrollTo(0, 0);
+      if (document.documentElement) document.documentElement.scrollTop = 0;
+      if (document.body) document.body.scrollTop = 0;
+      // iOS đôi khi cuộn visualViewport
+      if (window.visualViewport && typeof window.visualViewport.offsetTop === 'number') {
+        // không gọi scrollTo trên vv (không phải mọi browser hỗ trợ) — chỉ kéo document
+      }
+    } catch (e) {}
+  }
+
+  function detectKeyboard() {
+    if (!isGameActive()) {
+      setKbOpen(false);
+      return;
+    }
+    const m = measure();
+    if (!_baselineH) captureBaseline();
+
+    // Chênh so với baseline (ổn định hơn so sánh innerHeight khi iOS cũng co innerHeight)
+    const gapFromBaseline = Math.max(0, (_baselineH || m.layoutH) - m.visH);
+    const gapLayout = Math.max(0, m.layoutH - m.visH);
+    const gap = Math.max(gapFromBaseline, gapLayout);
+
+    // Phím mở: gap rõ ràng HOẶC offsetTop lớn (iOS đã đẩy layout)
+    const wantOpen = gap > 100 || m.offsetTop > 40 || (m.visH > 0 && _baselineH > 0 && m.visH / _baselineH < 0.78);
+
+    // Debounce 2 frame logic: cần 2 lần detect liên tiếp cùng trạng thái
+    if (wantOpen) {
+      _stableOpen++;
+      _stableClose = 0;
+      if (!_kbOpen && _stableOpen >= 1) setKbOpen(true);
+      else applyViewportVars();
+    } else {
+      _stableClose++;
+      _stableOpen = 0;
+      if (_kbOpen && _stableClose >= 2) {
+        setKbOpen(false);
+        // Cập nhật lại baseline sau khi đóng phím
+        setTimeout(captureBaseline, 120);
+      } else {
+        applyViewportVars();
+      }
+    }
+    if (_kbOpen) hardScrollTop();
+  }
+
+  function scheduleDetect() {
+    if (_raf) cancelAnimationFrame(_raf);
+    _raf = requestAnimationFrame(() => {
+      _raf = 0;
+      detectKeyboard();
+    });
+  }
+
+  function onFocusIn(e) {
+    if (!isGameActive()) return;
+    const t = e.target;
+    if (!t) return;
+    const isInput = t.id === 'game-hidden-input' || t.tagName === 'INPUT' || t.tagName === 'TEXTAREA';
+    if (!isInput) return;
+    captureBaseline();
+    scheduleDetect();
+    [40, 100, 200, 320, 480].forEach(ms => setTimeout(scheduleDetect, ms));
+    if (_scrollLockTimer) clearInterval(_scrollLockTimer);
+    _scrollLockTimer = setInterval(() => {
+      hardScrollTop();
+      applyViewportVars();
+    }, 80);
+    setTimeout(() => {
+      if (_scrollLockTimer) { clearInterval(_scrollLockTimer); _scrollLockTimer = null; }
+    }, 900);
+  }
+
+  function onFocusOut() {
+    setTimeout(() => {
+      const ae = document.activeElement;
+      if (ae && (ae.id === 'game-hidden-input' || ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) return;
+      scheduleDetect();
+      setTimeout(() => {
+        scheduleDetect();
+        if (!isGameActive() || !(document.activeElement && (document.activeElement.tagName === 'INPUT'))) {
+          _stableClose = 2;
+          setKbOpen(false);
+          captureBaseline();
+        }
+      }, 160);
+    }, 60);
+  }
+
+  function bind() {
+    if (_on) return;
+    _on = true;
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener('resize', scheduleDetect, { passive: true });
+      vv.addEventListener('scroll', () => {
+        applyViewportVars();
+        hardScrollTop();
+        scheduleDetect();
+      }, { passive: true });
+    }
+    window.addEventListener('resize', scheduleDetect, { passive: true });
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => { captureBaseline(); scheduleDetect(); }, 200);
+    }, { passive: true });
+    document.addEventListener('focusin', onFocusIn, true);
+    document.addEventListener('focusout', onFocusOut, true);
+    captureBaseline();
+  }
+
+  function onGameEnter() {
+    bind();
+    _stableOpen = 0;
+    _stableClose = 0;
+    captureBaseline();
+    applyViewportVars();
+    setKbOpen(false);
+  }
+
+  function onGameLeave() {
+    setKbOpen(false);
+    _stableOpen = 0;
+    _stableClose = 0;
+    if (_scrollLockTimer) { clearInterval(_scrollLockTimer); _scrollLockTimer = null; }
+  }
+
+  return { bind, onGameEnter, onGameLeave, detect: detectKeyboard, get open() { return _kbOpen; } };
+})();
+window.KeyboardGuard = KeyboardGuard;
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   // Khóa scroll body khi đang chơi (tránh bounce iOS / kéo nhầm trang)
   document.body.classList.toggle('playing-lock', id === 'game-screen');
+  if (id === 'game-screen') {
+    if (typeof KeyboardGuard !== 'undefined') KeyboardGuard.onGameEnter();
+  } else {
+    if (typeof KeyboardGuard !== 'undefined') KeyboardGuard.onGameLeave();
+  }
   // Nút loa sảnh nằm trong #lobby-screen → tự ẩn khi đổi màn
   // Nút quay lại + loa chỉ hiện ở màn prep (góc trên trái)
   const back = document.getElementById('prep-back-btn');
@@ -6198,6 +7219,7 @@ function showScreen(id) {
  */
 async function leaveRoomAndNotify() {
   if (!roomId) return;
+  if (typeof stopBattleIntegrityMonitor === 'function') stopBattleIntegrityMonitor();
   try { await update(ref(db, `bowwow/${roomId}`), { leftBy: myRole }); } catch(e) {}
   try { onDisconnect(ref(db, `bowwow/${roomId}`)).cancel(); } catch(e) {}
   try { await remove(ref(db, `bowwow/${roomId}`)); } catch(e) {}
@@ -6433,6 +7455,8 @@ function startRoomListener() {
   roomListenerActive = true;
   roomUnsub = onValue(ref(db, `bowwow/${roomId}`), snap => {
     const d = snap.val();
+    _lastRoomSnapAt = Date.now();
+    if (d && d.phase) _lastRoomPhase = d.phase;
     // Đối thủ CHỦ ĐỘNG rời / reload / đóng tab (đã ghi leftBy) → báo ngay
     // Grace period chỉ dành cho rớt mạng tạm (phòng biến mất nhưng không có leftBy)
     if (d && d.leftBy && d.leftBy !== myRole) {
@@ -6453,6 +7477,10 @@ function startRoomListener() {
     }
     // Có data phòng lại → hủy lịch “đối thủ rời”
     cancelOpponentLeftSchedule();
+    // Shared pause: cả hai máy cùng dừng theo cờ Firebase (server chuẩn)
+    if (typeof applySharedSyncPauseFromRoom === 'function') {
+      applySharedSyncPauseFromRoom(d);
+    }
     // Đối thủ biến mất khỏi phòng trong lúc ghép trận / đang chơi
     const oppRole = myRole === 'p1' ? 'p2' : 'p1';
     const phase = d.phase;
@@ -6549,6 +7577,7 @@ window.createRoom = async function() {
         power: hostProfile.power != null ? hostProfile.power : null,
         avatar: hostProfile.avatar || null,
         hasAccount: !!hostProfile.hasAccount,
+        powerPlatform: hostProfile.powerPlatform || null,
         imgDefault: (typeof myImgs !== 'undefined' && myImgs.default) ? myImgs.default : null,
         imgBark: (typeof myImgs !== 'undefined' && myImgs.bark) ? myImgs.bark : null
       },
@@ -6599,6 +7628,7 @@ window.joinRoom = async function() {
         power: joinProfile.power != null ? joinProfile.power : null,
         avatar: joinProfile.avatar || null,
         hasAccount: !!joinProfile.hasAccount,
+        powerPlatform: joinProfile.powerPlatform || null,
         imgDefault: (typeof myImgs !== 'undefined' && myImgs.default) ? myImgs.default : null,
         imgBark: (typeof myImgs !== 'undefined' && myImgs.bark) ? myImgs.bark : null
       }
@@ -6905,6 +7935,7 @@ async function attemptMatchPairing(retriesLeft) {
           power: hostProfile.power,
           avatar: hostProfile.avatar,
           hasAccount: hostProfile.hasAccount,
+          powerPlatform: hostProfile.powerPlatform || null,
           imgDefault: myImgs.default || null,
           imgBark: myImgs.bark || null
         },
@@ -7005,11 +8036,13 @@ async function startMatchmaking() {
 /** Hồ sơ mình để ghi vào phòng / hiện VS */
 function buildMyMatchProfile() {
   const hasAccount = !!(currentUser && currentUser.displayName);
+  const pow = hasAccount && typeof getMyDisplayPower === 'function' ? getMyDisplayPower() : (hasAccount && typeof currentUser.bestWpm === 'number' ? currentUser.bestWpm : null);
   return {
     hasAccount,
     displayName: hasAccount ? currentUser.displayName : null,
-    power: hasAccount && typeof currentUser.bestWpm === 'number' ? currentUser.bestWpm : null,
-    avatar: hasAccount && currentUser.avatar ? currentUser.avatar : null
+    power: (pow != null && pow > 0) ? pow : (hasAccount ? (pow || 0) : null),
+    avatar: hasAccount && currentUser.avatar ? currentUser.avatar : null,
+    powerPlatform: (typeof getPowerPlatform === 'function') ? getPowerPlatform() : null
   };
 }
 
@@ -7036,6 +8069,7 @@ async function showRoomVSThenPrep() {
         power: myProfile.power != null ? myProfile.power : null,
         avatar: myProfile.avatar || null,
         hasAccount: !!myProfile.hasAccount,
+        powerPlatform: myProfile.powerPlatform || null,
         imgDefault: (typeof myImgs !== 'undefined' && myImgs.default) ? myImgs.default : null,
         imgBark: (typeof myImgs !== 'undefined' && myImgs.bark) ? myImgs.bark : null
       });
@@ -7050,7 +8084,8 @@ async function showRoomVSThenPrep() {
     hasAccount: myProfile.hasAccount,
     displayName: myProfile.displayName,
     power: myProfile.power,
-    avatar: myProfile.avatar || (typeof myImgs !== 'undefined' ? myImgs.default : null)
+    avatar: myProfile.avatar || (typeof myImgs !== 'undefined' ? myImgs.default : null),
+    powerPlatform: myProfile.powerPlatform || null
   });
   const oppVs = vsPlayerFromProfile(oppRaw || {});
 
@@ -7061,6 +8096,13 @@ async function showRoomVSThenPrep() {
 }
 
 const VS_FACE_ICON_SVG = `<svg class="vs-face-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 19.5c0-3.5 2.9-6 6.5-6s6.5 2.5 6.5 6"/></svg>`;
+
+function formatVsPlatformLabel(plat) {
+  const p = String(plat || '').toLowerCase();
+  if (p === 'pc') return 'PC';
+  if (p === 'mobile') return 'Mobile';
+  return '—';
+}
 
 function vsPlayerFromProfile(profile) {
   // Không có tài khoản → ??? + icon
@@ -7073,15 +8115,18 @@ function vsPlayerFromProfile(profile) {
     ? profile.power
     : null;
   const avatar = hasAccount ? (profile.avatar || profile.imgDefault || null) : null;
-  return { name: name || null, power: power, avatar: avatar };
+  const platform = profile && (profile.powerPlatform || profile.platform) || null;
+  return { name: name || null, power: power, avatar: avatar, platform: platform };
 }
 
 function fillVsSlot(prefix, data) {
   const nameEl = document.getElementById(prefix + '-vs-name');
   const powerEl = document.getElementById(prefix + '-vs-power');
+  const platEl = document.getElementById(prefix + '-vs-platform');
   const avEl = document.getElementById(prefix + '-vs-avatar');
   if (nameEl) nameEl.textContent = data?.name || '???';
   if (powerEl) powerEl.textContent = (data?.power != null ? data.power : '???') + ' WPM';
+  if (platEl) platEl.textContent = formatVsPlatformLabel(data?.platform);
   if (avEl) {
     if (data?.avatar) {
       avEl.innerHTML = '<img src="' + data.avatar + '" alt="">';
@@ -7135,7 +8180,7 @@ async function waitForOpponentProfile(timeoutMs) {
     try {
       const snap = await get(ref(db, 'bowwow/' + roomId + '/' + oppRole));
       const d = snap.val();
-      if (d && (d.displayName || d.hasAccount || d.avatar || d.imgDefault || d.power != null)) {
+      if (d && (d.displayName || d.hasAccount || d.avatar || d.imgDefault || d.power != null || d.powerPlatform)) {
         return d;
       }
     } catch (e) {}
@@ -7176,10 +8221,12 @@ async function enterMatchedRoom(matchedRoomId, role) {
     const av = document.getElementById('avatars-row-el');
     const hd = document.getElementById('game-header-row');
     const pi = document.getElementById('practice-info');
+    const gs = document.getElementById('game-screen');
     if (bar) bar.style.display = '';
     if (av) av.style.display = '';
     if (hd) hd.style.display = '';
     if (pi) pi.style.display = 'none';
+    if (gs) gs.classList.remove('practice-active');
   }
 
   roomId = matchedRoomId;
@@ -7198,7 +8245,8 @@ async function enterMatchedRoom(matchedRoomId, role) {
       displayName: myProfile.displayName || (typeof getMyDisplayName === 'function' ? getMyDisplayName() : 'Bạn'),
       power: myProfile.power,
       avatar: myProfile.avatar,
-      hasAccount: myProfile.hasAccount
+      hasAccount: myProfile.hasAccount,
+      powerPlatform: myProfile.powerPlatform || null
     });
     try { await onDisconnect(ref(db, 'bowwow/' + roomId)).remove(); } catch(e) {}
   } catch(e) {}
@@ -7214,7 +8262,8 @@ async function enterMatchedRoom(matchedRoomId, role) {
     hasAccount: myProfile.hasAccount,
     displayName: myProfile.displayName,
     power: myProfile.power,
-    avatar: myProfile.avatar
+    avatar: myProfile.avatar,
+    powerPlatform: myProfile.powerPlatform || null
   });
   const oppVs = vsPlayerFromProfile(oppRaw || {});
 
@@ -7403,6 +8452,8 @@ window.startPractice = function() {
   document.getElementById('avatars-row-el').style.display = 'none';
   document.getElementById('game-header-row').style.display = 'none';
   document.getElementById('practice-info').style.display = 'block';
+  const gameScreen = document.getElementById('game-screen');
+  if (gameScreen) gameScreen.classList.add('practice-active');
   const overlay = document.getElementById('practice-result-overlay');
   if (overlay) overlay.classList.remove('show');
 
@@ -7547,6 +8598,8 @@ window.exitPractice = function() {
   document.getElementById('avatars-row-el').style.display = '';
   document.getElementById('game-header-row').style.display = '';
   document.getElementById('practice-info').style.display = 'none';
+  const gameScreen = document.getElementById('game-screen');
+  if (gameScreen) gameScreen.classList.remove('practice-active');
   showScreen('lobby-screen');
   if (typeof refreshMmFloatingVisibility === 'function') refreshMmFloatingVisibility();
   if (typeof setMmUI === 'function') setMmUI(isMatchmaking);
@@ -7713,6 +8766,9 @@ function startGameUI(d) {
   wordSeed = (typeof d.wordSeed === 'number') ? d.wordSeed : 1; // seed dùng chung 2 người chơi
   clearTypingInput();
   setupTypingEngine();
+  if (!isPracticeMode && typeof startBattleIntegrityMonitor === 'function') {
+    startBattleIntegrityMonitor();
+  }
 }
 
 function updateBar(pos, opts) {
@@ -7752,14 +8808,15 @@ function updateBar(pos, opts) {
 function spawnBarRipple(myPosPct, pushRight) {
   const track = document.querySelector('.bar-track');
   if (!track) return;
-  if (track.querySelectorAll('.bar-ripple').length >= 3) return;
+  const fx = (typeof DeviceFX !== 'undefined') ? DeviceFX.current() : { rippleMax: 3, rippleLife: 160 };
+  if (track.querySelectorAll('.bar-ripple').length >= (fx.rippleMax || 3)) return;
 
   const el = document.createElement('div');
   el.className = 'bar-ripple ' + (pushRight ? 'push-right' : 'push-left');
   // neo tại mép thanh (ball); gradient tự bung theo hướng — căn giữa đã xử lý bằng margin-left trong CSS
   el.style.left = myPosPct + '%';
   track.appendChild(el);
-  setTimeout(() => el.remove(), 160);
+  setTimeout(() => el.remove(), fx.rippleLife || 160);
 
   if (_dom.barBall) {
     _dom.barBall.classList.remove('pulse');
@@ -7775,6 +8832,9 @@ function spawnBarRipple(myPosPct, pushRight) {
 
 function computeTimeLeft() {
   if (!gameStartTs) return timeLeft;
+  if (typeof _battlePausedForSync !== 'undefined' && _battlePausedForSync && _battlePauseStartedAt) {
+    return Math.max(0, GAME_DURATION - Math.floor((_battlePauseStartedAt - gameStartTs) / 1000));
+  }
   return Math.max(0, GAME_DURATION - Math.floor((nowServer() - gameStartTs) / 1000));
 }
 
@@ -7842,6 +8902,14 @@ document.addEventListener('visibilitychange', () => {
   if (_dom.timer) _dom.timer.textContent = left;
   if (typeof resyncRoomStateFromServer === 'function') resyncRoomStateFromServer();
 });
+// Mất mạng: phản ứng NGAY (không chờ vòng poll checkBattleIntegrity kế tiếp)
+window.addEventListener('offline', () => {
+  if (!gameActive || isPracticeMode || resultShown) return;
+  _wasOffline = true;
+  _pauseRecoverStableSince = 0;
+  pauseBattleForSync('Bạn đang mất kết nối — đang chờ mạng ổn định…');
+  if (typeof requestSharedSyncPause === 'function') requestSharedSyncPause('offline');
+});
 // Online lại sau khi mất mạng tạm
 window.addEventListener('online', () => {
   if (!gameActive || isPracticeMode) return;
@@ -7870,17 +8938,13 @@ function cacheDom() {
 cacheDom();
 
 let _lastBallPos = -1, _lastTimeLeft = -1, _lastOppBark = null, _lastOppImgSrc = '';
-let _syncBusy = false;
-let _playingUnsub = null;
 
 // Đồng bộ realtime dùng CHUNG room listener (startRoomListener) — tránh 2 onValue song song trên mobile
 function startPlayingSync() {
-  // Reset cache để frame đầu nhận state mới
+  // Reset cache để frame đầu nhận state mới (đồng bộ qua room listener)
   _lastBallPos = -1; _lastTimeLeft = -1; _lastOppBark = null; _lastOppImgSrc = '';
-  _playingUnsub = null;
 }
 function stopPlayingSync() {
-  _playingUnsub = null;
   _lastBallPos = -1; _lastTimeLeft = -1; _lastOppBark = null; _lastOppImgSrc = '';
 }
 
@@ -7976,26 +9040,289 @@ async function setupTypingEngine() {
 
 // ── Khởi tạo hàng đợi từ (mỗi người tự cuộn riêng, không cần đồng bộ nội dung) ──
 let _currentWordEl = null; // cache highlight — tránh querySelectorAll mỗi từ
-// Chỉ coi là “mobile UI” khi màn hẹp hoặc UA điện thoại.
-// Không dùng pointer:coarse — laptop cảm ứng / Windows tablet mode bị coarse
-// nhưng vẫn cần hiệu ứng đầy đủ như máy mới.
-const IS_MOBILE_UI = (() => {
+
+/* ============================================================
+   DeviceDetect — nhận diện Mobile / Tablet / PC
+   Ưu tiên: UA + kích thước viewport + touch/pointer (không chỉ dựa coarse
+   vì laptop cảm ứng / Windows tablet mode hay báo coarse nhưng vẫn là PC).
+   ============================================================ */
+const DeviceDetect = (() => {
+  const UA = (navigator.userAgent || '') + ' ' + (navigator.platform || '');
+  const ua = UA.toLowerCase();
+
+  function mq(q) {
+    try { return window.matchMedia(q).matches; } catch (e) { return false; }
+  }
+
+  function detectOS() {
+    if (/ipad|iphone|ipod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1))
+      return 'ios';
+    if (/android/.test(ua)) return 'android';
+    if (/windows phone|iemobile|wpdesktop/.test(ua)) return 'windowsphone';
+    if (/windows|win32|win64|wow64/.test(ua)) return 'windows';
+    if (/macintosh|mac os x/.test(ua)) return 'macos';
+    if (/cros/.test(ua)) return 'chromeos';
+    if (/linux/.test(ua)) return 'linux';
+    return 'unknown';
+  }
+
+  function detectKind() {
+    const w = Math.min(window.innerWidth || 0, window.screen?.width || 9999);
+    const h = Math.min(window.innerHeight || 0, window.screen?.height || 9999);
+    const shortSide = Math.min(w, h);
+    const longSide = Math.max(w, h);
+
+    // UA phone mạnh
+    const phoneUA = /iphone|ipod|windows phone|iemobile|blackberry|bb10|opera mini|mobile/.test(ua)
+      || (/android/.test(ua) && /mobile/.test(ua));
+    // Tablet UA (Android tablet thường không có "Mobile"; iPad)
+    const tabletUA = /ipad|tablet|kindle|silk|playbook/.test(ua)
+      || (/android/.test(ua) && !/mobile/.test(ua))
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS 13+
+
+    // Touch thật sự (không dùng coarse làm tiêu chí PC/Mobile)
+    const hasTouch = (navigator.maxTouchPoints || 0) > 0
+      || 'ontouchstart' in window
+      || mq('(any-pointer: coarse)');
+
+    // Phân loại chính
+    let kind = 'pc'; // default
+    if (phoneUA || (shortSide > 0 && shortSide <= 480 && hasTouch)) {
+      kind = 'phone';
+    } else if (tabletUA || (hasTouch && shortSide > 480 && shortSide <= 900 && longSide <= 1400)) {
+      kind = 'tablet';
+    } else {
+      kind = 'pc';
+    }
+
+    // Viewport hẹp (responsive UI) — kể cả khi resize cửa sổ PC
+    const narrowUI = mq('(max-width: 720px)') || (w > 0 && w <= 720);
+    const veryNarrow = mq('(max-width: 480px)') || (w > 0 && w <= 480);
+
+    // isMobile: điện thoại thật HOẶC UI đang ở layout mobile
+    const isPhone = kind === 'phone';
+    const isTablet = kind === 'tablet';
+    const isPC = kind === 'pc';
+    // Tương thích code cũ: mobile UI = màn hẹp hoặc phone
+    const isMobileUI = narrowUI || isPhone;
+    const isNarrowPhone = veryNarrow || isPhone;
+
+    return {
+      kind,           // 'phone' | 'tablet' | 'pc'
+      os: detectOS(),
+      isPhone,
+      isTablet,
+      isPC,
+      isMobileUI,     // dùng cho tối ưu layout/DOM
+      isNarrowPhone,  // tắt VFX nặng
+      hasTouch,
+      width: w,
+      height: h,
+      narrowUI,
+      veryNarrow
+    };
+  }
+
+  let info = detectKind();
+
+  function applyBodyClasses() {
+    const b = document.body;
+    if (!b) return;
+    b.classList.toggle('device-phone', info.isPhone);
+    b.classList.toggle('device-tablet', info.isTablet);
+    b.classList.toggle('device-pc', info.isPC);
+    b.classList.toggle('device-mobile-ui', info.isMobileUI);
+    b.classList.toggle('device-narrow', info.isNarrowPhone);
+    b.classList.toggle('device-touch', info.hasTouch);
+    b.classList.toggle('device-no-touch', !info.hasTouch);
+    // OS helper
+    ['ios', 'android', 'windows', 'macos', 'linux', 'chromeos', 'windowsphone', 'unknown'].forEach(o => {
+      b.classList.toggle('os-' + o, info.os === o);
+    });
+    b.setAttribute('data-device', info.kind);
+    b.setAttribute('data-os', info.os);
+  }
+
+  function refresh() {
+    info = detectKind();
+    // Đồng bộ flag legacy (mutable)
+    try {
+      if (typeof window !== 'undefined') {
+        // cập nhật biến global bên ngoài qua closure
+      }
+    } catch (e) {}
+    applyBodyClasses();
+    return info;
+  }
+
+  // Public API
+  const api = {
+    get info() { return info; },
+    get kind() { return info.kind; },
+    get os() { return info.os; },
+    get isPhone() { return info.isPhone; },
+    get isTablet() { return info.isTablet; },
+    get isPC() { return info.isPC; },
+    get isMobileUI() { return info.isMobileUI; },
+    get isNarrowPhone() { return info.isNarrowPhone; },
+    get hasTouch() { return info.hasTouch; },
+    refresh,
+    applyBodyClasses
+  };
+
+  // Resize / orientation — cập nhật layout flags (không đổi kind cứng từ UA)
+  let _rt = null;
+  function onViewportChange() {
+    if (_rt) clearTimeout(_rt);
+    _rt = setTimeout(() => {
+      const prev = info.isMobileUI;
+      refresh();
+      // Có thể phát sự kiện nếu cần
+      if (prev !== info.isMobileUI) {
+        try {
+          window.dispatchEvent(new CustomEvent('deviceui-change', { detail: info }));
+        } catch (e) {}
+      }
+    }, 120);
+  }
   try {
-    const narrow = window.matchMedia('(max-width: 720px)').matches;
-    const phoneUA = /iPhone|iPod|Android.+Mobile|Windows Phone/i.test(navigator.userAgent || '');
-    // iPad lớn (chiều rộng > 720) vẫn hiện hiệu ứng desktop
-    return narrow || phoneUA;
-  } catch (e) { return false; }
-})();
-// Màn rất hẹp: tắt sonic-wave nặng (đồng bộ CSS max-width: 480px)
-const IS_NARROW_PHONE = (() => {
-  try {
-    return window.matchMedia('(max-width: 480px)').matches
-      || /iPhone|iPod|Android.+Mobile/i.test(navigator.userAgent || '');
-  } catch (e) { return false; }
+    window.addEventListener('resize', onViewportChange, { passive: true });
+    window.addEventListener('orientationchange', onViewportChange, { passive: true });
+  } catch (e) {}
+
+  // Áp class sớm nhất có thể
+  if (document.body) applyBodyClasses();
+  else document.addEventListener('DOMContentLoaded', applyBodyClasses);
+
+  return api;
 })();
 
-const WORD_LINE_H = 50; // khớp CSS .word height/line-height
+// Legacy flags — luôn đọc từ DeviceDetect (cập nhật khi resize)
+function _syncLegacyDeviceFlags() {
+  // gán lại mỗi lần dùng qua getter-style biến
+}
+let IS_MOBILE_UI = DeviceDetect.isMobileUI;
+let IS_NARROW_PHONE = DeviceDetect.isNarrowPhone;
+// Cập nhật khi viewport đổi
+(function bindLegacyFlags() {
+  const sync = () => {
+    IS_MOBILE_UI = DeviceDetect.isMobileUI;
+    IS_NARROW_PHONE = DeviceDetect.isNarrowPhone;
+  };
+  sync();
+  window.addEventListener('resize', () => setTimeout(sync, 130), { passive: true });
+  window.addEventListener('orientationchange', () => setTimeout(sync, 130), { passive: true });
+  window.addEventListener('deviceui-change', sync);
+})();
+
+// Expose global (debug / mở rộng sau)
+window.DeviceDetect = DeviceDetect;
+
+/* ============================================================
+   DeviceFX — profile hiệu ứng theo loại máy (phone / tablet / pc)
+   Mục tiêu: tăng độ chi tiết cho CẢ mobile lẫn PC, tối ưu khác nhau
+   chứ không “tắt hết” trên mobile.
+   ============================================================ */
+const DeviceFX = (() => {
+  const PROFILES = {
+    phone: {
+      particles: 7,
+      particleDist: [32, 56],
+      particleSize: [6, 9],
+      particleLife: 560,
+      sonic: true,
+      sonicScale: 0.95,
+      sonicMax: 2,
+      sonicLife: 300,
+      rippleMax: 3,
+      rippleLife: 150,
+      keepBehind: 55,
+      wordBatchAhead: 12,
+      shake: false,
+      barImgOpacity: 0.22,
+      hitGlow: true
+    },
+    tablet: {
+      particles: 10,
+      particleDist: [36, 64],
+      particleSize: [6, 10],
+      particleLife: 580,
+      sonic: true,
+      sonicScale: 1.05,
+      sonicMax: 3,
+      sonicLife: 320,
+      rippleMax: 4,
+      rippleLife: 160,
+      keepBehind: 70,
+      wordBatchAhead: 14,
+      shake: true,
+      barImgOpacity: 0.26,
+      hitGlow: true
+    },
+    pc: {
+      particles: 14,
+      particleDist: [40, 78],
+      particleSize: [6, 11],
+      particleLife: 620,
+      sonic: true,
+      sonicScale: 1.25,
+      sonicMax: 4,
+      sonicLife: 360,
+      rippleMax: 5,
+      rippleLife: 180,
+      keepBehind: 100,
+      wordBatchAhead: 16,
+      shake: true,
+      barImgOpacity: 0.32,
+      hitGlow: true
+    }
+  };
+
+  function current() {
+    const kind = (window.DeviceDetect && DeviceDetect.kind) || 'pc';
+    // Màn hẹp trên PC (cửa sổ nhỏ) → dùng profile phone cho layout/DOM, nhưng giữ VFX tablet
+    if (kind === 'pc' && DeviceDetect && DeviceDetect.isMobileUI) {
+      return Object.assign({}, PROFILES.tablet, { keepBehind: 70, barImgOpacity: 0.24 });
+    }
+    return PROFILES[kind] || PROFILES.pc;
+  }
+
+  function applyCssVars() {
+    const p = current();
+    const root = document.documentElement;
+    if (!root) return;
+    root.style.setProperty('--fx-bar-img-opacity', String(p.barImgOpacity));
+    root.style.setProperty('--fx-particle-life', p.particleLife + 'ms');
+    try {
+      document.body && document.body.setAttribute('data-fx', (DeviceDetect && DeviceDetect.kind) || 'pc');
+    } catch (e) {}
+  }
+
+  // Đồng bộ khi đổi viewport / deviceui-change
+  function refresh() {
+    applyCssVars();
+  }
+  try {
+    window.addEventListener('resize', () => setTimeout(refresh, 140), { passive: true });
+    window.addEventListener('deviceui-change', refresh);
+    if (document.body) applyCssVars();
+    else document.addEventListener('DOMContentLoaded', applyCssVars);
+  } catch (e) {}
+
+  return { PROFILES, current, refresh, applyCssVars };
+})();
+window.DeviceFX = DeviceFX;
+// Đổi mobile/PC UI → cập nhật số lực chiến hiển thị đúng nền
+window.addEventListener('deviceui-change', function() {
+  try { if (typeof renderAccountBadge === 'function') renderAccountBadge(); } catch (e) {}
+  try { if (typeof writePresenceNow === 'function') writePresenceNow(); } catch (e) {}
+});
+window.addEventListener('resize', function() {
+  clearTimeout(window._powerBadgeRt);
+  window._powerBadgeRt = setTimeout(function() {
+    try { if (typeof renderAccountBadge === 'function') renderAccountBadge(); } catch (e) {}
+  }, 200);
+});
 
 function setWordScroll(px, snap) {
   if (!containerEl) return;
@@ -8072,8 +9399,8 @@ function recalcScrollOffset() {
 
 // Cắt bớt từ đã gõ xong từ lâu để tránh DOM/mảng phình to vô hạn
 function pruneOldWords() {
-  // Mobile giữ ít từ hơn để DOM nhẹ
-  const KEEP_BEHIND = IS_MOBILE_UI ? 40 : 80;
+  // Profile theo máy: phone giữ ít hơn PC nhưng vẫn đủ để cuộn mượt
+  const KEEP_BEHIND = (typeof DeviceFX !== 'undefined' ? DeviceFX.current().keepBehind : (IS_MOBILE_UI ? 55 : 100));
   if (currentWordIndex > KEEP_BEHIND * 2) {
     const cutCount = currentWordIndex - KEEP_BEHIND;
     wordList = wordList.slice(cutCount);
@@ -8104,6 +9431,10 @@ function setTypingClass(inputEl, state) {
 }
 
 function handleWordInputChange(e) {
+  if (typeof _battlePausedForSync !== 'undefined' && _battlePausedForSync) {
+    if (e && e.target) { e.target.value = ''; setTypingClass(e.target, null); }
+    return;
+  }
   if (!gameActive || resultShown || (isPracticeMode && practiceFinished)) {
     // Trận đã kết thúc / chưa bắt đầu: nuốt phím gõ thừa, giữ ô trống
     if (e && e.target) {
@@ -8196,6 +9527,7 @@ function tryEndByBallPos(finalPos) {
 
 function dealDamageAsync(amount = 5.0, selfDamage = false) {
   if (isPracticeMode || !roomId || resultShown || !gameActive) return;
+  if (typeof _battlePausedForSync !== 'undefined' && _battlePausedForSync) return;
   let sign = (myRole === 'p1' ? -1 : 1);
   if (selfDamage) sign = -sign;
   const delta = amount * sign;
@@ -8271,14 +9603,513 @@ async function resyncRoomStateFromServer() {
   try {
     const snap = await get(ref(db, `bowwow/${roomId}`));
     const d = snap.val();
-    if (!d) return;
+    if (!d) {
+      _lastRoomSnapAt = Date.now();
+      return;
+    }
+    _lastRoomSnapAt = Date.now();
+    _lastRoomPhase = d.phase || null;
     if (typeof d.ballPos === 'number') setServerBallPos(d.ballPos);
     if (typeof d.startTs === 'number' && d.startTs > 0) {
       if (!gameStartTs || Math.abs(gameStartTs - d.startTs) > 500) gameStartTs = d.startTs;
     }
+    if (gameActive && d.phase === 'result') {
+      showBattleBanner('Trận đã kết thúc trên máy chủ — đồng bộ kết quả…', 'warn');
+      showResult(d);
+      return;
+    }
     if (d.phase === 'playing' && gameActive) applyRemoteState(d);
     if (d.phase === 'result') showResult(d);
   } catch (e) {}
+}
+
+// ── Nhận diện trục trặc trong chiến đấu + banner + tự resync ──
+let _battleIntegrityTimer = null;
+let _lastRoomSnapAt = 0;
+let _lastRoomPhase = null;
+let _battleBannerHideTimer = null;
+let _battleBannerKey = '';
+let _lastIntegrityActionAt = 0;
+let _pendingDriftSince = 0;
+let _wasOffline = false;
+let _battlePausedForSync = false;
+let _battlePauseStartedAt = 0;
+let _overlayShownAt = 0;          // mốc lần đầu overlay hiện — ép hiển thị tối thiểu OVERLAY_MIN_MS
+let _resumeCountdownTimer = null; // vòng lặp đếm ngược 3-2-1 khi chuẩn bị resume
+let _resumeAtLocal = 0;           // mốc server-time (nowServer) khi kết thúc đếm ngược, dùng chung cả 2 máy
+let _resumeFinalizing = false;
+let _pauseRecoverStableSince = 0; // mốc bắt đầu thấy mạng ổn định liên tục — chống nhấp nháy khi clear pause
+const OVERLAY_MIN_MS = 2000;      // thời gian tối thiểu overlay phải hiện — tránh ngắt-hiện liên tục
+const RESUME_COUNTDOWN_MS = 3000; // 3-2-1 trước khi thật sự vào lại trận
+
+/** opts.countdown: số nguyên 1-3 để hiện chữ số đếm ngược thay spinner; null/omit = hiện spinner như cũ */
+function showBattleConnOverlay(msg, opts) {
+  const ov = document.getElementById('battle-conn-overlay');
+  const tx = document.getElementById('battle-conn-text');
+  const cd = document.getElementById('battle-conn-countdown');
+  const sp = document.getElementById('battle-conn-spinner');
+  if (tx) tx.textContent = msg || 'Lỗi kết nối — đang chỉnh lại…';
+  const hasCountdown = opts && opts.countdown != null;
+  if (cd) {
+    cd.style.display = hasCountdown ? 'block' : 'none';
+    if (hasCountdown) cd.textContent = String(opts.countdown);
+  }
+  if (sp) sp.style.display = hasCountdown ? 'none' : '';
+  if (ov) {
+    // Ghi mốc lần đầu hiện overlay — dùng để ép thời gian hiển thị tối thiểu (chống nhấp nháy)
+    if (!ov.classList.contains('show')) _overlayShownAt = Date.now();
+    ov.classList.add('show');
+    ov.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function hideBattleConnOverlay() {
+  const ov = document.getElementById('battle-conn-overlay');
+  if (ov) {
+    ov.classList.remove('show');
+    ov.setAttribute('aria-hidden', 'true');
+  }
+  _overlayShownAt = 0;
+}
+
+function pauseBattleForSync(msg) {
+  if (_battlePausedForSync) {
+    showBattleConnOverlay(msg);
+    return;
+  }
+  _battlePausedForSync = true;
+  _pauseRecoverStableSince = 0;
+  // Ưu tiên mốc pause từ server (syncPause.at) nếu có
+  _battlePauseStartedAt = (typeof _sharedPauseAt === 'number' && _sharedPauseAt > 0)
+    ? _sharedPauseAt
+    : ((typeof nowServer === 'function') ? nowServer() : Date.now());
+  showBattleConnOverlay(msg || 'Lỗi kết nối — đang chỉnh lại…');
+  try {
+    const inp = document.getElementById('game-hidden-input');
+    // Khóa cứng: disable hẳn input (không chỉ blur) — chặn mọi gõ/nộp từ trong lúc mất kết nối
+    if (inp) { inp.blur(); inp.disabled = true; }
+  } catch (e) {}
+}
+
+/** Thật sự resume: gỡ khóa input, ẩn overlay, focus lại. Gọi sau khi đã đảm bảo
+ *  đủ thời gian hiển thị tối thiểu (và/hoặc đếm ngược 3-2-1) — không gọi trực tiếp từ ngoài. */
+function _finishResumeBattle() {
+  _battlePausedForSync = false;
+  _battlePauseStartedAt = 0;
+  _sharedPauseAt = 0;
+  stopResumeCountdown();
+  hideBattleConnOverlay();
+  try {
+    const inp = document.getElementById('game-hidden-input');
+    if (inp) inp.disabled = false;
+  } catch (e) {}
+  try {
+    if (gameActive && !resultShown && typeof focusInput === 'function') focusInput();
+  } catch (e) {}
+}
+
+function resumeBattleAfterSync() {
+  if (!_battlePausedForSync) {
+    hideBattleConnOverlay();
+    return;
+  }
+  // Ép thời gian hiển thị overlay tối thiểu OVERLAY_MIN_MS — tránh ngắt-hiện liên tục
+  // khi mạng chập chờn (pause/resume dồn dập trong vài trăm ms).
+  const elapsed = _overlayShownAt ? (Date.now() - _overlayShownAt) : OVERLAY_MIN_MS;
+  const remain = OVERLAY_MIN_MS - elapsed;
+  if (remain > 0) {
+    setTimeout(() => { if (_battlePausedForSync) _finishResumeBattle(); }, remain);
+  } else {
+    _finishResumeBattle();
+  }
+}
+
+/** Bắt đầu/khớp lại vòng đếm ngược 3-2-1 tới mốc resumeAt (nowServer chung cho cả 2 máy —
+ *  tránh lệch kiểu đếm cục bộ mỗi máy một kiểu). Khi hết giờ, máy nào tới trước sẽ chốt resume
+ *  qua transaction (an toàn nếu cả 2 máy cùng gọi). */
+function startResumeCountdown(resumeAt) {
+  _resumeAtLocal = resumeAt;
+  if (_resumeCountdownTimer) return; // đã có vòng lặp chạy, chỉ cần cập nhật mốc ở trên
+  const tick = () => {
+    _resumeCountdownTimer = null;
+    if (!_battlePausedForSync) return;
+    const ns = (typeof nowServer === 'function') ? nowServer() : Date.now();
+    const remain = _resumeAtLocal - ns;
+    if (remain <= 150) {
+      showBattleConnOverlay('Kết nối ổn định — đang vào lại trận…', { countdown: 0 });
+      finalizeSharedSyncResume(_resumeAtLocal);
+      // Lưới an toàn: nếu Firebase chưa kịp trả về active:false, thử chốt lại sau 1.2s
+      _resumeCountdownTimer = setTimeout(() => {
+        _resumeCountdownTimer = null;
+        if (_battlePausedForSync) finalizeSharedSyncResume(_resumeAtLocal);
+      }, 1200);
+      return;
+    }
+    const n = Math.max(1, Math.min(3, Math.ceil(remain / 1000)));
+    showBattleConnOverlay('Kết nối ổn định — chuẩn bị vào lại trận', { countdown: n });
+    _resumeCountdownTimer = setTimeout(tick, 100);
+  };
+  tick();
+}
+
+function stopResumeCountdown() {
+  if (_resumeCountdownTimer) {
+    clearTimeout(_resumeCountdownTimer);
+    _resumeCountdownTimer = null;
+  }
+  _resumeAtLocal = 0;
+}
+
+/** Cờ pause dùng chung trên phòng — cả hai client cùng dừng */
+let _sharedPauseAt = 0;
+let _sharedPauseRequesting = false;
+let _sharedPauseClearing = false;
+let _lastHbWriteAt = 0;
+
+/** side: 'self' = người GHI cờ này đang mất mạng; 'opp' = người GHI cờ phát hiện ĐỐI THỦ mất mạng;
+ *  'unknown' = mơ hồ (lệch bóng/giờ, listener im lặng…), không rõ bên nào. */
+function _detectPauseSide(reason) {
+  if (reason === 'offline') return 'self';
+  if (reason === 'opp_hb' || reason === 'ghost') return 'opp';
+  return 'unknown';
+}
+
+async function requestSharedSyncPause(reason) {
+  if (!roomId || isPracticeMode || resultShown) return;
+  if (_sharedPauseRequesting) return;
+  _sharedPauseRequesting = true;
+  const now = (typeof nowServer === 'function') ? nowServer() : Date.now();
+  const side = _detectPauseSide(reason);
+  try {
+    // Chỉ set nếu chưa active — tránh ghi đè mốc at
+    await runTransaction(ref(db, `bowwow/${roomId}/syncPause`), cur => {
+      if (cur && cur.active) return cur;
+      return {
+        active: true,
+        by: myRole || '?',
+        reason: reason || 'conn',
+        side,
+        at: now
+      };
+    });
+  } catch (e) {
+    // Offline: vẫn pause local
+    pauseBattleForSync(side === 'self' ? 'Bạn đang mất kết nối — đang chờ mạng ổn định…' : 'Lỗi kết nối — đang chỉnh lại…');
+  } finally {
+    _sharedPauseRequesting = false;
+  }
+}
+
+/** Pha 1: mạng đã ổn định trở lại (đủ điều kiện) → không clear ngay, mà đặt mốc resumeAt
+ *  (server-time, dùng chung cho cả 2 máy) để cả hai cùng đếm ngược 3-2-1 trước khi vào lại trận.
+ *  preD: dữ liệu phòng đã fetch sẵn (nếu có) để tránh gọi get() 2 lần. */
+async function clearSharedSyncPause(preD) {
+  if (!roomId || isPracticeMode) return;
+  if (_sharedPauseClearing) return;
+  _sharedPauseClearing = true;
+  const now = (typeof nowServer === 'function') ? nowServer() : Date.now();
+  try {
+    // (1) CẢ HAI CÙNG MẤT MẠNG: trước khi cho phép đếm ngược resume, xác nhận ĐỐI THỦ cũng đã
+    // online trở lại (heartbeat còn mới) — tránh trường hợp bên có mạng lại trước tự resume một
+    // mình trong khi bên kia vẫn đang offline (chơi không công bằng / lệch trạng thái).
+    let d0 = preD;
+    if (!d0) {
+      const snap0 = await get(ref(db, `bowwow/${roomId}`));
+      d0 = snap0.val() || {};
+    }
+    const oppRole = myRole === 'p1' ? 'p2' : 'p1';
+    const opp = d0 && d0[oppRole];
+    const oppFresh = !opp || typeof opp.hb !== 'number' || (now - opp.hb) < 4500;
+    if (!oppFresh) {
+      _pauseRecoverStableSince = 0;
+      await runTransaction(ref(db, `bowwow/${roomId}/syncPause`), cur => {
+        if (!cur || !cur.active || cur.resuming) return cur;
+        if (cur.side === 'opp' && cur.by === myRole) return cur; // đã đúng rồi, tránh ghi thừa
+        return Object.assign({}, cur, { side: 'opp', reason: 'opp_hb', by: myRole || cur.by });
+      });
+      return;
+    }
+    // (2) CHỐNG NHẤP NHÁY: yêu cầu mạng ổn định LIÊN TỤC một khoảng ngắn trước khi thật sự
+    // cho phép resume, thay vì clear ngay ở lần kiểm tra tốt đầu tiên (dễ ngắt-hiện liên tục
+    // khi mạng còn chập chờn quanh ngưỡng).
+    if (!_pauseRecoverStableSince) { _pauseRecoverStableSince = now; return; }
+    if (now - _pauseRecoverStableSince < 1500) return;
+
+    const resumeAt = now + RESUME_COUNTDOWN_MS;
+    await runTransaction(ref(db, `bowwow/${roomId}/syncPause`), cur => {
+      if (!cur || !cur.active) return cur;     // đã clear xong rồi
+      if (cur.resuming) return cur;            // đã ở pha đếm ngược — không ghi đè mốc
+      return Object.assign({}, cur, { resuming: true, resumeAt });
+    });
+    _pauseRecoverStableSince = 0;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    _sharedPauseClearing = false;
+  }
+}
+
+/** Pha 2: hết giờ đếm ngược → chốt thật sự (active:false) + bù startTs dựa trên resumeAt
+ *  (mốc CHUNG đã đồng bộ từ trước, không phải "now" riêng mỗi máy) để cả 2 máy ra cùng kết quả. */
+async function finalizeSharedSyncResume(resumeAt) {
+  if (!roomId || isPracticeMode) return;
+  if (_resumeFinalizing) return;
+  _resumeFinalizing = true;
+  try {
+    let pauseAt = 0;
+    const tx = await runTransaction(ref(db, `bowwow/${roomId}/syncPause`), cur => {
+      if (!cur || !cur.active || !cur.resuming) return cur; // máy kia đã chốt xong
+      pauseAt = typeof cur.at === 'number' ? cur.at : 0;
+      return { active: false, by: myRole || '?', at: resumeAt, cleared: true };
+    });
+    if (tx.committed && pauseAt > 0) {
+      const snap = await get(ref(db, `bowwow/${roomId}`));
+      const d = snap.val() || {};
+      const baseStart = (typeof d.startTs === 'number' && d.startTs > 0) ? d.startTs : (gameStartTs || resumeAt);
+      const newStart = baseStart + Math.max(0, resumeAt - pauseAt);
+      const ball = (typeof d.ballPos === 'number') ? d.ballPos : serverBallPos;
+      await update(ref(db, `bowwow/${roomId}`), {
+        startTs: newStart,
+        ballPos: typeof ball === 'number' ? ball : 50,
+        timeLeft: Math.max(0, GAME_DURATION - Math.floor((resumeAt - newStart) / 1000))
+      });
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    _resumeFinalizing = false;
+  }
+}
+
+/** Listener phòng → bật/tắt pause local theo server, hiện đúng ai đang mất mạng,
+ *  và chạy pha đếm ngược 3-2-1 khi server báo sẵn sàng resume. */
+function applySharedSyncPauseFromRoom(d) {
+  if (!d || isPracticeMode || !gameActive || resultShown) return;
+  const sp = d.syncPause;
+  if (sp && sp.active) {
+    _sharedPauseAt = typeof sp.at === 'number' ? sp.at : ((typeof nowServer === 'function') ? nowServer() : Date.now());
+    // Kéo ball + startTs từ server ngay khi pause
+    if (typeof d.ballPos === 'number') {
+      pendingBallDelta = 0;
+      setServerBallPos(d.ballPos);
+    }
+    if (typeof d.startTs === 'number' && d.startTs > 0) gameStartTs = d.startTs;
+
+    if (sp.resuming && typeof sp.resumeAt === 'number') {
+      // Mạng đã ổn — đang ở pha đếm ngược đồng bộ, không hiện lại thông báo lỗi nữa
+      startResumeCountdown(sp.resumeAt);
+      return;
+    }
+    stopResumeCountdown();
+    // Xác định bên đang gặp lỗi mạng, dựa trên who-detected (by) + side do người phát hiện ghi lại
+    const oppRole = myRole === 'p1' ? 'p2' : 'p1';
+    const troubledRole = sp.side === 'self' ? sp.by
+      : sp.side === 'opp' ? (sp.by === 'p1' ? 'p2' : (sp.by === 'p2' ? 'p1' : null))
+      : null;
+    let msg = 'Mất kết nối tạm thời — đang đồng bộ lại…';
+    if (troubledRole && troubledRole === myRole) msg = 'Bạn đang mất kết nối — đang chờ mạng ổn định…';
+    else if (troubledRole) msg = 'Đối thủ đang mất kết nối — đang chờ đồng bộ…';
+    pauseBattleForSync(msg);
+  } else if (_battlePausedForSync && (!sp || !sp.active)) {
+    // Server đã chốt xong (sau đếm ngược) — đồng bộ timer/ball rồi resume thật sự
+    stopResumeCountdown();
+    if (typeof d.ballPos === 'number') {
+      pendingBallDelta = 0;
+      setServerBallPos(d.ballPos);
+    }
+    if (typeof d.startTs === 'number' && d.startTs > 0) gameStartTs = d.startTs;
+    resumeBattleAfterSync();
+  }
+}
+
+async function writePlayHeartbeat() {
+  if (!roomId || !myRole || !gameActive || isPracticeMode || resultShown) return;
+  const now = (typeof nowServer === 'function') ? nowServer() : Date.now();
+  if (now - _lastHbWriteAt < 2000) return;
+  _lastHbWriteAt = now;
+  try {
+    await update(ref(db, `bowwow/${roomId}/${myRole}`), { hb: now });
+  } catch (e) {}
+}
+
+function showBattleBanner(msg, kind, holdMs) {
+  const el = document.getElementById('battle-sync-banner');
+  if (!el) return;
+  const k = kind || 'warn';
+  if (_battleBannerKey === msg + k && el.classList.contains('show')) {
+    if (_battleBannerHideTimer) {
+      clearTimeout(_battleBannerHideTimer);
+      _battleBannerHideTimer = setTimeout(() => hideBattleBanner(), holdMs != null ? holdMs : 3200);
+    }
+    return;
+  }
+  _battleBannerKey = msg + k;
+  el.textContent = msg;
+  el.className = 'battle-sync-banner show ' + k;
+  if (_battleBannerHideTimer) clearTimeout(_battleBannerHideTimer);
+  const ms = holdMs != null ? holdMs : (k === 'ok' ? 2200 : 3600);
+  if (ms > 0) {
+    _battleBannerHideTimer = setTimeout(() => hideBattleBanner(), ms);
+  }
+}
+
+function hideBattleBanner() {
+  const el = document.getElementById('battle-sync-banner');
+  if (el) el.classList.remove('show');
+  _battleBannerKey = '';
+  if (_battleBannerHideTimer) {
+    clearTimeout(_battleBannerHideTimer);
+    _battleBannerHideTimer = null;
+  }
+}
+
+function startBattleIntegrityMonitor() {
+  stopBattleIntegrityMonitor();
+  _lastRoomSnapAt = Date.now();
+  _pendingDriftSince = 0;
+  _wasOffline = (typeof navigator !== 'undefined' && navigator.onLine === false) || _fbConnected === false;
+  _lastIntegrityActionAt = 0;
+  // Siết tần suất kiểm tra (1.6s → 1s) để phát hiện + phản ứng nhanh hơn
+  _battleIntegrityTimer = setInterval(checkBattleIntegrity, 1000);
+  setTimeout(checkBattleIntegrity, 300);
+}
+
+function stopBattleIntegrityMonitor() {
+  if (_battleIntegrityTimer) {
+    clearInterval(_battleIntegrityTimer);
+    _battleIntegrityTimer = null;
+  }
+  hideBattleBanner();
+  stopResumeCountdown();
+  // Dọn dẹp tức thì (không chờ min-display/đếm ngược) — trận đã kết thúc hoặc đang rời phòng
+  _battlePausedForSync = false;
+  _battlePauseStartedAt = 0;
+  _overlayShownAt = 0;
+  hideBattleConnOverlay();
+  try {
+    const inp = document.getElementById('game-hidden-input');
+    if (inp) inp.disabled = false;
+  } catch (e) {}
+  _pendingDriftSince = 0;
+}
+
+async function checkBattleIntegrity() {
+  if (!gameActive || isPracticeMode || !roomId || resultShown) return;
+  const now = Date.now();
+  const nowS = (typeof nowServer === 'function') ? nowServer() : now;
+
+  // Heartbeat để đối thủ phát hiện mình bị rớt mạng
+  writePlayHeartbeat();
+
+  // Offline local (navigator HOẶC Firebase thật báo mất kết nối) → tạm dừng NGAY,
+  // không chờ vòng poll tiếp theo, đồng thời báo cho đối thủ qua Firebase (nếu ghi được).
+  if ((typeof navigator !== 'undefined' && navigator.onLine === false) || _fbConnected === false) {
+    _wasOffline = true;
+    _pauseRecoverStableSince = 0;
+    pauseBattleForSync('Bạn đang mất kết nối — đang chờ mạng ổn định…');
+    if (typeof requestSharedSyncPause === 'function') requestSharedSyncPause('offline');
+    return;
+  }
+
+  if (_wasOffline) {
+    _wasOffline = false;
+    _lastIntegrityActionAt = now;
+    await requestSharedSyncPause('offline');
+    try {
+      pendingBallDelta = 0;
+      await resyncRoomStateFromServer();
+      await clearSharedSyncPause();
+    } catch (e) {}
+    return;
+  }
+
+  // Đang pause theo server → chỉ resync + bắt đầu đếm ngược resume khi thật sự ổn định
+  if (_battlePausedForSync) {
+    if (now - _lastIntegrityActionAt < 1800) return;
+    _lastIntegrityActionAt = now;
+    try {
+      pendingBallDelta = 0;
+      await resyncRoomStateFromServer();
+      const snap = await get(ref(db, `bowwow/${roomId}`));
+      const d = snap.val();
+      if (!d || d.phase === 'result') return;
+      const drift = Math.abs(pendingBallDelta || 0);
+      const ballOk = typeof d.ballPos === 'number' && Math.abs(d.ballPos - serverBallPos) <= 3;
+      if (drift <= 3 && ballOk && navigator.onLine !== false && _fbConnected !== false) {
+        await clearSharedSyncPause(d);
+      } else {
+        _pauseRecoverStableSince = 0;
+      }
+    } catch (e) {}
+    return;
+  }
+
+  // Listener Firebase im lặng quá lâu (siết: 8s → 6s)
+  const silentMs = now - (_lastRoomSnapAt || now);
+  if (silentMs > 6000 && now - _lastIntegrityActionAt > 3000) {
+    _lastIntegrityActionAt = now;
+    await requestSharedSyncPause('stale');
+    return;
+  }
+
+  // Pending dame lệch / kẹt
+  const drift = Math.abs(pendingBallDelta || 0);
+  if (drift > 10) {
+    if (!_pendingDriftSince) _pendingDriftSince = now;
+    if (now - _pendingDriftSince > 2000 && now - _lastIntegrityActionAt > 4000) {
+      _lastIntegrityActionAt = now;
+      await requestSharedSyncPause('drift');
+    }
+  } else {
+    _pendingDriftSince = 0;
+  }
+
+  try {
+    if (now - _lastIntegrityActionAt > 5000) {
+      const snap = await get(ref(db, `bowwow/${roomId}`));
+      const d = snap.val();
+      if (!d) {
+        scheduleOpponentLeftAlert();
+        return;
+      }
+      _lastRoomSnapAt = Date.now();
+      _lastRoomPhase = d.phase || null;
+      const oppRole = myRole === 'p1' ? 'p2' : 'p1';
+      if (d.phase === 'playing' && !d[oppRole]) {
+        await requestSharedSyncPause('ghost');
+        scheduleOpponentLeftAlert();
+        return;
+      }
+      if (d.phase === 'result' && gameActive) {
+        showResult(d);
+        return;
+      }
+      // Đối thủ mất heartbeat (mạng yếu một bên)
+      const opp = d[oppRole];
+      if (d.phase === 'playing' && opp && typeof opp.hb === 'number') {
+        if (nowS - opp.hb > 5000) {
+          await requestSharedSyncPause('opp_hb');
+          return;
+        }
+      }
+      // ballPos local lệch server rõ
+      if (d.phase === 'playing' && typeof d.ballPos === 'number') {
+        if (Math.abs(d.ballPos - serverBallPos) > 8 && (_damageTxInFlight || 0) === 0) {
+          await requestSharedSyncPause('ball');
+          return;
+        }
+      }
+      // timeLeft / startTs lệch nặng
+      if (d.phase === 'playing' && typeof d.startTs === 'number' && gameStartTs) {
+        if (Math.abs(d.startTs - gameStartTs) > 2000) {
+          await requestSharedSyncPause('timer');
+          return;
+        }
+      }
+    }
+  } catch (e) {
+    await requestSharedSyncPause('read_fail');
+  }
 }
 
 
@@ -8321,8 +10152,11 @@ function vibrateHit(ok) {
 
 function spawnHitParticles(ok, anchorEl) {
   try {
-    // Luôn hiện particle (kể cả reduced-motion OS) — chỉ giảm số lượng trên mobile hẹp
-    const n = IS_NARROW_PHONE ? 4 : (IS_MOBILE_UI ? 6 : 8);
+    const fx = (typeof DeviceFX !== 'undefined') ? DeviceFX.current() : null;
+    const n = fx ? fx.particles : (IS_NARROW_PHONE ? 7 : (IS_MOBILE_UI ? 10 : 14));
+    const distRange = fx ? fx.particleDist : [32, 60];
+    const sizeRange = fx ? fx.particleSize : [6, 9];
+    const life = fx ? fx.particleLife : 560;
     let cx = window.innerWidth / 2;
     let cy = window.innerHeight * 0.55;
     if (anchorEl && anchorEl.getBoundingClientRect) {
@@ -8331,18 +10165,58 @@ function spawnHitParticles(ok, anchorEl) {
       cy = r.top + r.height / 2;
     }
     const color = ok ? 'var(--success)' : 'var(--danger)';
+    const glow = ok ? 'rgba(123,196,127,0.55)' : 'rgba(224,82,82,0.5)';
+    // Gắn FX vào chính span chữ (absolute local) — scale/transform cha không làm lệch vị trí
+    // Fallback body + fixed nếu không có anchor
+    const host = (anchorEl && anchorEl.nodeType === 1) ? anchorEl : document.body;
+    const local = host !== document.body;
+    if (local) {
+      try {
+        const cs = window.getComputedStyle(host);
+        if (cs.position === 'static') host.style.position = 'relative';
+      } catch (e2) {}
+    }
     for (let i = 0; i < n; i++) {
       const el = document.createElement('div');
-      el.className = 'hit-particle';
-      const ang = (Math.PI * 2 * i) / n + (Math.random() * 0.4);
-      const dist = 28 + Math.random() * 42;
-      el.style.left = cx + 'px';
-      el.style.top = cy + 'px';
+      el.className = 'hit-particle' + (ok ? ' hit-ok' : ' hit-bad');
+      const ang = (Math.PI * 2 * i) / n + (Math.random() * 0.45);
+      const dist = distRange[0] + Math.random() * (distRange[1] - distRange[0]);
+      const sz = sizeRange[0] + Math.random() * (sizeRange[1] - sizeRange[0]);
+      if (local) {
+        el.style.left = '50%';
+        el.style.top = '50%';
+        el.style.marginLeft = (-sz / 2) + 'px';
+        el.style.marginTop = (-sz / 2) + 'px';
+      } else {
+        el.style.position = 'fixed';
+        el.style.left = cx + 'px';
+        el.style.top = cy + 'px';
+      }
+      el.style.width = sz + 'px';
+      el.style.height = sz + 'px';
       el.style.background = color;
+      el.style.boxShadow = '0 0 ' + (sz * 1.4) + 'px ' + glow;
       el.style.setProperty('--dx', Math.cos(ang) * dist + 'px');
-      el.style.setProperty('--dy', Math.sin(ang) * dist + 'px');
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 520);
+      el.style.setProperty('--dy', (Math.sin(ang) * dist - 8) + 'px');
+      host.appendChild(el);
+      setTimeout(() => el.remove(), life);
+    }
+    // Vòng sáng nhẹ tại điểm hit (PC + tablet + phone đều có — phone nhỏ hơn)
+    if (fx && fx.hitGlow) {
+      const ring = document.createElement('div');
+      ring.className = 'hit-ring' + (ok ? ' hit-ok' : ' hit-bad');
+      const ringScale = (DeviceDetect && DeviceDetect.isPhone) ? 0.75 : (DeviceDetect && DeviceDetect.isPC ? 1.15 : 0.95);
+      if (local) {
+        ring.style.left = '50%';
+        ring.style.top = '50%';
+      } else {
+        ring.style.position = 'fixed';
+        ring.style.left = cx + 'px';
+        ring.style.top = cy + 'px';
+      }
+      ring.style.setProperty('--ring-scale', String(ringScale));
+      host.appendChild(ring);
+      setTimeout(() => ring.remove(), 420);
     }
   } catch (e) {}
 }
@@ -8354,8 +10228,8 @@ function playHitSfx(ok) {
       uiTone(660, 0.05, 'triangle', 0.16, 990);
       uiTone(990, 0.07, 'sine', 0.12, 1320);
     } else {
-      uiTone(220, 0.09, 'sawtooth', 0.14, 110);
-      uiKnock(0.12, 0.06, 400);
+      uiTone(220, 0.09, 'sawtooth', 0.26, 110);
+      uiKnock(0.22, 0.06, 400);
     }
   } catch (e) {}
 }
@@ -8368,6 +10242,7 @@ function feedbackWordHit(ok, anchorEl) {
 
 function submitWord(typedWord) {
   if (!gameActive) return;
+  if (typeof _battlePausedForSync !== 'undefined' && _battlePausedForSync) return;
   // Khóa đồng bộ trong cùng tick (chống double-fire), mở lại ngay cuối hàm — không delay 35ms
   if (isSubmitting) return;
   isSubmitting = true;
@@ -8461,6 +10336,11 @@ function submitWord(typedWord) {
 // "Enter/Go/Xong" thay vì phím cách (một số bố cục IME hoặc trình duyệt di động).
 // keydown cũng phát âm thanh predictive (trước sự kiện input) → cảm giác gõ “sát tay”.
 function handleWordKeydown(event) {
+  if (typeof _battlePausedForSync !== 'undefined' && _battlePausedForSync) {
+    event.preventDefault();
+    clearTypingInput();
+    return;
+  }
   if (!gameActive || resultShown || (isPracticeMode && practiceFinished)) {
     event.preventDefault();
     clearTypingInput();
@@ -8492,20 +10372,34 @@ window.addEventListener('resize', () => {
 });
 
 function spawnSonicWave(role) {
-  // Chỉ bỏ sonic trên điện thoại hẹp — laptop (kể cả cũ / cảm ứng) vẫn hiện
-  if (IS_NARROW_PHONE) return;
-  if (document.querySelectorAll('.sonic-wave').length >= 2) return;
+  const fx = (typeof DeviceFX !== 'undefined') ? DeviceFX.current() : { sonic: !IS_NARROW_PHONE, sonicMax: 2, sonicScale: 1, sonicLife: 280 };
+  if (!fx.sonic) return;
+  if (document.querySelectorAll('.sonic-wave').length >= (fx.sonicMax || 2)) return;
   const avEl = document.getElementById(`av-img-${role === 'p1' || role === myRole ? 'p1' : 'p2'}`);
   if (!avEl) return;
   const rect = avEl.getBoundingClientRect();
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
-  const size = Math.min(window.innerWidth, window.innerHeight) * 1.2;
+  const base = Math.min(window.innerWidth, window.innerHeight) * 1.15 * (fx.sonicScale || 1);
+  const size = Math.max(120, Math.min(base, window.innerWidth * 1.4));
   const w = document.createElement('div');
-  w.className = 'sonic-wave';
+  w.className = 'sonic-wave' + ((DeviceDetect && DeviceDetect.isPhone) ? ' sonic-phone' : ((DeviceDetect && DeviceDetect.isPC) ? ' sonic-pc' : ' sonic-tablet'));
   w.style.cssText = `width:${size}px;height:${size}px;left:${cx}px;top:${cy}px;color:${role === 'p2' ? 'var(--p2)' : 'var(--p1)'};`;
   document.body.appendChild(w);
-  setTimeout(() => w.remove(), 280);
+  setTimeout(() => w.remove(), fx.sonicLife || 280);
+
+  // PC/tablet: rung nhẹ toàn màn thưa hơn (mỗi ~5 hit đúng) — tránh chóng mặt
+  if (fx.shake && role === myRole) {
+    try {
+      window._fxShakeHits = (window._fxShakeHits || 0) + 1;
+      if (window._fxShakeHits % 5 === 0) {
+        document.body.classList.remove('shake');
+        void document.body.offsetWidth;
+        document.body.classList.add('shake');
+        setTimeout(() => document.body.classList.remove('shake'), 220);
+      }
+    } catch (e) {}
+  }
 }
 
 const _barkState = { p1: false, p2: false };
@@ -8559,6 +10453,7 @@ function showResult(d) {
   }
   resultShown = true;
   gameActive = false;
+  if (typeof stopBattleIntegrityMonitor === 'function') stopBattleIntegrityMonitor();
   stopPlayingSync();
   if (timerInterval) clearInterval(timerInterval);
 
@@ -8691,13 +10586,11 @@ function renderPrepLastResult() {
           <div class="prep-last-result-side-label">Bạn</div>
           <div class="prep-last-result-line ok"><span>Đúng</span><span>${r.meCorrect}</span></div>
           <div class="prep-last-result-line bad"><span>Sai</span><span>${r.meWrong}</span></div>
-          <div class="prep-last-result-line wpm"><span>WPM</span><span>${r.meWpm ?? 0}</span></div>
         </div>
         <div class="prep-last-result-side opp">
           <div class="prep-last-result-side-label">Đối thủ</div>
           <div class="prep-last-result-line ok"><span>Đúng</span><span>${r.oppCorrect}</span></div>
           <div class="prep-last-result-line bad"><span>Sai</span><span>${r.oppWrong}</span></div>
-          <div class="prep-last-result-line wpm"><span>WPM</span><span>${r.oppWpm ?? 0}</span></div>
         </div>
       </div>
     </div>`;

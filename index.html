@@ -107,6 +107,207 @@
     flex-wrap: nowrap;
     white-space: nowrap;
   }
+  .logo-title-row {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    max-width: calc(100% - 7.5rem);
+  }
+  .typing-settings-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 2px 2px 0 rgba(0,0,0,.35);
+  }
+  .typing-settings-btn:active {
+    /* Chỉ thay đổi độ sâu bóng, không đổi vị trí */
+    transform: translateY(-50%);
+    box-shadow: 1px 1px 0 rgba(0,0,0,.35);
+  }
+  .typing-settings-btn svg { width: 20px; height: 20px; }
+
+  /* Bánh răng: bỏ hiệu ứng hover pixel dùng chung của hệ thống, chỉ giữ lại viền đổi màu khi hover */
+  .typing-settings-btn {
+    transition: border-color 0.12s ease !important;
+    transform: translateY(-50%) !important;
+    box-shadow: 2px 2px 0 rgba(0,0,0,.35) !important;
+    border-color: var(--line-strong) !important;
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    filter: none !important;
+  }
+  .typing-settings-btn:hover {
+    transform: translateY(-50%) !important;
+    box-shadow: 2px 2px 0 rgba(0,0,0,.35) !important;
+    border-color: var(--accent) !important;
+    background: var(--surface) !important;
+    color: var(--ink) !important;
+    filter: none !important;
+  }
+  .typing-settings-btn:active {
+    transform: translateY(-50%) !important;
+    box-shadow: 2px 2px 0 rgba(0,0,0,.35) !important;
+  }
+
+  .typing-settings-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0,0,0,.48);
+  }
+  .typing-settings-overlay.open { display: flex; }
+  .typing-settings-panel {
+    width: min(430px, calc(100vw - 2rem));
+    max-height: min(80vh, 620px);
+    overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    box-shadow: 5px 5px 0 rgba(0,0,0,.45);
+  }
+  .typing-settings-head {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:.75rem;
+    padding:1rem 1.1rem;
+    border-bottom:1px solid var(--line);
+  }
+  .typing-settings-head h2 {
+    margin:0;
+    font-family:var(--font-display);
+    font-size:1.15rem;
+    letter-spacing:.02em;
+  }
+  .typing-settings-close {
+    width:32px;height:32px;padding:0;border:1px solid var(--line-strong);
+    border-radius:5px;background:var(--surface-2);color:var(--ink);cursor:pointer;
+    font-size:1.15rem;line-height:1;
+  }
+  .typing-settings-body { padding:1rem 1.1rem 1.15rem; }
+  .typing-setting-label {
+    display:block; margin-bottom:.65rem; font-family:var(--font-mono);
+    font-size:.72rem; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--dim);
+  }
+  .typing-mode-options {
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:.55rem;
+  }
+  .typing-mode-option {
+    display:flex; align-items:flex-start; gap:.55rem; width:100%; padding:.7rem .65rem;
+    border:1px solid var(--line); border-radius:6px; background:var(--surface-2);
+    color:var(--ink); cursor:pointer; text-align:left; min-width:0;
+  }
+  .typing-mode-option.active { border-color:var(--accent); box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent); }
+  .typing-mode-radio {
+    width:17px;height:17px; flex:0 0 17px; margin-top:.12rem; border:1px solid var(--line-strong);
+    border-radius:50%; display:grid; place-items:center;
+  }
+  .typing-mode-option.active .typing-mode-radio { border-color:var(--accent); }
+  .typing-mode-option.active .typing-mode-radio::after {
+    content:""; width:7px;height:7px;border-radius:50%;background:var(--accent);
+  }
+  .typing-mode-title { font-weight:800; font-size:.86rem; line-height:1.25; }
+  .typing-mode-desc { margin-top:.15rem; color:var(--dim); font-size:.72rem; line-height:1.3; }
+  .typing-settings-section + .typing-settings-section { margin-top:1.05rem; }
+  .typing-theme-swatch {
+    width:22px; height:22px; flex:0 0 22px; margin-top:.05rem;
+    border-radius:5px; border:1px solid var(--line-strong);
+    background: linear-gradient(135deg, var(--swatch-a, #E8B25B) 50%, var(--swatch-b, #15151A) 50%);
+  }
+  .typing-mode-option[data-theme="default"] .typing-theme-swatch {
+    --swatch-a: #E8B25B; --swatch-b: #15151A;
+  }
+  .typing-mode-option[data-theme="mono"] .typing-theme-swatch {
+    --swatch-a: #F2F2F2; --swatch-b: #15151A;
+  }
+  @media (max-width: 380px) {
+    .typing-mode-options { grid-template-columns: 1fr; }
+  }
+  /* Chế độ con trỏ: bỏ hoàn toàn khung/nền của từ hiện tại */
+  .typing-cursor-mode .word { background: transparent !important; color: rgba(236,231,221,.42); box-shadow: none !important; }
+  .typing-cursor-mode .word.current { color: var(--ink); background: transparent !important; box-shadow: none !important; }
+  body.typing-cursor-mode.device-pc .word.current,
+  body.typing-cursor-mode.device-phone .word.current,
+  body.typing-cursor-mode.device-mobile-ui .word.current,
+  body.typing-cursor-mode.device-tablet .word.current {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .typing-char { position:relative; display:inline-block; min-width:.01em; }
+  /* Chế độ con trỏ: chỉ đổi màu chữ, không nền/khung/ánh sáng trên chữ */
+  .typing-cursor-mode .typing-char.typing-correct {
+    color: var(--success) !important;
+    background: transparent !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  .typing-cursor-mode .typing-char.typing-wrong {
+    color: #e03e3e !important;
+    background: transparent !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  .typing-cursor-mode .typing-char.typing-extra {
+    min-width: .55em;
+    color: #e03e3e !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  .typing-char.cursor-before::before {
+    content:"";
+    position:absolute;
+    left:-3px;
+    top:10px;
+    bottom:10px;
+    width:3px;
+    border-radius:1px;
+    background:var(--accent);
+    box-shadow:0 0 4px rgba(232,178,91,.45);
+    pointer-events:none;
+  }
+  /* Khi đã gõ hết từ, caret bám trực tiếp vào ký tự cuối — không tính phần padding của .word */
+  .typing-char.typing-cursor-end { position:relative; }
+  .typing-char.typing-cursor-end::after {
+    content:"";
+    position:absolute;
+    right:-3px;
+    top:10px;
+    bottom:10px;
+    width:3px;
+    border-radius:1px;
+    background:var(--accent);
+    box-shadow:0 0 4px rgba(232,178,91,.45);
+    pointer-events:none;
+  }
+  @media (max-width:720px) {
+    .logo-title-row { gap:.4rem; max-width:calc(100% - 5.5rem); }
+    .typing-settings-btn { width:38px;height:38px;flex-basis:38px; }
+  }
+
   .logo-word {
     color: var(--ink);
   }
@@ -671,9 +872,26 @@
     border-color: rgba(123,196,127,0.45);
     color: var(--success);
   }
+  .online-user-av.is-admin {
+    border-color: rgba(232,178,91,0.5);
+    color: var(--accent);
+  }
+  .online-user-av.is-guest {
+    color: var(--dim);
+  }
   .online-user-av svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+  }
+  .online-user-av.is-admin svg {
+    width: 28px;
+    height: 28px;
+    transform: scale(1.12);
+  }
+  .online-user-av.is-guest svg {
+    width: 26px;
+    height: 26px;
+    transform: scale(1.15);
   }
   .online-user-av img {
     width: 100%;
@@ -728,6 +946,29 @@
     color: var(--accent);
     background: rgba(232,178,91,0.12);
   }
+  /* Thời gian online (vd. 3P): không khung, không nền xám */
+  .online-user-tag.time {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--success);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: none;
+  }
+  /* Offline: không khung — dạng "OFF 5 phút" */
+  .online-user-tag.off {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--dim);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: none;
+    opacity: 0.9;
+  }
   .online-user-meta {
     font-family: var(--font-mono);
     font-size: 0.7rem;
@@ -770,8 +1011,12 @@
     font-family: var(--font-mono);
     font-size: 0.62rem;
     font-weight: 600;
-    color: var(--dim);
+    color: var(--ink);
+    opacity: 0.55;
     line-height: 1.2;
+    border: none;
+    background: transparent;
+    padding: 0;
   }
   .online-users-foot {
     flex-shrink: 0;
@@ -782,6 +1027,142 @@
     color: var(--dim);
     text-align: center;
     letter-spacing: 0.02em;
+  }
+
+  /* ── Admin: chuyển "Khách" ⇄ "Player" ──
+     Chế độ Khách: chỉ danh sách khách online — ẩn stats + search.
+     Chế độ Player: hiện lại stats (Tất cả/Online/Offline) + search + refresh. */
+  .online-users-stats { display: none !important; }
+  .online-users-tools { display: none !important; }
+  .online-users-overlay.mode-players .online-users-stats {
+    display: grid !important;
+  }
+  .online-users-overlay.mode-players .online-users-tools {
+    display: flex !important;
+  }
+  .online-users-overlay.mode-players .online-users-search {
+    display: block;
+  }
+  .online-users-head-left { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
+  /* Tiêu đề dạng sổ xuống: bấm Khách/Player để đổi chế độ */
+  .online-users-mode-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+  }
+  .online-users-title-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    max-width: 100%;
+    padding: 0.2rem 0.45rem 0.2rem 0.15rem;
+    margin: 0;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s, color 0.15s;
+  }
+  .online-users-title-btn:hover { background: rgba(236,231,221,0.06); }
+  .online-users-title-btn[aria-expanded="true"] { background: rgba(232,178,91,0.1); }
+  .online-users-title-btn .online-users-title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: inherit;
+    line-height: 1.15;
+  }
+  .online-users-title-chevron {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--dim);
+    transition: transform 0.18s ease, color 0.15s;
+  }
+  .online-users-title-btn:hover .online-users-title-chevron { color: var(--accent); }
+  .online-users-title-btn[aria-expanded="true"] .online-users-title-chevron {
+    transform: rotate(180deg);
+    color: var(--accent);
+  }
+  .online-users-mode-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 20;
+    min-width: 132px;
+    padding: 0.3rem;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+    display: none;
+  }
+  .online-users-mode-menu.open { display: block; }
+  .online-users-mode-opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.55rem 0.75rem;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .online-users-mode-opt:hover { background: var(--surface-2); color: var(--accent); }
+  .online-users-mode-opt.active {
+    color: var(--accent);
+    background: rgba(232,178,91,0.12);
+  }
+  /* Dòng khách là mình → bôi xanh */
+  .online-user-row.is-me {
+    border-color: rgba(123,196,127,0.45);
+    background: rgba(123,196,127,0.1);
+  }
+  .online-user-row.is-me:hover {
+    border-color: rgba(123,196,127,0.55);
+    background: rgba(123,196,127,0.14);
+  }
+  .online-user-row.is-me .online-user-name {
+    color: var(--success);
+  }
+  .online-user-row.is-me .online-user-av {
+    border-color: rgba(123,196,127,0.55);
+    color: var(--success);
+    opacity: 1;
+  }
+  .online-users-tools { flex-direction: row !important; align-items: center; gap: 0.45rem !important; }
+  .online-users-tools .online-users-search { flex: 1; width: auto; min-width: 0; }
+  .online-users-refresh {
+    display: none; width: 36px; height: 36px; flex-shrink: 0; border-radius: 8px;
+    border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--dim);
+    cursor: pointer; align-items: center; justify-content: center;
+  }
+  .online-users-refresh svg { width: 16px; height: 16px; }
+  .online-users-refresh:hover { color: var(--accent); border-color: var(--accent); }
+  .online-users-refresh.spin svg { animation: ou-spin .8s linear infinite; }
+  @keyframes ou-spin { to { transform: rotate(360deg); } }
+  .online-users-overlay.mode-players .online-users-refresh { display: flex; }
+  .online-users-more {
+    display: block; width: calc(100% - 0.5rem); margin: 0.5rem 0.25rem 0.2rem; padding: 0.6rem;
+    border-radius: 8px; border: 1px dashed var(--line-strong); background: transparent;
+    color: var(--dim); font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer;
+  }
+  .online-users-more:hover { color: var(--accent); border-color: var(--accent); }
+  .online-users-more:disabled { opacity: .6; cursor: default; }
+  .online-user-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--success); margin-right: 0.3rem; vertical-align: middle;
+    box-shadow: 0 0 6px rgba(123,196,127,0.7);
   }
 
   /* ── Account badge: neo trái, tách khỏi luồng logo ── */
@@ -1273,6 +1654,10 @@
     #game-screen.active.practice-active .typing-section {
       margin-top: 0.85rem;
     }
+  }
+  /* Riêng trên PC (không phải tablet cảm ứng): đẩy cụm luyện tập xuống thêm một chút */
+  body.device-pc #game-screen.active.practice-active {
+    padding-top: max(4.5rem, calc(env(safe-area-inset-top) + 4rem));
   }
 
   #lobby-screen {
@@ -2704,11 +3089,13 @@
     background: var(--surface);
     color: var(--dim);
     cursor: pointer;
+    outline: none;
     transition: color 0.15s, border-color 0.15s, background 0.15s;
   }
-  .practice-timer-reveal:hover {
-    color: var(--accent);
-    border-color: var(--accent);
+  .practice-timer-reveal:focus,
+  .practice-timer-reveal:focus-visible {
+    outline: none;
+    border-color: var(--line-strong);
   }
   .practice-timer-reveal:active { transform: scale(0.92); }
   .practice-timer-reveal.is-shown {
@@ -2913,6 +3300,28 @@
   @keyframes hitParticleFly {
     0%   { opacity: 1; transform: translate(0, 0) scale(1); }
     100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.15); }
+  }
+  /* Meow hit FX — ảnh meo thay particle khi soundType=3; box cố định để 2 PNG tỉ lệ khác nhau vẫn bằng size */
+  .meow-hit-fx {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 85px;
+    height: 85px;
+    margin-left: -42.5px;
+    margin-top: -42.5px;
+    pointer-events: none;
+    z-index: 75;
+    object-fit: contain;
+    will-change: transform, opacity;
+    animation: meowHitPop 0.35s ease-out forwards;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  @keyframes meowHitPop {
+    0%   { opacity: 1; transform: scale(0.4); }
+    55%  { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 0; transform: scale(1.1); }
   }
 
   /* DeviceDetect body classes — hook CSS theo loại máy (bổ sung media query) */
@@ -3598,7 +4007,6 @@
     .online-users-close:hover,
     .online-user-row:hover,
     .mm-floating-cancel:hover,
-    .practice-timer-reveal:hover,
     .practice-exit-btn:hover,
     .practice-wpm-btn:not(:disabled):hover,
     .account-menu button:hover,
@@ -3662,6 +4070,113 @@
 </style>
 
 <script src="https://sdk.crazygames.com/crazygames-sdk-v2.js"></script>
+
+<style id="typing-settings-no-hover">
+/* Bánh răng: không đổi gì khác ngoài viền khi hover; focus bàn phím vẫn giữ nguyên (không viền) */
+.typing-settings-btn:focus,
+.typing-settings-btn:focus-visible {
+  transform: translateY(-50%) !important;
+  border-color: var(--line-strong) !important;
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,.35) !important;
+  filter: none !important;
+  outline: none !important;
+}
+.typing-settings-btn:hover,
+.typing-settings-btn:not(:disabled):hover {
+  transform: translateY(-50%) !important;
+  border-color: var(--accent) !important;
+  background: var(--surface) !important;
+  color: var(--ink) !important;
+  box-shadow: 2px 2px 0 rgba(0,0,0,.35) !important;
+  filter: none !important;
+}
+</style>
+
+<style id="split-keyboard-viz-style">
+  /* ============================================================
+     Split Keyboard Visualizer — chỉ hiện trên PC, trong Luyện tập
+     Tỉ lệ ~70% so với bản gốc (44px key → 30px key)
+     ============================================================ */
+  #practice-keyboard-viz {
+    display: none;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 32px;
+    margin: 18px auto 0;
+    padding: 10px;
+    user-select: none;
+    font-family: var(--font-mono, monospace);
+  }
+  body.device-pc #game-screen.active.practice-active #practice-keyboard-viz {
+    display: flex;
+  }
+
+  .skv-half {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .skv-row {
+    display: flex;
+    gap: 5px;
+    height: 30px;
+  }
+
+  .skv-row-left-2, .skv-row-right-2 { padding-left: 10px; }
+  .skv-row-left-3, .skv-row-right-3 { padding-left: 23px; }
+
+  .skv-key {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+    background-color: var(--surface, #323b43);
+    color: var(--dim, #66717c);
+    border: 1px solid var(--line, #43505b);
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 11px;
+    text-transform: uppercase;
+    box-shadow: 0 3px 5px rgba(0,0,0,0.24), inset 0 1px 1px rgba(255,255,255,0.035);
+    transition: background-color 0.08s ease-out,
+                color 0.08s ease-out,
+                box-shadow 0.08s ease-out,
+                transform 0.08s ease-out;
+  }
+  .skv-key.symbol { font-size: 10px; }
+
+  .skv-space-row {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    margin-top: 1px;
+  }
+  .skv-space-row-left { justify-content: flex-end; }
+  .skv-space-row-right { justify-content: flex-start; padding-left: 27px; }
+
+  .skv-key.space {
+    width: 105px;
+    flex: 0 0 105px;
+    height: 28px;
+    border-radius: 6px;
+  }
+
+  .skv-key.active {
+    background-color: var(--accent, #50e3c2);
+    color: var(--on-accent, #2c343b);
+    border-color: var(--accent, #50e3c2);
+    box-shadow: 0 0 10px rgba(232,178,91,0.55);
+    transform: translateY(1px);
+  }
+
+  @media (max-width: 900px) {
+    #practice-keyboard-viz { display: none !important; }
+  }
+</style>
 </head>
 <body>
 
@@ -3680,7 +4195,15 @@
         <div class="account-power">Lực chiến <span id="account-power-plat" style="opacity:.75;font-weight:500;"></span>: <strong id="account-wpm">0</strong> WPM</div>
       </div>
     </div>
-    <h1 class="logo-title"><span class="logo-word">TYPING</span><span class="logo-war">BATTLE</span></h1>
+    <div class="logo-title-row">
+      <h1 class="logo-title"><span class="logo-word">TYPING</span><span class="logo-war">BATTLE</span></h1>
+      <button type="button" class="typing-settings-btn" id="typing-settings-btn" onclick="toggleTypingSettings(event)" title="Cài đặt hiển thị gõ" aria-label="Cài đặt hiển thị gõ" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a7.66 7.66 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.213-1.28Z"></path>
+          <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
+        </svg>
+      </button>
+    </div>
     <!-- Admin-only: số người online — neo trái dưới avatar -->
     <div id="admin-online-badge" class="admin-online-badge" style="display:flex;" title="Người đang online — bấm để xem danh sách">
       <span class="admin-online-dot"></span>
@@ -3692,6 +4215,44 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span class="chat-unread" id="lobby-chat-unread">0</span>
       </button>
+    </div>
+  </div>
+  <div class="typing-settings-overlay" id="typing-settings-overlay" onclick="if(event.target===this) toggleTypingSettings()">
+    <div class="typing-settings-panel" role="dialog" aria-modal="true" aria-labelledby="typing-settings-title">
+      <div class="typing-settings-head">
+        <h2 id="typing-settings-title">CÀI ĐẶT</h2>
+        <button type="button" class="typing-settings-close" onclick="toggleTypingSettings()" aria-label="Đóng">×</button>
+      </div>
+      <div class="typing-settings-body">
+        <div class="typing-settings-section">
+          <span class="typing-setting-label">Kiểu hiển thị gõ</span>
+          <div class="typing-mode-options">
+            <button type="button" class="typing-mode-option" data-typing-mode="word" onclick="setTypingDisplayMode('word')">
+              <span class="typing-mode-radio"></span>
+              <span><div class="typing-mode-title">Tô sáng cả từ</div><div class="typing-mode-desc">Làm nổi bật toàn bộ từ đang gõ.</div></span>
+            </button>
+            <button type="button" class="typing-mode-option" data-typing-mode="cursor" onclick="setTypingDisplayMode('cursor')">
+              <span class="typing-mode-radio"></span>
+              <span><div class="typing-mode-title">Con trỏ ký tự</div><div class="typing-mode-desc">Con trỏ di chuyển theo từng ký tự.</div></span>
+            </button>
+          </div>
+        </div>
+        <div class="typing-settings-section">
+          <span class="typing-setting-label">Giao diện</span>
+          <div class="typing-mode-options">
+            <button type="button" class="typing-mode-option" data-theme="default" onclick="setAppTheme('default')">
+              <span class="typing-mode-radio"></span>
+              <span class="typing-theme-swatch" aria-hidden="true"></span>
+              <span><div class="typing-mode-title">Giao diện 1</div><div class="typing-mode-desc">Mặc định hệ thống.</div></span>
+            </button>
+            <button type="button" class="typing-mode-option" data-theme="mono" onclick="setAppTheme('mono')">
+              <span class="typing-mode-radio"></span>
+              <span class="typing-theme-swatch" aria-hidden="true"></span>
+              <span><div class="typing-mode-title">Giao diện 2</div><div class="typing-mode-desc">Nút vàng → trắng.</div></span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="lobby-grid">
@@ -3830,12 +4391,12 @@
     </div>
   </div>
 
-  <!-- Kết quả WPM 1 phút -->
+  <!-- Kết quả WPM 30 giây -->
   <div id="practice-result-overlay" class="practice-result-overlay" onclick="if(event.target===this)closePracticeResult()">
     <div class="practice-result-card">
       <h2>Kết quả</h2>
-      <div class="practice-result-wpm" id="pr-wpm" style="display:none;">0</div>
-      <div class="practice-result-wpm-label" style="display:none;">WPM</div>
+      <div class="practice-result-wpm" id="pr-wpm">0</div>
+      <div class="practice-result-wpm-label">WPM</div>
       <div class="practice-result-grid">
         <div class="practice-result-item ok">
           <div class="v" id="pr-correct">0</div>
@@ -3866,6 +4427,65 @@
       <div class="word-container" id="wordContainer"></div>
     </div>
     <input type="text" id="game-hidden-input" class="word-type-input" placeholder="" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="enter" lang="vi">
+  </div>
+
+  <!-- Bàn phím ảo — chỉ hiện trên PC khi đang ở chế độ Luyện tập -->
+  <div id="practice-keyboard-viz" aria-hidden="true">
+    <div class="skv-half">
+      <div class="skv-row skv-row-left-1">
+        <div class="skv-key" data-skv-key="q">q</div>
+        <div class="skv-key" data-skv-key="w">w</div>
+        <div class="skv-key" data-skv-key="e">e</div>
+        <div class="skv-key" data-skv-key="r">r</div>
+        <div class="skv-key" data-skv-key="t">t</div>
+      </div>
+      <div class="skv-row skv-row-left-2">
+        <div class="skv-key" data-skv-key="a">a</div>
+        <div class="skv-key" data-skv-key="s">s</div>
+        <div class="skv-key" data-skv-key="d">d</div>
+        <div class="skv-key" data-skv-key="f">f</div>
+        <div class="skv-key" data-skv-key="g">g</div>
+      </div>
+      <div class="skv-row skv-row-left-3">
+        <div class="skv-key" data-skv-key="z">z</div>
+        <div class="skv-key" data-skv-key="x">x</div>
+        <div class="skv-key" data-skv-key="c">c</div>
+        <div class="skv-key" data-skv-key="v">v</div>
+        <div class="skv-key" data-skv-key="b">b</div>
+      </div>
+      <div class="skv-space-row skv-space-row-left">
+        <div class="skv-key space" data-skv-key=" " aria-label="Space"></div>
+      </div>
+    </div>
+    <div class="skv-half">
+      <div class="skv-row skv-row-right-1">
+        <div class="skv-key" data-skv-key="y">y</div>
+        <div class="skv-key" data-skv-key="u">u</div>
+        <div class="skv-key" data-skv-key="i">i</div>
+        <div class="skv-key" data-skv-key="o">o</div>
+        <div class="skv-key" data-skv-key="p">p</div>
+        <div class="skv-key symbol" data-skv-key="[">[</div>
+        <div class="skv-key symbol" data-skv-key="]">]</div>
+      </div>
+      <div class="skv-row skv-row-right-2">
+        <div class="skv-key" data-skv-key="h">h</div>
+        <div class="skv-key" data-skv-key="j">j</div>
+        <div class="skv-key" data-skv-key="k">k</div>
+        <div class="skv-key" data-skv-key="l">l</div>
+        <div class="skv-key symbol" data-skv-key=";">;</div>
+        <div class="skv-key symbol" data-skv-key="'">'</div>
+      </div>
+      <div class="skv-row skv-row-right-3">
+        <div class="skv-key" data-skv-key="n">n</div>
+        <div class="skv-key" data-skv-key="m">m</div>
+        <div class="skv-key symbol" data-skv-key=",">,</div>
+        <div class="skv-key symbol" data-skv-key=".">.</div>
+        <div class="skv-key symbol" data-skv-key="/">/</div>
+      </div>
+      <div class="skv-space-row skv-space-row-right">
+        <div class="skv-key space" data-skv-key=" " aria-label="Space"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3911,8 +4531,17 @@
 <div id="online-users-overlay" class="online-users-overlay" aria-hidden="true" onclick="if(event.target===this)closeOnlineUsersPanel()">
   <div class="online-users-panel" role="dialog" aria-labelledby="online-users-title" onclick="event.stopPropagation()">
     <div class="online-users-head">
-      <div>
-        <div class="online-users-title" id="online-users-title">Người đang online</div>
+      <div class="online-users-head-left">
+        <div class="online-users-mode-wrap" id="online-users-mode-wrap">
+          <button type="button" class="online-users-title-btn" id="online-users-title-btn" onclick="toggleOnlineModeMenu(event)" aria-haspopup="listbox" aria-expanded="false" title="Chọn chế độ xem">
+            <span class="online-users-title" id="online-users-title">Player</span>
+            <svg class="online-users-title-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="online-users-mode-menu" id="online-users-mode-menu" role="listbox" aria-label="Chế độ xem">
+            <button type="button" class="online-users-mode-opt active" data-mode="players" role="option" aria-selected="true" onclick="selectOnlineUsersMode('players', event)">Player</button>
+            <button type="button" class="online-users-mode-opt" data-mode="online" role="option" aria-selected="false" onclick="selectOnlineUsersMode('online', event)">Khách</button>
+          </div>
+        </div>
       </div>
       <button type="button" class="online-users-close" onclick="closeOnlineUsersPanel()" aria-label="Đóng">×</button>
     </div>
@@ -3932,6 +4561,9 @@
     </div>
     <div class="online-users-tools">
       <input type="search" id="online-users-search" class="online-users-search" placeholder="Tìm tên / tài khoản…" autocomplete="off" oninput="renderOnlineUsersList()">
+      <button type="button" class="online-users-refresh" id="online-users-refresh" onclick="refreshPlayers()" title="Tải lại danh sách" aria-label="Tải lại danh sách Player">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+      </button>
     </div>
     <div class="online-users-list" id="online-users-list">
       <div class="online-users-empty">Chưa có dữ liệu…</div>
@@ -4185,7 +4817,7 @@
     <button type="button" class="sound-option" data-sound="3" id="sound-opt-3" onclick="selectSoundType(3)">
       <div class="sound-option-main">
         <span class="sound-option-name">Meow</span>
-        <span class="sound-option-desc">Tiếng mèo kêu — mỗi phím một tiếng meo</span>
+        <span class="sound-option-desc">Phát âm thanh meo meo theo từng phím bấm</span>
       </div>
       <span class="sound-option-check">✓</span>
     </button>
@@ -4197,7 +4829,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, get, update, onValue, remove, runTransaction, onDisconnect, push, query, limitToLast, orderByChild }
+import { getDatabase, ref, set, get, update, onValue, remove, runTransaction, onDisconnect, push, query, limitToLast, orderByChild, endBefore, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
@@ -4267,13 +4899,29 @@ function normalizeAccountId(raw) {
   return local + '.wordwar.vn';
 }
 
-/** Local-part hợp lệ: 3–32 ký tự, chữ HOA/thường/số, bắt đầu/kết thúc chữ hoặc số, giữa cho phép . _ - */
+/** Local-part legacy (đăng nhập acc cũ): 3–32 ký tự, chữ/số, giữa cho phép . _ - */
 function isValidAccountLocal(local) {
   return /^[a-zA-Z0-9](?:[a-zA-Z0-9._-]{1,30}[a-zA-Z0-9])?$/.test(local) && local.length >= 3 && local.length <= 32;
 }
 
+/**
+ * Local-part đăng ký MỚI (từ nay): không cho . , / ; @ và ký tự đặc biệt tương tự.
+ * Cho phép: chữ HOA/thường, số, gạch dưới _, gạch ngang - ; 3–32 ký tự.
+ */
+function isValidAccountLocalNew(local) {
+  local = String(local || '');
+  if (local.length < 3 || local.length > 32) return false;
+  // Cấm rõ: . , / ; @ và mọi ký tự không phải chữ/số/_/-
+  if (/[.,\/;@]/.test(local)) return false;
+  return /^[a-zA-Z0-9](?:[a-zA-Z0-9_-]{1,30}[a-zA-Z0-9])?$/.test(local);
+}
+
+function hasForbiddenAccountChars(local) {
+  return /[.,\/;@]/.test(String(local || ''));
+}
+
 function isValidEmail(email) {
-  // Giữ tên hàm cũ để ít đụng code — thực chất kiểm tra địa chỉ .wordwar.vn
+  // Đăng nhập: vẫn chấp nhận local legacy (có dấu chấm…)
   const full = normalizeAccountId(email);
   if (!full.toLowerCase().endsWith('.wordwar.vn')) return false;
   const local = full.slice(0, -'.wordwar.vn'.length);
@@ -4297,7 +4945,10 @@ function defaultNameFromEmail(email) {
   el.addEventListener('input', () => {
     const start = el.selectionStart, before = el.value.length;
     let v = el.value;
+    // Cắt đuôi domain nếu user gõ/dán kèm
     let stripped = v.replace(/@wordwar\.vn\s*$/i, '').replace(/\.wordwar\.vn\s*$/i, '');
+    // Chặn , / ; @ khi gõ (acc mới không dùng; vẫn cho phép . để đăng nhập acc cũ)
+    stripped = stripped.replace(/[,/;@]/g, '');
     if (stripped !== v) {
       el.value = stripped;
       const diff = before - stripped.length;
@@ -4359,7 +5010,7 @@ function setAuthForgotMode(on) {
   if (hint) {
     hint.textContent = authForgotMode
       ? 'Nhập tài khoản + mã PIN 6 số + mật khẩu mới'
-      : 'Địa chỉ dạng tenban.wordwar.vn · Chưa có → tạo mới · Đã có → đăng nhập · Tên hiển thị lấy từ tài khoản (sửa sau)';
+      : 'Dạng TenBan.wordwar.vn · Tạo mới: không dùng . , / ; @ · Đã có → đăng nhập · Tên hiển thị sửa sau';
   }
   if (forgotBtn) forgotBtn.textContent = authForgotMode ? '← Quay lại đăng nhập' : 'Quên mật khẩu?';
   const errEl = document.getElementById('auth-error');
@@ -4899,7 +5550,12 @@ window.submitAuth = async function() {
   const pass = (passEl && passEl.value || '');
   if (errEl) errEl.textContent = '';
   if (!isValidEmail(email)) {
-    if (errEl) errEl.textContent = 'Tài khoản dạng TenBan.wordwar.vn (3–32 ký tự, phân biệt hoa/thường, chữ/số/._-)';
+    const localTry = email ? email.slice(0, -'.wordwar.vn'.length) : emailRaw;
+    if (hasForbiddenAccountChars(localTry) || /[.,\/;@]/.test(emailRaw)) {
+      if (errEl) errEl.textContent = 'Tên tài khoản không được chứa . , / ; @ (vd: TenBan.wordwar.vn)';
+    } else {
+      if (errEl) errEl.textContent = 'Tài khoản dạng TenBan.wordwar.vn (3–32 ký tự, chữ/số, có thể dùng _ -)';
+    }
     return;
   }
   const key = emailKey(email);
@@ -5016,6 +5672,16 @@ window.submitAuth = async function() {
       showToast('Xin chào, ' + currentUser.displayName + '!');
       ensureRecoveryPinSet();
     } else {
+      // ── Đăng ký mới: cấm . , / ; @ trong tên tài khoản (acc cũ vẫn đăng nhập được) ──
+      const localPart = email.slice(0, -'.wordwar.vn'.length);
+      if (!isValidAccountLocalNew(localPart)) {
+        if (errEl) {
+          errEl.textContent = hasForbiddenAccountChars(localPart)
+            ? 'Tạo tài khoản mới không được dùng . , / ; @ trong tên (vd: TenBan, khong dung Ten.Ban)'
+            : 'Tên tài khoản mới: 3–32 ký tự, chỉ chữ/số/_/- , bắt đầu và kết thúc bằng chữ hoặc số';
+        }
+        return;
+      }
       // ── Chống tạo acc clone tràn lan ──
       // 1) Mật khẩu tối thiểu 6 ký tự khi đăng ký mới
       if (pass.length < 6) {
@@ -5175,6 +5841,12 @@ window.submitEditName = async function() {
 };
 
 window.logoutAccount = function() {
+  try {
+    if (currentUser && currentUser.emailKey) markUserLastSeen(false);
+    if (typeof cancelUserLastSeenOnDisconnect === 'function') cancelUserLastSeenOnDisconnect();
+    if (typeof stopPresence === 'function') { /* presence restart as guest below */ }
+  } catch (e) {}
+
   closeAccountMenu();
   currentUser = null;
   saveSessionUser(null);
@@ -5270,7 +5942,7 @@ function isAdmin() {
 
 // ── Presence: đếm người đang mở web (lobby / game / practice…) ──
 // Mọi client GHI node của mình + lắng nghe cây /presence (số online + danh sách công khai).
-// Đếm theo NGƯỜI: 1 account (kể cả nhiều tab/máy) = 1; khách = 1 / session.
+// Đếm theo NGƯỜI: 1 account (nhiều tab) = 1; khách = 1 / thiết bị (nhiều tab cùng máy = 1).
 const PRESENCE_PATH = 'presence';
 const PRESENCE_HEARTBEAT_MS = 30000; // 30s — cập nhật thường hơn, đếm chính xác hơn
 const PRESENCE_FRESH_MS = 75000;    // 75s — quá hạn coi như offline (2.5 × heartbeat)
@@ -5290,10 +5962,15 @@ let _onlineAgoTimer = null;
 const _onlineAvatarCache = Object.create(null);
 const _onlineAvatarLoading = new Set();
 const ONLINE_FACE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 19.5c0-3.5 2.9-6 6.5-6s6.5 2.5 6.5 6"/></svg>';
+/** Admin: icon Incognito chuẩn Chromium/Google (mũ + kính tròn) */
+const ONLINE_ADMIN_SVG = '<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M3 11h18v1H3zm14.62-1l-2.29-6.1c-.19-.5-.74-.77-1.25-.6L12 4l-2.09-.7c-.51-.17-1.06.1-1.25.6L6.38 10h11.24zm-1.12 3c-1.66 0-3.04 1.16-3.4 2.71-.84-.36-1.62-.26-2.2-.01A3.503 3.503 0 0 0 7.5 13C5.57 13 4 14.57 4 16.5S5.57 20 7.5 20c1.84 0 3.33-1.42 3.47-3.22.3-.21 1.09-.6 2.06.02.16 1.79 1.64 3.2 3.47 3.2 1.93 0 3.5-1.57 3.5-3.5S18.43 13 16.5 13zm-9 6a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5zm9 0a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>';
+/** Khách: chỉ dấu hỏi (không vòng tròn), phóng to */
+const ONLINE_GUEST_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 8.8a4.2 4.2 0 1 1 5.6 3.95c-1.35.6-1.95 1.25-1.95 2.55"/><circle cx="12" cy="18.4" r="1.25" fill="currentColor" stroke="none"/></svg>';
 
-/** ID thiết bị bền — localStorage + cookie mirror để nhận diện ổn định hơn giữa tab/phiên cùng trình duyệt */
+/** ID thiết bị bền — localStorage + cookie mirror; chống race khi nhiều tab mở cùng lúc */
 function getOrCreateDeviceId() {
   const COOKIE = 'wwb_device_id';
+  const LS = 'wwb_device_id';
   function readCookie(name) {
     try {
       const m = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '=([^;]*)'));
@@ -5306,21 +5983,43 @@ function getOrCreateDeviceId() {
     } catch (e) {}
   }
   try {
-    let id = localStorage.getItem('wwb_device_id') || readCookie(COOKIE);
+    let id = null;
+    try { id = localStorage.getItem(LS); } catch (e) {}
+    if (!id) id = readCookie(COOKIE);
     if (!id) {
       id = 'd_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 12);
+      // Compare-and-set: tab khác có thể đã ghi trước
+      try {
+        const raced = localStorage.getItem(LS);
+        if (raced) id = raced;
+        else {
+          localStorage.setItem(LS, id);
+          const finalId = localStorage.getItem(LS);
+          if (finalId) id = finalId;
+        }
+      } catch (e) {}
+    } else {
+      try { localStorage.setItem(LS, id); } catch (e) {}
     }
-    try { localStorage.setItem('wwb_device_id', id); } catch (e) {}
     writeCookie(COOKIE, id);
     return id;
   } catch (e) {
-    return 'd_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 12);
+    if (!window._wwbDeviceIdMem) {
+      window._wwbDeviceIdMem = 'd_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 12);
+    }
+    return window._wwbDeviceIdMem;
   }
 }
 
-/** Khách: 1 thiết bị = 1 guestKey (không tạo nhiều “tài khoản khách” ảo) */
+/** Khách: 1 thiết bị = 1 guestKey (nhiều tab cùng máy vẫn chung 1 key) */
 function getGuestKey() {
   return 'guest_' + getOrCreateDeviceId();
+}
+
+/** Firebase path an toàn cho guestKey */
+function guestPresencePathKey(guestKey) {
+  const raw = String(guestKey || '').trim() || ('guest_fallback_' + Date.now().toString(36));
+  return raw.replace(/[^a-zA-Z0-9_\-]/g, '_').slice(0, 120);
 }
 
 function getOrCreatePresenceSid() {
@@ -5336,9 +6035,21 @@ function getOrCreatePresenceSid() {
   }
 }
 
+function getPresenceSince() {
+  try {
+    let v = Number(sessionStorage.getItem('wwb_presence_since'));
+    if (!v || !isFinite(v)) { v = Date.now(); sessionStorage.setItem('wwb_presence_since', String(v)); }
+    return v;
+  } catch (e) {
+    if (!window._presenceSinceMem) window._presenceSinceMem = Date.now();
+    return window._presenceSinceMem;
+  }
+}
+
 function presencePayload() {
   const payload = {
     ts: Date.now(),
+    since: getPresenceSince(),
     account: null,
     name: null,
     wpm: null,
@@ -5352,25 +6063,191 @@ function presencePayload() {
       payload.wpm = (typeof getMyDisplayPower === 'function') ? getMyDisplayPower() : ((typeof currentUser.bestWpm === 'number') ? currentUser.bestWpm : 0);
     }
   } else {
-    // Chế độ khách: gắn guestKey theo thiết bị
+    // Chế độ khách: gắn guestKey theo thiết bị + số thứ tự tái sử dụng (Khách1, 2, …)
     payload.guestKey = getGuestKey();
-    payload.name = 'Khách';
+    payload.guestNum = (typeof _myGuestNum === 'number' && _myGuestNum >= 1) ? _myGuestNum : null;
+    payload.name = (payload.guestNum ? ('Khách' + payload.guestNum) : 'Khách');
   }
   return payload;
 }
 
+/** Số khách của máy này trong phiên hiện tại (tái sử dụng số trống khi có người rời) */
+let _myGuestNum = null;
+const GUEST_NUM_LS = 'wwb_guest_num';
+
+function readCachedGuestNum() {
+  try {
+    const n = Number(localStorage.getItem(GUEST_NUM_LS));
+    if (Number.isFinite(n) && n >= 1 && n === Math.floor(n)) return n;
+  } catch (e) {}
+  return null;
+}
+
+function writeCachedGuestNum(n) {
+  _myGuestNum = n;
+  try {
+    if (n >= 1) localStorage.setItem(GUEST_NUM_LS, String(n));
+    else localStorage.removeItem(GUEST_NUM_LS);
+  } catch (e) {}
+}
+
+function clearCachedGuestNum() {
+  _myGuestNum = null;
+  try { localStorage.removeItem(GUEST_NUM_LS); } catch (e) {}
+}
+
+/** Lấy tập số guestNum đang được dùng (bỏ qua chính mình) */
+function collectUsedGuestNums(val, myGuestKey, mySid) {
+  const used = new Set();
+  const now = Date.now();
+  if (!val || typeof val !== 'object') return used;
+  for (const k of Object.keys(val)) {
+    const row = val[k];
+    if (!row || typeof row !== 'object') continue;
+    if (row.account) continue; // đã login
+    const ts = typeof row.ts === 'number' ? row.ts : 0;
+    if (!ts || ts > now + 300000 || (now - ts) >= PRESENCE_FRESH_MS) continue;
+    const gk = row.guestKey != null ? String(row.guestKey).trim() : '';
+    if (myGuestKey && gk && gk === myGuestKey) continue;
+    if (mySid && k === mySid) continue;
+    const n = typeof row.guestNum === 'number' ? row.guestNum : Number(row.guestNum);
+    if (Number.isFinite(n) && n >= 1) used.add(Math.floor(n));
+  }
+  return used;
+}
+
+function lowestFreeGuestNum(used) {
+  let n = 1;
+  while (used.has(n)) n++;
+  return n;
+}
+
+/**
+ * Gán guestNum: giữ số đã cache nếu còn trống; không thì lấy số nhỏ nhất còn trống.
+ * Ví dụ còn Khách2, Khách3 → người mới nhận Khách1.
+ */
+async function ensureGuestNumAssigned() {
+  if (currentUser && currentUser.emailKey) {
+    _myGuestNum = null;
+    return null;
+  }
+  let myKey = null, mySid = null;
+  try { myKey = getGuestKey(); } catch (e) {}
+  try { mySid = getOrCreatePresenceSid(); } catch (e) {}
+  let used = new Set();
+  try {
+    const snap = await get(ref(db, PRESENCE_PATH));
+    used = collectUsedGuestNums(snap.val(), myKey, mySid);
+  } catch (e) {
+    // fallback: dùng cache rows đã parse
+    for (const r of (_presenceRows || [])) {
+      if (r.isLogged) continue;
+      if (myKey && r.guestKey === myKey) continue;
+      if (typeof r.guestNum === 'number' && r.guestNum >= 1) used.add(r.guestNum);
+    }
+  }
+  const cached = readCachedGuestNum();
+  if (cached && !used.has(cached)) {
+    writeCachedGuestNum(cached);
+    return cached;
+  }
+  const n = lowestFreeGuestNum(used);
+  writeCachedGuestNum(n);
+  return n;
+}
+
+/**
+ * Presence path = session id (mỗi tab 1 node) + onDisconnect.remove khi thoát.
+ * Khách vẫn gắn guestKey trong payload → parse gom 1 máy = 1 khách (nhiều tab không nhân bản).
+ * Thoát hết tab → mọi node session biến mất → khách biến mất khỏi danh sách ngay.
+ */
+function getMyPresenceNodeKey() {
+  return _presenceSid || getOrCreatePresenceSid();
+}
+
+/** Ghi mốc thoát acc — chỉ 1 field lastSeen (tối ưu), dùng cho nhãn OFF */
+function markUserLastSeen(useServerTime) {
+  try {
+    if (!currentUser || !currentUser.emailKey) return;
+    const key = String(currentUser.emailKey).trim();
+    if (!key) return;
+    const payload = useServerTime
+      ? { lastSeen: serverTimestamp() }
+      : { lastSeen: Date.now() };
+    update(ref(db, 'users/' + key), payload).catch(() => {});
+  } catch (e) {}
+}
+
+/** Đăng ký onDisconnect: khi mất mạng / đóng tab → lastSeen = giờ server */
+async function armUserLastSeenOnDisconnect() {
+  try {
+    if (!currentUser || !currentUser.emailKey) return;
+    const key = String(currentUser.emailKey).trim();
+    if (!key) return;
+    const lsRef = ref(db, 'users/' + key + '/lastSeen');
+    try { await onDisconnect(lsRef).cancel(); } catch (e) {}
+    await onDisconnect(lsRef).set(serverTimestamp());
+  } catch (e) {}
+}
+
+async function cancelUserLastSeenOnDisconnect() {
+  try {
+    if (!currentUser || !currentUser.emailKey) return;
+    const key = String(currentUser.emailKey).trim();
+    if (!key) return;
+    await onDisconnect(ref(db, 'users/' + key + '/lastSeen')).cancel();
+  } catch (e) {}
+}
+
 function writePresenceNow() {
-  if (!_presenceSid) return;
-  set(ref(db, PRESENCE_PATH + '/' + _presenceSid), presencePayload()).catch(() => {});
+  const key = getMyPresenceNodeKey();
+  if (!key) return;
+  if (!_presenceSid) _presenceSid = key;
+  set(ref(db, PRESENCE_PATH + '/' + key), presencePayload()).catch(() => {});
+}
+
+/** Xóa node presence hiện tại (và node guestKey cũ nếu còn sót từ bản trước) */
+function removeMyPresenceNodes() {
+  const keys = new Set();
+  if (_presenceSid) keys.add(_presenceSid);
+  try { keys.add(getOrCreatePresenceSid()); } catch (e) {}
+  // Node path = guestKey (bản cũ không onDisconnect) — dọn khi còn sót
+  try {
+    if (!(currentUser && currentUser.emailKey) && typeof guestPresencePathKey === 'function') {
+      keys.add(guestPresencePathKey(getGuestKey()));
+    }
+  } catch (e) {}
+  keys.forEach(k => {
+    if (!k) return;
+    remove(ref(db, PRESENCE_PATH + '/' + k)).catch(() => {});
+    try { onDisconnect(ref(db, PRESENCE_PATH + '/' + k)).cancel(); } catch (e) {}
+  });
 }
 
 async function startPresence() {
   if (_presenceSid) return;
-  _presenceSid = getOrCreatePresenceSid();
-  const myRef = ref(db, PRESENCE_PATH + '/' + _presenceSid);
+  // Mỗi tab = 1 session node; khách kèm guestKey + guestNum (tái sử dụng số trống)
+  const sessionSid = getOrCreatePresenceSid();
+  _presenceSid = sessionSid;
+  const myRef = ref(db, PRESENCE_PATH + '/' + sessionSid);
   try {
+    if (!(currentUser && currentUser.emailKey)) {
+      try { await ensureGuestNumAssigned(); } catch (e) {}
+      // Dọn node guestKey-path cũ (nếu còn) để không treo “máy ma”
+      if (typeof guestPresencePathKey === 'function') {
+        const legacy = guestPresencePathKey(getGuestKey());
+        if (legacy && legacy !== sessionSid) {
+          remove(ref(db, PRESENCE_PATH + '/' + legacy)).catch(() => {});
+        }
+      }
+    }
     await set(myRef, presencePayload());
+    // Luôn đăng ký xóa khi mất kết nối / đóng tab — khách lẫn login
     await onDisconnect(myRef).remove();
+    // Acc đã login: khi thoát/mất mạng → lastSeen bắt đầu tính OFF từ lúc đó
+    if (currentUser && currentUser.emailKey) {
+      await armUserLastSeenOnDisconnect();
+    }
   } catch (e) {}
   if (_presenceHeartbeat) clearInterval(_presenceHeartbeat);
   _presenceHeartbeat = setInterval(() => {
@@ -5382,11 +6259,47 @@ async function startPresence() {
 function stopPresence() {
   if (_presenceHeartbeat) { clearInterval(_presenceHeartbeat); _presenceHeartbeat = null; }
   if (_presenceSid) {
-    remove(ref(db, PRESENCE_PATH + '/' + _presenceSid)).catch(() => {});
-    try { onDisconnect(ref(db, PRESENCE_PATH + '/' + _presenceSid)).cancel(); } catch (e) {}
+    removeMyPresenceNodes();
     _presenceSid = null;
   }
+  try {
+    if (currentUser && currentUser.emailKey) {
+      markUserLastSeen(false);
+      cancelUserLastSeenOnDisconnect();
+    } else {
+      clearCachedGuestNum();
+    }
+  } catch (e) {}
 }
+
+/** Đóng tab / rời trang → xóa presence ngay (không chờ timeout) */
+function presenceUnloadCleanup() {
+  try {
+    if (!_presenceSid && !(typeof getOrCreatePresenceSid === 'function')) return;
+    const key = _presenceSid || (typeof getOrCreatePresenceSid === 'function' ? getOrCreatePresenceSid() : null);
+    if (key) {
+      remove(ref(db, PRESENCE_PATH + '/' + key)).catch(() => {});
+    }
+    try {
+      if (!(currentUser && currentUser.emailKey) && typeof guestPresencePathKey === 'function') {
+        const legacy = guestPresencePathKey(getGuestKey());
+        if (legacy) remove(ref(db, PRESENCE_PATH + '/' + legacy)).catch(() => {});
+      }
+    } catch (e2) {}
+    try {
+      if (currentUser && currentUser.emailKey) {
+        // Mốc thoát acc — OFF tính từ đây (tab/máy khác vào lại acc sẽ online; khi họ thoát lastSeen cập nhật lại)
+        markUserLastSeen(false);
+      } else {
+        clearCachedGuestNum();
+      }
+    } catch (e3) {}
+  } catch (e) {}
+}
+try {
+  window.addEventListener('pagehide', presenceUnloadCleanup);
+  window.addEventListener('beforeunload', presenceUnloadCleanup);
+} catch (e) {}
 
 function updateAdminOnlineUI() {
   const el = document.getElementById('admin-online-badge');
@@ -5423,6 +6336,7 @@ function parsePresenceSnapshot(val) {
   const rows = [];
   const accountBest = new Map(); // emailKey → row
   const accountDevices = new Map(); // emailKey → số session còn sống
+  const accountSince = new Map(); // emailKey → thời điểm vào game sớm nhất
   const guestBest = new Map(); // guestKey → row
   const guestDevices = new Map(); // guestKey → số session
   const now = Date.now();
@@ -5440,6 +6354,10 @@ function parsePresenceSnapshot(val) {
     const rawAcc = row.account != null ? String(row.account).trim() : '';
     if (rawAcc) {
       accountDevices.set(rawAcc, (accountDevices.get(rawAcc) || 0) + 1);
+      if (typeof row.since === 'number' && isFinite(row.since) && row.since > 0 && row.since <= now + 300000) {
+        const ps = accountSince.get(rawAcc);
+        accountSince.set(rawAcc, ps ? Math.min(ps, row.since) : row.since);
+      }
       const prev = accountBest.get(rawAcc);
       if (!prev || ts > prev.ts) {
         const name = (row.name != null && String(row.name).trim())
@@ -5457,27 +6375,37 @@ function parsePresenceSnapshot(val) {
         });
       }
     } else {
-      // Khách: ưu tiên guestKey theo thiết bị → 1 máy chỉ 1 khách
+      // Khách: 1 máy = 1 khách. Ưu tiên guestKey payload; path node cũng có thể là guestKey.
       let gKey = row.guestKey != null ? String(row.guestKey).trim() : '';
-      if (!gKey) gKey = 'sid:' + k; // fallback session cũ không có guestKey
+      if (!gKey && typeof k === 'string' && k.indexOf('guest_') === 0) gKey = k;
+      if (!gKey) gKey = 'sid:' + k; // fallback session cũ
+      gKey = gKey.replace(/[^a-zA-Z0-9_\-]/g, '_');
       guestDevices.set(gKey, (guestDevices.get(gKey) || 0) + 1);
       const prev = guestBest.get(gKey);
+      const gNumRaw = typeof row.guestNum === 'number' ? row.guestNum : Number(row.guestNum);
+      const gNum = (Number.isFinite(gNumRaw) && gNumRaw >= 1) ? Math.floor(gNumRaw) : null;
       if (!prev || ts > prev.ts) {
         guestBest.set(gKey, {
           sid: k,
           ts,
           account: null,
           guestKey: gKey.startsWith('sid:') ? null : gKey,
-          name: 'Khách',
+          guestNum: gNum,
+          name: gNum ? ('Khách' + gNum) : 'Khách',
           wpm: null,
           isLogged: false,
           devices: 1
         });
+      } else if (prev && gNum && !prev.guestNum) {
+        // Giữ số nếu bản ghi cũ hơn nhưng có guestNum
+        prev.guestNum = gNum;
+        prev.name = 'Khách' + gNum;
       }
     }
   }
   for (const [acc, r] of accountBest) {
     r.devices = accountDevices.get(acc) || 1;
+    r.since = accountSince.get(acc) || null;
     rows.push(r);
   }
   for (const [gk, r] of guestBest) {
@@ -5557,9 +6485,12 @@ function isOnlineAdminAccount(emailKey) {
 }
 
 function onlineAvHtml(r) {
-  // Guest / admin → icon; player có cache → img; đang tải → icon
-  if (!r.isLogged || !r.account || isOnlineAdminAccount(r.account)) {
-    return '<div class="online-user-av' + (r.isLogged ? ' is-logged' : ' is-guest') + '">' + ONLINE_FACE_SVG + '</div>';
+  // Admin → ẩn danh; khách → dấu hỏi; player có cache → img
+  if (r.isLogged && r.account && isOnlineAdminAccount(r.account)) {
+    return '<div class="online-user-av is-logged is-admin">' + ONLINE_ADMIN_SVG + '</div>';
+  }
+  if (!r.isLogged || !r.account) {
+    return '<div class="online-user-av is-guest">' + ONLINE_GUEST_SVG + '</div>';
   }
   const cached = _onlineAvatarCache[r.account];
   const accAttr = escapeOnlineHtml(r.account);
@@ -5637,64 +6568,58 @@ function queueOnlineAvatars(rows) {
 }
 
 function renderOnlineUsersList() {
+  if (_onlineUsersMode === 'players') { renderPlayersList(); return; }
   const listEl = document.getElementById('online-users-list');
   const foot = document.getElementById('online-users-foot');
-  const searchEl = document.getElementById('online-users-search');
   if (!listEl) return;
 
-  const q = ((searchEl && searchEl.value) || '').trim().toLowerCase();
-  // Stats luôn lấy từ bộ đếm đã parse (khớp badge Online N)
-  const total = _onlineCount;
-  const logged = _onlineLogged;
-  const guest = _onlineGuest;
-  const elT = document.getElementById('ou-stat-total');
-  const elL = document.getElementById('ou-stat-logged');
-  const elG = document.getElementById('ou-stat-guest');
-  if (elT) elT.textContent = String(total);
-  if (elL) elL.textContent = String(logged);
-  if (elG) elG.textContent = String(guest);
-
-  let rows = _presenceRows;
-  if (_onlineUsersFilter === 'logged') rows = rows.filter(r => r.isLogged);
-  else if (_onlineUsersFilter === 'guest') rows = rows.filter(r => !r.isLogged);
-
-  if (q) {
-    rows = rows.filter(r => {
-      const name = (r.name || '').toLowerCase();
-      const acc = (r.account || '').toLowerCase();
-      return name.includes(q) || acc.includes(q);
-    });
+  // Chế độ Khách: chỉ hiện guest online — số sticky (tái sử dụng số trống)
+  let rows = _presenceRows.filter(r => !r.isLogged);
+  // Gán số hiển thị: giữ guestNum có sẵn; thiếu thì lấy số trống nhỏ nhất (không đè số đã có)
+  const usedNums = new Set();
+  for (const r of rows) {
+    if (typeof r.guestNum === 'number' && r.guestNum >= 1) usedNums.add(r.guestNum);
   }
+  let fill = 1;
+  rows = rows.map(r => {
+    let n = (typeof r.guestNum === 'number' && r.guestNum >= 1) ? r.guestNum : null;
+    if (!n) {
+      while (usedNums.has(fill)) fill++;
+      n = fill;
+      usedNums.add(n);
+      fill++;
+    }
+    return Object.assign({}, r, { displayNum: n });
+  });
+  rows.sort((a, b) => (a.displayNum - b.displayNum) || ((b.ts || 0) - (a.ts || 0)));
+
+  let myGuestKey = null;
+  let mySid = null;
+  try { myGuestKey = (typeof getGuestKey === 'function') ? getGuestKey() : null; } catch (e) {}
+  try { mySid = (typeof getOrCreatePresenceSid === 'function') ? getOrCreatePresenceSid() : null; } catch (e) {}
 
   if (!rows.length) {
-    listEl.innerHTML = '<div class="online-users-empty">' +
-      (total === 0 ? 'Không có ai online lúc này.' : 'Không khớp bộ lọc / tìm kiếm.') +
-      '</div>';
+    listEl.innerHTML = '<div class="online-users-empty">Không có khách online lúc này.</div>';
   } else {
-    // Giới hạn render 200 dòng — đủ cho admin, tránh DOM phình khi spike
     const MAX_RENDER = 200;
     const slice = rows.slice(0, MAX_RENDER);
     let html = '';
-    for (const r of slice) {
-      const name = escapeOnlineHtml(r.isLogged ? (r.name || r.account || 'User') : 'Khách');
-      const meta = r.isLogged
-        ? (escapeOnlineHtml(r.account || '') + (r.devices > 1 ? (' · ' + r.devices + ' tab') : ''))
-        : ('1 thiết bị' + (r.devices > 1 ? (' · ' + r.devices + ' tab') : ''));
-      const hasWpm = r.isLogged && r.wpm != null;
-      const wpmHtml = hasWpm
-        ? ('<div class="online-user-wpm">' + escapeOnlineHtml(r.wpm) + '<span>WPM</span></div>')
-        : '<div class="online-user-wpm empty">—</div>';
-      const isAdminRow = isOnlineAdminAccount(r.account);
-      const tag = isAdminRow
-        ? '<span class="online-user-tag admin">Admin</span>'
-        : (r.isLogged
-          ? '<span class="online-user-tag logged">Login</span>'
-          : '<span class="online-user-tag">Guest</span>');
-      html += '<div class="online-user-row">' +
+    for (let i = 0; i < slice.length; i++) {
+      const r = slice[i];
+      const guestNum = r.displayNum || (i + 1);
+      const name = 'Khách' + guestNum;
+      const isMe = (!!myGuestKey && r.guestKey && r.guestKey === myGuestKey)
+        || (!!mySid && r.sid && r.sid === mySid);
+      const meta = '1 thiết bị' + (r.devices > 1 ? (' · ' + r.devices + ' tab') : '');
+      const wpmHtml = '<div class="online-user-wpm empty">—</div>';
+      const tag = isMe
+        ? '<span class="online-user-tag logged">Bạn</span>'
+        : '<span class="online-user-tag">Guest</span>';
+      html += '<div class="online-user-row' + (isMe ? ' is-me' : '') + '">' +
         onlineAvHtml(r) +
         '<div class="online-user-info">' +
           '<div class="online-user-name-row">' +
-            '<div class="online-user-name">' + name + '</div>' +
+            '<div class="online-user-name">' + escapeOnlineHtml(name) + '</div>' +
             tag +
           '</div>' +
           '<div class="online-user-meta">' + meta + '</div>' +
@@ -5706,16 +6631,14 @@ function renderOnlineUsersList() {
       '</div>';
     }
     if (rows.length > MAX_RENDER) {
-      html += '<div class="online-users-empty">… và ' + (rows.length - MAX_RENDER) + ' mục nữa (dùng tìm kiếm để lọc)</div>';
+      html += '<div class="online-users-empty">… và ' + (rows.length - MAX_RENDER) + ' khách nữa</div>';
     }
     listEl.innerHTML = html;
-    // Tải avatar nền (không block UI) — admin bị bỏ qua trong queue
     queueOnlineAvatars(slice);
   }
 
   if (foot) {
-    foot.textContent = 'Realtime · heartbeat 30s · hiển thị ' + rows.length + '/' + total +
-      (_onlineUsersFilter !== 'all' ? ' · lọc: ' + _onlineUsersFilter : '');
+    foot.textContent = 'Realtime · heartbeat 30s · khách ' + rows.length;
   }
 }
 
@@ -5729,23 +6652,401 @@ window.openOnlineUsersPanel = function() {
   const btn = document.getElementById('admin-online-list-btn');
   if (!ov) return;
   _onlineUsersPanelOpen = true;
+  syncOnlineUsersModeUI();
   ov.classList.add('show');
   ov.setAttribute('aria-hidden', 'false');
   if (btn) btn.classList.add('active');
+  // Mặc định Player: tải danh sách nếu chưa
+  if (_onlineUsersMode === 'players' && !_playersStarted && typeof window.refreshPlayers === 'function') {
+    window.refreshPlayers();
+  }
   renderOnlineUsersList();
   if (_onlineAgoTimer) clearInterval(_onlineAgoTimer);
   _onlineAgoTimer = setInterval(() => {
     if (!_onlineUsersPanelOpen) return;
     renderOnlineUsersList();
   }, 10000);
-  const search = document.getElementById('online-users-search');
-  if (search) {
-    search.value = search.value || '';
-    setTimeout(() => { try { search.focus(); } catch (e) {} }, 80);
+  // Chỉ focus ô tìm khi đang ở chế độ Player (chế độ Khách đã ẩn search)
+  if (_onlineUsersMode === 'players') {
+    const search = document.getElementById('online-users-search');
+    if (search) {
+      search.value = search.value || '';
+      setTimeout(() => { try { search.focus(); } catch (e) {} }, 80);
+    }
   }
 };
 
+// ══ Admin: chế độ "Player" — xem mọi tài khoản đã tạo (kể cả offline) ══
+// Đọc users/* theo trang (mới tạo → cũ), CHỈ giữ field hiển thị; không bao giờ giữ passwordHash / recoveryCodeHash.
+const PLAYERS_PAGE = 30;
+const PLAYERS_MAX = 1000;
+let _onlineUsersMode = 'players'; // mặc định Player trước Khách
+let _players = [];       // [{ key, email, name, avatar, createdAt, updatedAt, wpmPc, wpmMobile, best }]
+let _playersHasMore = true;
+let _playersLoading = false;
+let _playersTotal = null; // tổng số tài khoản (REST shallow, best-effort)
+let _playersError = '';
+let _playersGen = 0;
+let _playersStarted = false;
+
+function sanitizePlayer(key, d) {
+  d = d || {};
+  const num = v => (typeof v === 'number' && isFinite(v)) ? v : null;
+  const pc = num(d.bestWpmPc), mob = num(d.bestWpmMobile), legacy = num(d.bestWpm);
+  let av = d.avatar;
+  if (!(typeof av === 'string' && av.length > 32 &&
+        (av.startsWith('data:image/') || av.startsWith('https://') || av.startsWith('http://')))) av = null;
+  return {
+    key: String(key),
+    email: d.email != null ? String(d.email) : '',
+    name: (d.displayName != null && String(d.displayName).trim()) ? String(d.displayName).trim() : String(key),
+    avatar: av,
+    createdAt: num(d.createdAt),
+    updatedAt: num(d.updatedAt),
+    lastSeen: num(d.lastSeen),
+    wpmPc: pc || 0,
+    wpmMobile: mob || 0,
+    best: Math.max(pc || 0, mob || 0, legacy || 0)
+  };
+}
+
+async function fetchPlayersTotal() {
+  try {
+    const base = String(firebaseConfig.databaseURL || '').replace(/\/$/, '');
+    const res = await fetch(base + '/users.json?shallow=true');
+    if (!res.ok) return;
+    const j = await res.json();
+    if (j && typeof j === 'object') {
+      _playersTotal = Object.keys(j).length;
+      if (_onlineUsersPanelOpen && _onlineUsersMode === 'players') renderPlayersList();
+    }
+  } catch (e) {}
+}
+
+// Dự phòng: query orderByChild('createdAt') lỗi (thiếu .indexOn / rules) → lấy danh sách key rồi đọc từng users/<key>
+async function loadPlayersFallback(gen) {
+  const base = String(firebaseConfig.databaseURL || '').replace(/\/$/, '');
+  const res = await fetch(base + '/users.json?shallow=true');
+  if (!res.ok) return false;
+  const j = await res.json();
+  const keys = Object.keys(j || {}).slice(0, PLAYERS_MAX);
+  const out = [];
+  for (let i = 0; i < keys.length; i += 10) {
+    const chunk = keys.slice(i, i + 10);
+    const snaps = await Promise.all(chunk.map(k => get(ref(db, 'users/' + k))));
+    if (gen !== _playersGen) return true;
+    snaps.forEach((sn, idx) => { if (sn.exists()) out.push(sanitizePlayer(chunk[idx], sn.val())); });
+  }
+  out.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  _players = out;
+  _playersHasMore = false;
+  _playersError = '';
+  return true;
+}
+
+async function loadMorePlayers(loadAll) {
+  if (_playersLoading || !_playersHasMore) return;
+  _playersLoading = true;
+  _playersError = '';
+  const gen = _playersGen;
+  renderPlayersList();
+  try {
+    do {
+      const last = _players.length ? _players[_players.length - 1] : null;
+      const q = last
+        ? query(ref(db, 'users'), orderByChild('createdAt'), endBefore(last.createdAt == null ? null : last.createdAt, last.key), limitToLast(PLAYERS_PAGE))
+        : query(ref(db, 'users'), orderByChild('createdAt'), limitToLast(PLAYERS_PAGE));
+      const snap = await get(q);
+      if (gen !== _playersGen) return; // đã refresh / đóng panel
+      const batch = [];
+      snap.forEach(ch => { batch.push(sanitizePlayer(ch.key, ch.val())); });
+      batch.reverse(); // mới tạo lên đầu
+      const seen = new Set(_players.map(p => p.key));
+      for (const p of batch) if (!seen.has(p.key)) _players.push(p);
+      _playersHasMore = batch.length >= PLAYERS_PAGE;
+      if (_players.length >= PLAYERS_MAX) _playersHasMore = false;
+      if (_onlineUsersPanelOpen && _onlineUsersMode === 'players') renderPlayersList();
+    } while (loadAll && _playersHasMore && gen === _playersGen);
+  } catch (e) {
+    console.error(e);
+    let ok = false;
+    try { ok = await loadPlayersFallback(gen); } catch (e2) { console.error(e2); }
+    if (!ok && gen === _playersGen) _playersError = 'Không tải được danh sách (' + ((e && (e.code || e.message)) || 'lỗi') + '). Kiểm tra mạng / quyền đọc Firebase.';
+  } finally {
+    if (gen === _playersGen) {
+      _playersLoading = false;
+      const rb = document.getElementById('online-users-refresh');
+      if (rb) rb.classList.remove('spin');
+      if (_onlineUsersPanelOpen && _onlineUsersMode === 'players') renderPlayersList();
+    }
+  }
+}
+
+function resetPlayers() {
+  _playersGen++;
+  _players = [];
+  _playersHasMore = true;
+  _playersLoading = false;
+  _playersTotal = null;
+  _playersError = '';
+  _playersStarted = false;
+}
+
+window.refreshPlayers = function() {
+  resetPlayers();
+  _playersStarted = true;
+  const rb = document.getElementById('online-users-refresh');
+  if (rb) rb.classList.add('spin');
+  fetchPlayersTotal();
+  loadMorePlayers(true); // tải hết để xếp theo WPM đúng toàn bộ
+};
+
+function closeOnlineModeMenu() {
+  const menu = document.getElementById('online-users-mode-menu');
+  const btn = document.getElementById('online-users-title-btn');
+  if (menu) menu.classList.remove('open');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+window.toggleOnlineModeMenu = function(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('online-users-mode-menu');
+  const btn = document.getElementById('online-users-title-btn');
+  if (!menu || !btn) return;
+  const open = !menu.classList.contains('open');
+  menu.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+};
+
+function syncOnlineUsersModeUI() {
+  const ov = document.getElementById('online-users-overlay');
+  const title = document.getElementById('online-users-title');
+  const search = document.getElementById('online-users-search');
+  const labels = document.querySelectorAll('.online-users-stat .l');
+  const players = _onlineUsersMode === 'players';
+  const admin = isAdmin();
+  if (ov) ov.classList.toggle('mode-players', players);
+  if (title) title.textContent = players ? 'Player' : 'Khách';
+  document.querySelectorAll('.online-users-mode-opt').forEach(opt => {
+    const on = opt.getAttribute('data-mode') === (players ? 'players' : 'online');
+    opt.classList.toggle('active', on);
+    opt.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  if (search) search.placeholder = players ? (admin ? 'Tìm tên / email / tài khoản…' : 'Tìm tên…') : 'Tìm tên / tài khoản…';
+  if (labels.length >= 3) {
+    labels[0].textContent = 'Tất cả';
+    labels[1].textContent = players ? 'Online' : 'Đã login';
+    labels[2].textContent = players ? 'Offline' : 'Khách';
+  }
+  closeOnlineModeMenu();
+}
+
+window.selectOnlineUsersMode = function(mode, event) {
+  if (event) event.stopPropagation();
+  const next = (mode === 'players') ? 'players' : 'online';
+  if (_onlineUsersMode === next) {
+    closeOnlineModeMenu();
+    return;
+  }
+  _onlineUsersMode = next;
+  _onlineUsersFilter = 'all';
+  document.querySelectorAll('.online-users-stat').forEach(b => {
+    const on = b.getAttribute('data-filter') === 'all';
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  const search = document.getElementById('online-users-search');
+  if (search) search.value = '';
+  syncOnlineUsersModeUI();
+  if (_onlineUsersMode === 'players' && !_playersStarted) window.refreshPlayers();
+  renderOnlineUsersList();
+};
+
+// Tương thích cũ: toggle hai chiều
+window.toggleOnlineUsersMode = function() {
+  window.selectOnlineUsersMode(_onlineUsersMode === 'players' ? 'online' : 'players');
+};
+
+// Đóng menu khi bấm ra ngoài / đóng panel
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('online-users-mode-wrap');
+  if (!wrap) return;
+  if (!wrap.contains(e.target)) closeOnlineModeMenu();
+});
+
+function formatPlayerDate(ts) {
+  if (!ts) return '—';
+  try { return new Date(ts).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: '2-digit' }); }
+  catch (e) { return '—'; }
+}
+
+function playerAvHtml(p, online) {
+  if (isOnlineAdminAccount(p.key)) {
+    return '<div class="online-user-av is-logged is-admin">' + ONLINE_ADMIN_SVG + '</div>';
+  }
+  const cls = 'online-user-av ' + (online ? 'is-logged' : 'is-guest');
+  if (p.avatar) {
+    return '<div class="' + cls + '"><img src="' + p.avatar.replace(/"/g, '') +
+      '" alt="" loading="lazy" decoding="async" width="40" height="40"></div>';
+  }
+  return '<div class="' + cls + '">' + ONLINE_FACE_SVG + '</div>';
+}
+
+function renderPlayersList() {
+  const listEl = document.getElementById('online-users-list');
+  const foot = document.getElementById('online-users-foot');
+  const searchEl = document.getElementById('online-users-search');
+  if (!listEl) return;
+  const admin = isAdmin();
+
+  const q = ((searchEl && searchEl.value) || '').trim().toLowerCase();
+  const onlineSet = new Set(_presenceRows.filter(r => r.isLogged && r.account).map(r => r.account));
+  const sinceMap = new Map(_presenceRows.filter(r => r.isLogged && r.account && r.since).map(r => [r.account, r.since]));
+  const fmtInGame = ms => {
+    const sec = Math.max(0, Math.floor(ms / 1000));
+    if (sec < 60) return sec + ' giây';
+    const m = Math.floor(sec / 60);
+    if (m < 60) return m + ' phút';
+    const h = Math.floor(m / 60);
+    if (h < 24) {
+      const rem = m % 60;
+      return rem ? (h + ' giờ ' + rem + ' phút') : (h + ' giờ');
+    }
+    const d = Math.floor(h / 24);
+    return d + ' ngày';
+  };
+  const loaded = _players.length;
+  const total = _playersTotal != null ? Math.max(_playersTotal, loaded) : loaded;
+  const elT = document.getElementById('ou-stat-total');
+  const elL = document.getElementById('ou-stat-logged');
+  const elG = document.getElementById('ou-stat-guest');
+  if (elT) elT.textContent = String(total);
+  if (elL) elL.textContent = String(_onlineLogged);
+  if (elG) elG.textContent = _playersTotal != null ? String(Math.max(0, total - _onlineLogged)) : '—';
+
+  let rows = _players;
+  if (_onlineUsersFilter === 'logged') rows = rows.filter(p => onlineSet.has(p.key));
+  else if (_onlineUsersFilter === 'guest') rows = rows.filter(p => !onlineSet.has(p.key));
+  if (q) {
+    rows = rows.filter(p => p.name.toLowerCase().includes(q) ||
+      (admin && (p.key.toLowerCase().includes(q) || p.email.toLowerCase().includes(q))));
+    // Đang tìm mà chưa tải hết → tự tải nốt để tìm được mọi tài khoản
+    if (_playersHasMore && !_playersLoading && !_playersError) loadMorePlayers(true);
+  }
+
+  rows = rows.slice().sort((a, b) => ((b.best > 0) - (a.best > 0)) || (b.best - a.best));
+
+  let html = '';
+  for (const p of rows) {
+    const online = onlineSet.has(p.key);
+    const isAd = isOnlineAdminAccount(p.key);
+    const onlineDur = online && sinceMap.get(p.key) ? fmtInGame(Date.now() - sinceMap.get(p.key)) : null;
+    // Offline bao lâu (dựa updatedAt hồ sơ — lần hoạt động gần nhất đã lưu)
+    const fmtOffline = (ms) => {
+      const sec = Math.max(0, Math.floor(ms / 1000));
+      if (sec < 60) return 'OFF ' + sec + ' giây';
+      const m = Math.floor(sec / 60);
+      if (m < 60) return 'OFF ' + m + ' phút';
+      const h = Math.floor(m / 60);
+      if (h < 24) return 'OFF ' + h + ' giờ';
+      const d = Math.floor(h / 24);
+      if (d < 7) return 'OFF ' + d + ' ngày';
+      const w = Math.floor(d / 7);
+      if (w < 5) return 'OFF ' + w + ' tuần';
+      const mo = Math.floor(d / 30);
+      if (mo < 12) return 'OFF ' + mo + ' tháng';
+      return 'OFF ' + Math.floor(d / 365) + ' năm';
+    };
+    let offlineLabel = 'OFF';
+    if (!online) {
+      // Ưu tiên lastSeen (lúc thoát acc) → updatedAt → createdAt
+      const last = (typeof p.lastSeen === 'number' && p.lastSeen > 0) ? p.lastSeen
+        : ((typeof p.updatedAt === 'number' && p.updatedAt > 0) ? p.updatedAt
+        : ((typeof p.createdAt === 'number' && p.createdAt > 0) ? p.createdAt : 0));
+      offlineLabel = last ? fmtOffline(Date.now() - last) : 'OFF';
+    }
+    // Admin: giữ tag Admin + Online/OFF… (thời gian online hoặc offline)
+    let tag = '';
+    if (isAd) tag += '<span class="online-user-tag admin">Admin</span>';
+    if (onlineDur) tag += '<span class="online-user-tag time">' + escapeOnlineHtml(onlineDur) + '</span>';
+    else if (online) tag += '<span class="online-user-tag logged">Online</span>';
+    else tag += '<span class="online-user-tag off">' + escapeOnlineHtml(offlineLabel) + '</span>';
+    // Admin chỉ thấy tên tài khoản (local), không hiện đuôi .wordwar.vn
+    const accountLabel = (() => {
+      let s = String(p.email || p.key || '').trim();
+      if (!s) return '';
+      const lower = s.toLowerCase();
+      if (lower.endsWith('.wordwar.vn')) s = s.slice(0, -'.wordwar.vn'.length);
+      else if (lower.endsWith('@wordwar.vn')) s = s.slice(0, -'@wordwar.vn'.length);
+      // key Firebase dạng ten_wordwar_vn → ten
+      if (!p.email && /_wordwar_vn$/i.test(s)) s = s.replace(/_wordwar_vn$/i, '').replace(/_/g, '.');
+      return s;
+    })();
+    const meta = escapeOnlineHtml(accountLabel);
+    // Non-admin: không thấy tên tài khoản; nếu chưa đặt tên hiển thị (tên = key) thì che
+    const shownName = admin ? p.name : (p.name === p.key ? 'Người chơi' : p.name);
+    const wpmHtml = p.best > 0
+      ? '<div class="online-user-wpm">' + escapeOnlineHtml(p.best) + '<span>WPM</span></div>'
+      : '<div class="online-user-wpm empty">—</div>';
+    const canDel = admin && !ADMIN_KEYS.includes(p.key) && !(currentUser && p.key === currentUser.emailKey);
+    html += '<div class="online-user-row"' + (canDel ? ' style="cursor:pointer" data-key="' + escapeOnlineHtml(p.key) + '" ondblclick="deletePlayerRow(this)"' : '') +
+      ' title="PC ' + p.wpmPc + ' · Mobile ' + p.wpmMobile + (canDel ? ' · nhấp đúp để xóa' : '') + '">' +
+      playerAvHtml(p, online) +
+      '<div class="online-user-info">' +
+        '<div class="online-user-name-row">' +
+          (online ? '<span class="online-user-dot"></span>' : '') +
+          '<div class="online-user-name">' + escapeOnlineHtml(shownName) + '</div>' + tag +
+        '</div>' +
+        (admin ? '<div class="online-user-meta">' + meta + '</div>' : '') +
+      '</div>' +
+      '<div class="online-user-side">' + wpmHtml +
+        (admin ? '<div class="online-user-ago">tạo ' + escapeOnlineHtml(formatPlayerDate(p.createdAt)) + '</div>' : '') +
+      '</div>' +
+    '</div>';
+  }
+  if (!rows.length) {
+    html = '<div class="online-users-empty">' +
+      (_playersLoading ? 'Đang tải danh sách…' :
+       _playersError ? escapeOnlineHtml(_playersError) :
+       (loaded === 0 ? 'Chưa có tài khoản nào.' : 'Không khớp bộ lọc / tìm kiếm.')) + '</div>';
+  } else if (_playersError) {
+    html += '<div class="online-users-empty">' + escapeOnlineHtml(_playersError) + '</div>';
+  }
+  if (_playersHasMore && !q) {
+    html += '<button type="button" class="online-users-more" onclick="loadMorePlayers(false)"' +
+      (_playersLoading ? ' disabled' : '') + '>' + (_playersLoading ? 'Đang tải…' : 'Tải thêm') + '</button>';
+  }
+  listEl.innerHTML = html;
+
+  if (foot) {
+    foot.textContent = 'Player · đã tải ' + loaded + (_playersTotal != null ? '/' + _playersTotal : '') +
+      ' · online ' + _onlineLogged + (_playersHasMore ? ' · còn nữa' : '');
+  }
+}
+window.loadMorePlayers = loadMorePlayers;
+window.deletePlayerRow = async function(el) {
+  if (!isAdmin() || !el) return;
+  const key = el.getAttribute('data-key');
+  const p = _players.find(x => x.key === key);
+  if (!p || ADMIN_KEYS.includes(key) || (currentUser && key === currentUser.emailKey)) return;
+  const label = p.name + ' (' + key + ')';
+  if (!confirm('Xóa tài khoản này?\n\n' + label + '\nWPM: ' + (p.best || 0))) return;
+  if (!confirm('XÁC NHẬN LẦN CUỐI\n\nXóa VĨNH VIỄN ' + label + '?\nKhông thể hoàn tác.')) return;
+  try {
+    await remove(ref(db, 'users/' + key));
+    _players = _players.filter(x => x.key !== key);
+    if (_playersTotal != null) _playersTotal = Math.max(0, _playersTotal - 1);
+    renderPlayersList();
+  } catch (e) {
+    console.error(e);
+    alert('Xóa lỗi (' + ((e && (e.code || e.message)) || 'không rõ') + '). Kiểm tra rules Firebase.');
+  }
+};
+
+
 window.closeOnlineUsersPanel = function() {
+  try { closeOnlineModeMenu(); } catch (e) {}
+
   const ov = document.getElementById('online-users-overlay');
   const btn = document.getElementById('admin-online-list-btn');
   if (ov) {
@@ -5759,6 +7060,17 @@ window.closeOnlineUsersPanel = function() {
 
 /** Gọi khi login/logout — cập nhật account trên presence; listener luôn bật cho mọi người */
 function syncAdminPresenceState() {
+  // Không còn là admin (đăng xuất / đổi acc) → xóa cache Player khỏi RAM, về chế độ online
+  try {
+    if (!isAdmin()) {
+      resetPlayers();
+      if (_onlineUsersPanelOpen) {
+        syncOnlineUsersModeUI();
+        if (_onlineUsersMode === 'players') window.refreshPlayers();
+        renderOnlineUsersList();
+      }
+    }
+  } catch (e) {}
   writePresenceNow();
   startAdminOnlineListener();
   updateAdminOnlineUI();
@@ -6474,6 +7786,7 @@ if (soundType !== 1 && soundType !== 2 && soundType !== 3) soundType = 1;
 // Âm lượng gõ đã giảm ~50% so với bản trước (tránh lấn át / mỏi tai).
 const SOUND_SRC_3 = "data:audio/mp3;base64,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YplsCOQh+43x5oDB40uHNWragbosSNg64UPTBElSkO0ZRw255Alj6f+2f/nG9SUtu1I7ZWZ/JO8f1/xjw7Y36/NtUgY/29neWix5YUSBL/nf//38/P///3///9Tx4Gpo+I0SHFniBz////wuQFTbAGkE9sAARI9HtdpdNpLG2AUPhGKrIMBmEIouYLqJAkimKYazApwHpszMhxyzERMEiFaFYwkuq3NTSG2QkQa86PQYI6cxSyqI01aIzao0z00H97I67/08srS+A55frjyh1ncp72dPT3J2Ytal9SLu6+buRKdwrUTX7nK9BLr7mX+VXHicFWJRQy+738t/zDmFSlrY5V+/F4hek0P1J6MS/HeFTesea1n/87+O+c5qlv0mV6foblJUu///mQcQfAgOgQh////4XEAqbYA0jQEEAIMMAAAAADI141kC1/+bhhmLHf7/zECA0tM//8G8YGQiXXgY5hwGQ08Bp8bK+Boq//vSZBkABxBuQs5uoAB6zaisycwAQAABpBwAACAAADSDgAAEHgZMU4CkRAz6vv8DHJyAx6HwMrFUDDg9AwEKv/AGCwNygFgWA4DCXAYJA3/4Dg2A4DgFBUAkLAPAQDQOAwEG//8AwFg4EgYFCgCQMF1YGAAGFkoewGMv//xWwYFD0CYCyIGgDD2QbGQFwUFugse///8AgHgOAIaaAKCAsSEAwbVC6ImwPWGWDoRCQwDFX////4aKJ5C2IEQIGzBgoBAHBvKHhANAQXyE5hYSHIikBBIAEBgIBAQDBAAAAAqh83gAfAIX4GYAOP5Dwbh8Cqg2YN+/AEiA4IaSAKj/DkhcYlEckfH/k8XiiUDIi3/5RMS6RxSKxDf/8mTxeMnJkxQNv//0jqEyOrLpSMjb///yZMTxNGSZdRUlRQpf////nVmpkkbGJieLxkmYowlMQU1FMy4xMDBVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU="; // Mèo kêu (meow)
 const SOUND_VOL = { 1: 0.34, 2: 0.46, 3: 0.55 };
+const SPACE_KEY_VOL_RATIO = 0.8; // giảm nhẹ volume riêng cho phím cách (~20%)
 let audioCtx = null;
 let soundBuffers = { 1: null, 2: null, 3: null }; // AudioBuffer đã decode
 let soundDecodePromise = null;
@@ -6485,6 +7798,11 @@ let keyClickPoolIndex = 0;
 // Tránh phát 2 lần khi keydown + input cùng 1 phím (desktop)
 let _soundFromKeydown = false;
 let _soundFromKeydownTs = 0;
+// Theo dõi các tiếng gõ đang "ngân" (chưa tắt hẳn) để chống cộng hưởng/chói tai
+// khi gõ nhanh: càng nhiều tiếng chồng lên nhau cùng lúc thì tiếng mới càng được
+// giảm nhẹ âm lượng + rút ngắn đuôi âm + lệch cao độ nhẹ, tránh cộng dồn biên độ
+// và "ù" ở cùng dải tần khi nhiều bản sao y hệt nhau chồng pha lên nhau.
+let activeKeyVoiceEnds = []; // Web Audio: mảng thời điểm (ctx.currentTime) tiếng sẽ tắt
 
 function getAudioCtx() {
   if (audioCtx) return audioCtx;
@@ -6503,7 +7821,28 @@ function getMasterGain(ctx) {
   if (masterGain && masterGain.context === ctx) return masterGain;
   masterGain = ctx.createGain();
   masterGain.gain.value = 1;
-  masterGain.connect(ctx.destination);
+  // Compressor chung: khi gõ quá nhanh, nhiều tiếng (key click + hit sfx) chồng lên
+  // nhau cùng lúc có thể cộng dồn biên độ gây rè/vỡ tiếng (clipping). Đưa tất cả
+  // qua 1 DynamicsCompressorNode trước khi ra loa để tự động nén bớt khi tổng
+  // biên độ vượt ngưỡng, thay vì để clip cứng.
+  let outNode = masterGain;
+  try {
+    if (typeof ctx.createDynamicsCompressor === 'function') {
+      const comp = ctx.createDynamicsCompressor();
+      // Siết ngưỡng + tăng tỉ lệ nén, attack nhanh hơn: bắt gọn các đỉnh biên độ
+      // khi nhiều tiếng gõ chồng nhau lúc gõ nhanh (nguồn chính gây chói/rè),
+      // release nhanh hơn để không "đè" tiếng gõ tiếp theo ngay sau đó.
+      comp.threshold.value = -22;
+      comp.knee.value = 18;
+      comp.ratio.value = 10;
+      comp.attack.value = 0.001;
+      comp.release.value = 0.09;
+      masterGain.connect(comp);
+      comp.connect(ctx.destination);
+      outNode = comp;
+    }
+  } catch (e) {}
+  if (outNode === masterGain) masterGain.connect(ctx.destination);
   return masterGain;
 }
 
@@ -6711,12 +8050,26 @@ async function unlockAudio() {
   }
 }
 
-function playKeySoundHtml5() {
+// Dọn các mốc "tiếng sắp tắt" đã qua khỏi danh sách theo dõi, trả về số tiếng
+// vẫn đang ngân tại thời điểm `now` (dùng để biết đang gõ dồn dập hay không).
+function pruneActiveKeyVoices(now) {
+  if (!activeKeyVoiceEnds.length) return 0;
+  activeKeyVoiceEnds = activeKeyVoiceEnds.filter(end => end > now);
+  return activeKeyVoiceEnds.length;
+}
+
+function playKeySoundHtml5(volRatio) {
   if (!keyClickPools) return;
   try {
     const pool = keyClickPools[soundType] || keyClickPools[1];
     let idx = keyClickPoolIndex;
     let a = pool[idx];
+    // Đếm số tiếng đang phát dở trong pool ngay lúc này — dùng để giảm nhẹ âm
+    // lượng tiếng mới khi gõ dồn dập, tránh cộng dồn biên độ gây chói tai.
+    let playingCount = 0;
+    for (let i = 0; i < pool.length; i++) {
+      if (!pool[i].paused && pool[i].currentTime > 0.02) playingCount++;
+    }
     // Nếu slot hiện tại đang phát dở → tìm 1 slot rảnh khác trong pool.
     // KHÔNG dùng cloneNode(): clone phải giải mã lại toàn bộ data URI mỗi
     // lần, rất tốn khi gõ nhanh liên tục → gây giật/lag. Nếu cả pool đang
@@ -6734,12 +8087,17 @@ function playKeySoundHtml5() {
     }
     keyClickPoolIndex = (idx + 1) % pool.length;
     a.currentTime = 0;
+    const duck = Math.max(0.5, 1 / (1 + playingCount * 0.3));
+    a.volume = (SOUND_VOL[soundType] || 0.34) * (volRatio || 1) * duck;
+    // Lệch nhẹ tốc độ/cao độ mỗi lần phát — tránh nhiều bản sao y hệt nhau
+    // chồng pha cộng hưởng thành tiếng "ù"/chói khi gõ nhanh liên tục.
+    try { a.playbackRate = 1 + (Math.random() * 0.04 - 0.02); } catch (e) {}
     const p = a.play();
     if (p && p.catch) p.catch(() => {});
   } catch (e) {}
 }
 
-function playKeySound() {
+function playKeySound(volRatio) {
   if (!soundEnabled) return;
   try {
     const ctx = audioCtx || getAudioCtx();
@@ -6748,12 +8106,26 @@ function playKeySound() {
       if (ctx.state === "suspended") {
         ctx.resume().catch(() => {});
       }
+      const t0 = Math.max(0, ctx.currentTime);
+      // Càng nhiều tiếng gõ đang "ngân" cùng lúc (gõ nhanh) → tiếng mới càng
+      // giảm nhẹ âm lượng, rút ngắn đuôi âm, lọc bớt dải cao và lệch nhẹ cao
+      // độ/tốc độ. Mục đích: khi gõ dồn dập, nhiều bản sao giống hệt nhau
+      // không còn chồng pha + cộng dồn biên độ ở cùng dải tần → hết chói tai,
+      // trong khi gõ bình thường/chậm vẫn giữ nguyên tiếng gốc, rõ và đầy.
+      const overlap = pruneActiveKeyVoices(t0);
+      const duck = Math.max(0.42, 1 / (1 + overlap * 0.35));
+      const durScale = Math.max(0.55, 1 - overlap * 0.09);
       const src = ctx.createBufferSource();
       src.buffer = buf;
+      try { src.playbackRate.value = 1 + (Math.random() * 0.04 - 0.02); } catch (e) {}
+      const filter = ctx.createBiquadFilter();
+      filter.type = "lowpass";
+      const baseCutoff = soundType === 1 ? 11000 : (soundType === 2 ? 9000 : 8200);
+      filter.frequency.value = Math.max(3200, baseCutoff - overlap * 650);
+      filter.Q.value = 0.6;
       // Gain riêng mỗi hit: envelope ngắn → bớt “pop”, cảm giác sạch hơn
       const gain = ctx.createGain();
-      const vol = SOUND_VOL[soundType] || 0.34;
-      const t0 = Math.max(0, ctx.currentTime);
+      const vol = (SOUND_VOL[soundType] || 0.34) * (volRatio || 1) * duck;
       // Bắt đầu rất sớm (~8ms trong quá khứ nếu API cho phép) → cảm giác “trước khi ấn”
       const startAt = Math.max(0, t0 - 0.008);
       const dur = Math.max(0.02, buf.duration || 0.12);
@@ -6761,35 +8133,37 @@ function playKeySound() {
       const fullClip = soundType === 2 || soundType === 3;
       const attack = fullClip ? 0.003 : 0.004;
       const sustainEnd = fullClip
-        ? startAt + Math.min(dur * 0.72, dur - 0.025)
-        : startAt + Math.min(0.045, dur * 0.55);
+        ? startAt + Math.min(dur * 0.72, dur - 0.025) * durScale
+        : startAt + Math.min(0.045, dur * 0.55) * durScale;
       const releaseEnd = fullClip
-        ? startAt + Math.min(dur, soundType === 3 ? 0.28 : 0.19)
-        : startAt + Math.min(dur, 0.09);
+        ? startAt + Math.min(dur, soundType === 3 ? 0.28 : 0.19) * durScale
+        : startAt + Math.min(dur, 0.09) * durScale;
       gain.gain.setValueAtTime(0.0001, startAt);
       gain.gain.exponentialRampToValueAtTime(vol, startAt + attack);
       gain.gain.setValueAtTime(vol, Math.max(startAt + attack, sustainEnd));
       gain.gain.exponentialRampToValueAtTime(0.0001, Math.max(sustainEnd + 0.01, releaseEnd));
-      src.connect(gain);
+      src.connect(filter);
+      filter.connect(gain);
       gain.connect(getMasterGain(ctx));
       try {
         src.start(startAt);
       } catch (e) {
         src.start(0);
       }
+      activeKeyVoiceEnds.push(Math.max(sustainEnd + 0.01, releaseEnd));
       // Dọn node sau khi hết buffer (tránh leak khi gõ hàng nghìn phím)
       src.onended = () => {
-        try { src.disconnect(); gain.disconnect(); } catch (e) {}
+        try { src.disconnect(); filter.disconnect(); gain.disconnect(); } catch (e) {}
       };
       return;
     }
     // Chưa decode xong / fallback
-    if (keyClickPools) playKeySoundHtml5();
+    if (keyClickPools) playKeySoundHtml5(volRatio);
     else ensureSoundBuffers().then(() => {
-      if (soundEnabled) playKeySound();
+      if (soundEnabled) playKeySound(volRatio);
     });
   } catch (e) {
-    playKeySoundHtml5();
+    playKeySoundHtml5(volRatio);
   }
 }
 
@@ -6802,13 +8176,14 @@ function maybePlaySoundFromKeydown(event) {
   const isChar = k && k.length === 1;
   const isSubmit = k === ' ' || k === 'Enter' || k === 'Spacebar';
   if (!isChar && !isSubmit) return;
-  playKeySound();
+  const isSpaceKey = (k === ' ' || k === 'Spacebar');
+  playKeySound(isSpaceKey ? SPACE_KEY_VOL_RATIO : 1);
   _soundFromKeydown = true;
   _soundFromKeydownTs = performance.now();
 }
 
 /** input event: chỉ phát nếu keydown chưa phát (bàn phím ảo / IME) */
-function maybePlaySoundFromInput() {
+function maybePlaySoundFromInput(isSpace) {
   if (!soundEnabled) return;
   // Trong ~90ms sau keydown → coi như đã phát predictive, bỏ qua
   if (_soundFromKeydown && (performance.now() - _soundFromKeydownTs) < 90) {
@@ -6816,7 +8191,7 @@ function maybePlaySoundFromInput() {
     return;
   }
   _soundFromKeydown = false;
-  playKeySound();
+  playKeySound(isSpace ? SPACE_KEY_VOL_RATIO : 1);
 }
 
 // Unlock sớm: chạm / click / gõ phím lần đầu trên trang
@@ -6895,6 +8270,7 @@ window.selectSoundType = function(n) {
   document.querySelectorAll(".sound-option").forEach(btn => {
     btn.classList.toggle("active", parseInt(btn.dataset.sound,10) === soundType);
   });
+  if (soundType === 3 && typeof preloadMeowHitImages === 'function') preloadMeowHitImages();
   // Unlock + phát mẫu 5 nhịp
   unlockAudio().then(() => playSampleBeats(5));
 };
@@ -6903,7 +8279,14 @@ window.openSoundSheet = openSoundSheet;
 window.closeSoundSheet = closeSoundSheet;
 
 // Cập nhật icon FAB khi load
-document.addEventListener("DOMContentLoaded", updateSoundFabIcon);
+document.addEventListener("DOMContentLoaded", function() {
+  updateSoundFabIcon();
+  // Preload sau khi toàn bộ script đã parse (preloadMeowHitImages nằm phía dưới)
+  // — ảnh meo/sad giờ hiện ở mọi kiểu âm nên luôn preload, không cần chờ soundType === 3
+  if (typeof preloadMeowHitImages === 'function') {
+    try { preloadMeowHitImages(); } catch (e) {}
+  }
+});
 updateSoundFabIcon();
 
 // Ẩn/hiện FAB theo màn hình lobby
@@ -6959,13 +8342,13 @@ let practiceElapsed = 0, practiceTimerInterval = null;
 let practiceCorrect = 0, practiceWrong = 0;
 let practiceCorrectChars = 0;
 let practiceTotalChars = 0; // ký tự net (đúng cộng, sai trừ) — cùng thi đấu
-let practiceTimedMode = false;       // true = thử thách 1 phút WPM
-let practiceShowTimer = false;        // true = hiện giây thủ công khi đang tạm ẩn
+let practiceTimedMode = false;       // true = thử thách 30 giây WPM
+let practiceShowTimer = true;        // true = hiện giây thủ công khi đang tạm ẩn (mặc định hiện)
 let practiceTimerStarted = false;    // chỉ true sau lần gõ đầu
 let practiceResultUnlockAt = 0;      // mốc thời gian cho phép rời bảng kết quả WPM (chống bấm nhầm)
 let practiceStartTs = 0;
 let practiceFinished = false;
-const PRACTICE_WPM_SECONDS = 60;
+const PRACTICE_WPM_SECONDS = 30;
 let matchCorrect = 0, matchWrong = 0;  // thống kê multiplayer (đồng bộ Firebase)
 let matchTotalChars = 0; // tổng ký tự (chữ + space) — tính WPM cuối trận
 let lastMatchResult = null; // { winner, meCorrect, meWrong, oppCorrect, oppWrong } — hiện lại trên prep khi chơi lại
@@ -8293,7 +9676,7 @@ function resetPracticeStatsUI() {
   practiceTimerStarted = false;
   practiceStartTs = 0;
   practiceFinished = false;
-  practiceShowTimer = false;
+  practiceShowTimer = true;
   if (typeof updatePracticeTimerToggleBtn === 'function') {
     // deferred: function defined later at runtime OK once loaded
   }
@@ -8301,9 +9684,10 @@ function resetPracticeStatsUI() {
   if (rev) {
     if (practiceTimedMode) {
       rev.style.display = 'inline-flex';
-      rev.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-      rev.classList.remove('is-shown');
-      rev.title = 'Hiện giây';
+      rev.innerHTML = _eyeOffSvg;
+      rev.classList.add('is-shown');
+      rev.title = 'Ẩn giây';
+      rev.setAttribute('aria-label', 'Ẩn giây');
     } else {
       rev.style.display = 'none';
     }
@@ -8469,7 +9853,7 @@ window.startPractice = function() {
   if (typeof unlockAudio === 'function') unlockAudio();
 };
 
-/** Bắt đầu / thử lại thử thách 1 phút WPM */
+/** Bắt đầu / thử lại thử thách 30 giây WPM */
 window.startPracticeWpm = function() {
   // Nếu chưa ở practice: vào practice trước
   if (!isPracticeMode) {
@@ -8527,19 +9911,26 @@ function finishPracticeWpm() {
 
   const total = practiceCorrect + practiceWrong;
   const acc = total > 0 ? Math.round((practiceCorrect / total) * 100) : 0;
-  // WPM chuẩn: (tổng ký tự ÷ 5) ÷ phút; bài test 60s → minutes = 1
+  // WPM chuẩn: (tổng ký tự ÷ 5) ÷ phút; bài test 30s → minutes = 0.5
   const minutes = PRACTICE_WPM_SECONDS / 60;
   const wpm = Math.max(0, Math.round((practiceTotalChars / 5) / minutes));
   // Lưu lực chiến (best WPM luyện tập) nếu cao hơn
   if (typeof maybeUpdateBestWpm === 'function') maybeUpdateBestWpm(wpm);
 
   const el = id => document.getElementById(id);
-  if (el('pr-wpm')) el('pr-wpm').textContent = String(wpm);
+  if (el('pr-wpm')) {
+    el('pr-wpm').textContent = String(wpm);
+    el('pr-wpm').style.display = '';
+  }
+  if (el('practice-result-wpm-label') || document.querySelector('.practice-result-wpm-label')) {
+    const lab = document.querySelector('.practice-result-wpm-label');
+    if (lab) lab.style.display = '';
+  }
   if (el('pr-correct')) el('pr-correct').textContent = String(practiceCorrect);
   if (el('pr-wrong')) el('pr-wrong').textContent = String(practiceWrong);
   if (el('pr-acc')) el('pr-acc').textContent = acc + '%';
   if (el('pr-chars')) el('pr-chars').textContent = String(practiceTotalChars);
-  // WPM chỉ hiện trên overlay kết quả
+  // WPM hiện lại trên overlay kết quả
 
   const btn = document.getElementById('practice-wpm-btn');
   if (btn) {
@@ -8998,6 +10389,159 @@ function applyRemoteState(d) {
   if (d.phase === 'result') showResult(d);
 }
 
+// ── Typing Display Settings ──
+const TYPING_DISPLAY_MODE_KEY = 'typingBattleDisplayMode';
+let typingDisplayMode = localStorage.getItem(TYPING_DISPLAY_MODE_KEY) || 'word';
+
+function applyTypingDisplayMode() {
+  document.body.classList.toggle('typing-cursor-mode', typingDisplayMode === 'cursor');
+  document.querySelectorAll('[data-typing-mode]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.typingMode === typingDisplayMode);
+  });
+  updateTypingCursor();
+}
+
+window.setTypingDisplayMode = function setTypingDisplayMode(mode) {
+  typingDisplayMode = mode === 'cursor' ? 'cursor' : 'word';
+  localStorage.setItem(TYPING_DISPLAY_MODE_KEY, typingDisplayMode);
+  applyTypingDisplayMode();
+}
+
+// ── App Theme (chỉ đổi màu chủ đạo qua CSS variables) ──
+const APP_THEME_KEY = 'typingBattleTheme';
+const APP_THEMES = {
+  default: {
+    // Giao diện 1 — mặc định hệ thống (giữ nguyên :root hiện tại)
+    '--bg': '#0E0E11',
+    '--surface': '#15151A',
+    '--surface-2': '#1A1A21',
+    '--line': '#26262C',
+    '--line-strong': '#3A3A42',
+    '--ink': '#ECE7DD',
+    '--dim': '#8B8B95',
+    '--accent': '#E8B25B',
+    '--accent-hover': '#F0BE6B',
+    '--on-accent': '#16130C',
+    '--danger': '#E05252',
+    '--danger-line': '#4A2A2A',
+    '--success': '#7BC47F',
+    '--p1': '#E8B25B',
+    '--p2': '#A39E94',
+    '--green': '#7BC47F'
+  },
+  mono: {
+    // Giao diện 2 — chỉ đổi vàng/gold → trắng; màu khác giữ nguyên hệ thống
+    '--bg': '#0E0E11',
+    '--surface': '#15151A',
+    '--surface-2': '#1A1A21',
+    '--line': '#26262C',
+    '--line-strong': '#3A3A42',
+    '--ink': '#ECE7DD',
+    '--dim': '#8B8B95',
+    '--accent': '#F2F2F2',
+    '--accent-hover': '#FFFFFF',
+    '--on-accent': '#0A0A0A',
+    '--danger': '#E05252',
+    '--danger-line': '#4A2A2A',
+    '--success': '#7BC47F',
+    '--p1': '#F2F2F2',
+    '--p2': '#A39E94',
+    '--green': '#7BC47F'
+  }
+};
+let appTheme = localStorage.getItem(APP_THEME_KEY) || 'default';
+if (!APP_THEMES[appTheme]) appTheme = 'default';
+
+function applyAppTheme() {
+  const root = document.documentElement;
+  const vars = APP_THEMES[appTheme] || APP_THEMES.default;
+  Object.keys(vars).forEach(k => root.style.setProperty(k, vars[k]));
+  // theme-color meta (thanh trạng thái mobile)
+  try {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', vars['--bg'] || '#0E0E11');
+  } catch (e) {}
+  document.querySelectorAll('[data-theme]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === appTheme);
+  });
+  document.body.setAttribute('data-theme', appTheme);
+}
+
+window.setAppTheme = function setAppTheme(theme) {
+  appTheme = (theme === 'mono') ? 'mono' : 'default';
+  localStorage.setItem(APP_THEME_KEY, appTheme);
+  applyAppTheme();
+}
+
+window.toggleTypingSettings = function toggleTypingSettings(event) {
+  if (event) event.stopPropagation();
+  const overlay = document.getElementById('typing-settings-overlay');
+  const btn = document.getElementById('typing-settings-btn');
+  if (!overlay) return;
+  const open = !overlay.classList.contains('open');
+  overlay.classList.toggle('open', open);
+  if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) {
+    applyTypingDisplayMode();
+    applyAppTheme();
+  }
+}
+
+function updateTypingCharacterFeedback(inputEl, target) {
+  if (typingDisplayMode !== 'cursor') return;
+  const currentSpan = document.getElementById('word-' + currentWordIndex);
+  if (!currentSpan) return;
+
+  // Xóa trạng thái cũ trước khi quét lại từ đầu.
+  currentSpan.querySelectorAll('.typing-char').forEach(el => {
+    el.classList.remove('typing-correct', 'typing-wrong', 'typing-extra');
+  });
+
+  const typed = Array.from((inputEl && inputEl.value) || '');
+  const targetChars = Array.from(target || '');
+  const chars = currentSpan.querySelectorAll('.typing-char');
+  const compareLength = Math.min(typed.length, targetChars.length);
+
+  // Gõ dư ký tự phía sau (vd: "nguồnh" cho từ "nguồn") → cả từ sai, bôi đỏ toàn bộ từ.
+  // Ký tự dư vẫn không được render thêm lên word display, chỉ đổi màu các ký tự của từ mục tiêu.
+  const hasExtra = typed.length > targetChars.length;
+
+  for (let i = 0; i < compareLength; i++) {
+    const ok = !hasExtra && typed[i] === targetChars[i];
+    chars[i].classList.add(ok ? 'typing-correct' : 'typing-wrong');
+  }
+}
+
+function updateTypingCursor() {
+  // Luôn xóa toàn bộ caret cũ trước khi đặt caret mới.
+  // Nhờ vậy trên màn hình chỉ tồn tại DUY NHẤT một dấu gạch dọc
+  // và nó di chuyển liên tục theo vị trí ký tự đang gõ.
+  document.querySelectorAll('.typing-char.cursor-before').forEach(el => el.classList.remove('cursor-before'));
+  document.querySelectorAll('.typing-cursor-end').forEach(el => el.classList.remove('typing-cursor-end'));
+
+  if (typingDisplayMode !== 'cursor') return;
+  const currentSpan = document.getElementById('word-' + currentWordIndex);
+  if (!currentSpan) return;
+  const inputEl = document.getElementById('game-hidden-input');
+  const typedLength = inputEl ? Array.from(inputEl.value || '').length : 0;
+  const chars = currentSpan.querySelectorAll('.typing-char');
+  if (typedLength < chars.length) {
+    chars[typedLength].classList.add('cursor-before');
+  } else if (chars.length) {
+    // Đặt caret trực tiếp lên ký tự cuối để không bị .word padding đẩy lệch sang phải.
+    chars[chars.length - 1].classList.add('typing-cursor-end');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const overlay = document.getElementById('typing-settings-overlay');
+    if (overlay?.classList.contains('open')) toggleTypingSettings();
+  }
+});
+applyTypingDisplayMode();
+applyAppTheme();
+
 // ── Typing Engine Logic ──
 window.focusInput = function() {
   const inputEl = document.getElementById('game-hidden-input');
@@ -9368,9 +10912,14 @@ function renderAllWords() {
   const fragment = document.createDocumentFragment();
   wordList.forEach((word, idx) => {
     const span = document.createElement('span');
-    span.textContent = word;
     span.className = 'word' + (resultList[idx] ? ' ' + resultList[idx] : '');
     span.id = 'word-' + idx;
+    Array.from(word).forEach(ch => {
+      const charSpan = document.createElement('span');
+      charSpan.className = 'typing-char';
+      charSpan.textContent = ch;
+      span.appendChild(charSpan);
+    });
     fragment.appendChild(span);
   });
   containerEl.appendChild(fragment);
@@ -9387,6 +10936,7 @@ function updateCurrentWordHighlight() {
     // Luôn neo theo vị trí layout thật — tránh lệch khi wrap/prune/resize
     scrollCurrentWordIntoView();
   }
+  updateTypingCursor();
 }
 
 // Tính lại cuộn theo vị trí thật của từ hiện tại (sau prune / resize)
@@ -9454,8 +11004,9 @@ function handleWordInputChange(e) {
     let rest = val.slice(spaceIdx + 1).replace(/^\s+/, '');
     inputEl.value = rest;
     setTypingClass(inputEl, null);
+    updateTypingCursor();
     // Âm thanh: predictive keydown đã phát Space → không double; ảo thì phát tại đây
-    maybePlaySoundFromInput();
+    maybePlaySoundFromInput(true);
     resetBarkTimeout();
     if (typedWord !== '') submitWord(typedWord);
     // Gõ rất nhanh có thể để lại nhiều hơn 1 dấu cách trong value -> xử lý tiếp phần còn lại
@@ -9473,6 +11024,8 @@ function handleWordInputChange(e) {
   } else {
     setTypingClass(inputEl, 'wrong');
   }
+  updateTypingCharacterFeedback(inputEl, currentTarget || '');
+  updateTypingCursor();
   resetBarkTimeout();
 }
 
@@ -10225,18 +11778,126 @@ function playHitSfx(ok) {
   if (!soundEnabled) return;
   try {
     if (ok) {
-      uiTone(660, 0.05, 'triangle', 0.16, 990);
-      uiTone(990, 0.07, 'sine', 0.12, 1320);
+      uiTone(660, 0.05, 'triangle', 0.21, 990);
+      uiTone(990, 0.07, 'sine', 0.16, 1320);
     } else {
-      uiTone(220, 0.09, 'sawtooth', 0.26, 110);
-      uiKnock(0.22, 0.06, 400);
+      uiTone(220, 0.09, 'sawtooth', 0.47, 110);
+      uiKnock(0.42, 0.06, 400);
     }
+  } catch (e) {}
+}
+
+// ── Meow hit FX (hiện ở TẤT CẢ kiểu âm thanh, kể cả khi tắt âm thanh): ảnh meo thay particle burst ──
+const MEOW_HIT_OK = 'https://raw.githubusercontent.com/quanphamhong2k8-blip/animation-phimbattle/main/meomeo.png';
+const MEOW_HIT_BAD = 'https://raw.githubusercontent.com/quanphamhong2k8-blip/animation-phimbattle/main/meomeo-sad%20(2).png';
+const MEOW_HIT_MAX = 3;
+const MEOW_HIT_MS = 350;
+let _meowHitActive = 0;
+let _meowHitPreloaded = false;
+
+function preloadMeowHitImages() {
+  if (_meowHitPreloaded) return;
+  _meowHitPreloaded = true;
+  try {
+    const a = new Image();
+    a.decoding = 'async';
+    a.src = MEOW_HIT_OK;
+    const b = new Image();
+    b.decoding = 'async';
+    b.src = MEOW_HIT_BAD;
+  } catch (e) {}
+}
+
+function spawnMeowHitFx(ok, anchorEl) {
+  try {
+    if (_meowHitActive >= MEOW_HIT_MAX) return;
+    preloadMeowHitImages();
+    const host = (anchorEl && anchorEl.nodeType === 1) ? anchorEl : document.body;
+    const local = host !== document.body;
+    if (local) {
+      try {
+        const cs = window.getComputedStyle(host);
+        if (cs.position === 'static') host.style.position = 'relative';
+      } catch (e2) {}
+    }
+    // Size cố định (box vuông + object-fit) — 2 PNG tỉ lệ khác nhau vẫn bằng nhau
+    const sz = (typeof DeviceDetect !== 'undefined' && DeviceDetect.isPhone) ? 80
+      : ((typeof DeviceDetect !== 'undefined' && DeviceDetect.isPC) ? 90 : 85);
+    const el = document.createElement('img');
+    el.className = 'meow-hit-fx';
+    el.alt = '';
+    el.draggable = false;
+    el.width = sz;
+    el.height = sz;
+    el.style.width = sz + 'px';
+    el.style.height = sz + 'px';
+    el.style.marginLeft = (-sz / 2) + 'px';
+    el.style.marginTop = (-sz / 2) + 'px';
+    el.src = ok ? MEOW_HIT_OK : MEOW_HIT_BAD;
+    if (!local) {
+      let cx = window.innerWidth / 2, cy = window.innerHeight * 0.55;
+      if (anchorEl && anchorEl.getBoundingClientRect) {
+        const r = anchorEl.getBoundingClientRect();
+        cx = r.left + r.width / 2;
+        cy = r.top + r.height / 2;
+      }
+      el.style.position = 'fixed';
+      el.style.left = cx + 'px';
+      el.style.top = cy + 'px';
+    }
+    _meowHitActive++;
+    host.appendChild(el);
+    setTimeout(() => {
+      try { el.remove(); } catch (e) {}
+      _meowHitActive = Math.max(0, _meowHitActive - 1);
+    }, MEOW_HIT_MS + 20);
+  } catch (e) {}
+}
+
+/** Chỉ vòng sáng hit-ring (không particle burst) — dùng kèm Meow FX */
+function spawnHitRingOnly(ok, anchorEl) {
+  try {
+    const fx = (typeof DeviceFX !== 'undefined') ? DeviceFX.current() : null;
+    if (fx && fx.hitGlow === false) return;
+    let cx = window.innerWidth / 2;
+    let cy = window.innerHeight * 0.55;
+    if (anchorEl && anchorEl.getBoundingClientRect) {
+      const r = anchorEl.getBoundingClientRect();
+      cx = r.left + r.width / 2;
+      cy = r.top + r.height / 2;
+    }
+    const host = (anchorEl && anchorEl.nodeType === 1) ? anchorEl : document.body;
+    const local = host !== document.body;
+    if (local) {
+      try {
+        const cs = window.getComputedStyle(host);
+        if (cs.position === 'static') host.style.position = 'relative';
+      } catch (e2) {}
+    }
+    const ring = document.createElement('div');
+    ring.className = 'hit-ring' + (ok ? ' hit-ok' : ' hit-bad');
+    const ringScale = (typeof DeviceDetect !== 'undefined' && DeviceDetect.isPhone) ? 0.75
+      : ((typeof DeviceDetect !== 'undefined' && DeviceDetect.isPC) ? 1.15 : 0.95);
+    if (local) {
+      ring.style.left = '50%';
+      ring.style.top = '50%';
+    } else {
+      ring.style.position = 'fixed';
+      ring.style.left = cx + 'px';
+      ring.style.top = cy + 'px';
+    }
+    ring.style.setProperty('--ring-scale', String(ringScale));
+    host.appendChild(ring);
+    setTimeout(() => { try { ring.remove(); } catch (e) {} }, 420);
   } catch (e) {}
 }
 
 function feedbackWordHit(ok, anchorEl) {
   vibrateHit(ok);
+  // Particle đầy đủ cho mọi kiểu âm; ảnh meo/sad hiện ở TẤT CẢ kiểu âm thanh
+  // (kể cả khi đã tắt âm thanh) — không còn phụ thuộc soundType/soundEnabled.
   spawnHitParticles(ok, anchorEl);
+  spawnMeowHitFx(ok, anchorEl);
   playHitSfx(ok);
 }
 
@@ -10283,9 +11944,14 @@ function submitWord(typedWord) {
       const base = wordList.length - extraWords.length;
       for (let i = 0; i < extraWords.length; i++) {
         const span = document.createElement('span');
-        span.textContent = extraWords[i];
         span.className = 'word';
         span.id = 'word-' + (base + i);
+        Array.from(extraWords[i]).forEach(ch => {
+          const charSpan = document.createElement('span');
+          charSpan.className = 'typing-char';
+          charSpan.textContent = ch;
+          span.appendChild(charSpan);
+        });
         fragment.appendChild(span);
       }
       containerEl.appendChild(fragment);
@@ -10648,6 +12314,66 @@ window.backLobby = async function() {
   await leaveRoomAndNotify();
   location.reload();
 };
+</script>
+<script>
+/* ============================================================
+   Split Keyboard Visualizer — highlight phím khi gõ (chỉ PC)
+   CSS đã tự ẩn/hiện theo body.device-pc + #game-screen.practice-active,
+   nên JS chỉ cần cập nhật trạng thái .active, không cần kiểm tra thêm.
+
+   Dùng e.code (mã phím VẬT LÝ) thay vì e.key: khi gõ tiếng Việt có dấu
+   qua bộ gõ Telex/IME, e.key trong lúc đang gộp dấu thường là "Process"
+   / không xác định (isComposing = true) nên không khớp được — trong khi
+   e.code (KeyA, KeyS, Comma, Space, ...) luôn đúng theo phím vật lý bất
+   kể IME có đang xử lý hay không. Đây là lý do trước đó phím cách sáng
+   bình thường nhưng các phím chữ thì không.
+   ============================================================ */
+(function () {
+  const skvKeys = document.querySelectorAll('#practice-keyboard-viz .skv-key');
+  if (!skvKeys.length) return;
+
+  const CODE_TO_KEY = {
+    KeyQ: 'q', KeyW: 'w', KeyE: 'e', KeyR: 'r', KeyT: 't',
+    KeyY: 'y', KeyU: 'u', KeyI: 'i', KeyO: 'o', KeyP: 'p',
+    KeyA: 'a', KeyS: 's', KeyD: 'd', KeyF: 'f', KeyG: 'g',
+    KeyH: 'h', KeyJ: 'j', KeyK: 'k', KeyL: 'l',
+    KeyZ: 'z', KeyX: 'x', KeyC: 'c', KeyV: 'v', KeyB: 'b',
+    KeyN: 'n', KeyM: 'm',
+    BracketLeft: '[', BracketRight: ']',
+    Semicolon: ';', Quote: "'",
+    Comma: ',', Period: '.', Slash: '/',
+    Space: ' '
+  };
+
+  function resolveKey(e) {
+    // Ưu tiên e.code (phím vật lý, không bị IME/Telex làm sai lệch)
+    if (e.code && CODE_TO_KEY[e.code] !== undefined) return CODE_TO_KEY[e.code];
+    // Fallback: layout lạ / trình duyệt không hỗ trợ code → dùng e.key
+    const k = (e.key || '').toLowerCase();
+    return k.length === 1 ? k : null;
+  }
+
+  function findSkvKeys(targetKey) {
+    return document.querySelectorAll('#practice-keyboard-viz .skv-key[data-skv-key="' + targetKey + '"]');
+  }
+
+  window.addEventListener('keydown', (e) => {
+    const targetKey = resolveKey(e);
+    if (targetKey === null) return;
+    findSkvKeys(targetKey).forEach(k => k.classList.add('active'));
+  });
+
+  window.addEventListener('keyup', (e) => {
+    const targetKey = resolveKey(e);
+    if (targetKey === null) return;
+    findSkvKeys(targetKey).forEach(k => k.classList.remove('active'));
+  });
+
+  // Tránh phím bị "kẹt sáng" nếu người dùng chuyển tab/cửa sổ khi đang giữ phím
+  window.addEventListener('blur', () => {
+    document.querySelectorAll('#practice-keyboard-viz .skv-key.active').forEach(k => k.classList.remove('active'));
+  });
+})();
 </script>
 </body>
 </html>

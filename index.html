@@ -684,7 +684,9 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding: 4.5rem 1rem 1.5rem;
+    /* Kéo bảng lên sát mép trên */
+    padding: 0.75rem 1rem 1rem;
+    padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -698,7 +700,7 @@
   .online-users-panel {
     width: 100%;
     max-width: 420px;
-    max-height: min(78vh, 640px);
+    max-height: min(86vh, 720px);
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 14px;
@@ -706,11 +708,13 @@
     flex-direction: column;
     overflow: hidden;
     box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-    transform: translateY(12px) scale(0.97);
+    /* Scale 0.88 (+10% so với 0.8), neo mép trên giữa */
+    transform-origin: top center;
+    transform: translateY(10px) scale(0.84);
     transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
   }
   .online-users-overlay.show .online-users-panel {
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(0.88);
   }
   .online-users-head {
     display: flex;
@@ -755,15 +759,15 @@
   .online-users-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.4rem;
-    padding: 0.7rem 1.1rem 0.55rem;
+    gap: 0.3rem;
+    padding: 0.4rem 0.85rem 0.3rem;
     flex-shrink: 0;
   }
   .online-users-stat {
     background: var(--surface-2);
     border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 0.55rem 0.4rem 0.5rem;
+    border-radius: 8px;
+    padding: 0.35rem 0.3rem 0.32rem;
     text-align: center;
     cursor: pointer;
     user-select: none;
@@ -781,7 +785,7 @@
   }
   .online-users-stat .v {
     font-family: var(--font-mono);
-    font-size: 1.25rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: var(--ink);
     line-height: 1.1;
@@ -789,26 +793,26 @@
   .online-users-stat.active .v { color: var(--accent); }
   .online-users-stat .l {
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.58rem;
     font-weight: 600;
     color: var(--dim);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    margin-top: 0.18rem;
+    margin-top: 0.1rem;
   }
   .online-users-stat.active .l { color: var(--accent); }
   .online-users-tools {
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding: 0.45rem 1.1rem 0.7rem;
+    padding: 0.25rem 0.85rem 0.45rem;
     border-bottom: 1px solid var(--line);
     flex-shrink: 0;
   }
   .online-users-search {
     width: 100%;
-    padding: 0.55rem 0.75rem;
-    border-radius: 8px;
+    padding: 0.4rem 0.65rem;
+    border-radius: 7px;
     border: 1px solid var(--line-strong);
     background: var(--surface-2);
     color: var(--ink);
@@ -823,8 +827,8 @@
     flex: 1;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding: 0.25rem 0.65rem 0.7rem;
-    min-height: 120px;
+    padding: 0.15rem 0.65rem 0.5rem;
+    min-height: 220px;
   }
   .online-users-empty {
     text-align: center;
@@ -978,6 +982,20 @@
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.2;
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    min-width: 0;
+  }
+  .online-user-meta .ou-acc {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .online-user-meta .ou-created {
+    flex-shrink: 0;
+    opacity: 0.75;
+    font-weight: 500;
   }
   .online-user-side {
     flex-shrink: 0;
@@ -1007,16 +1025,84 @@
     color: var(--dim);
     margin-left: 0.12rem;
   }
+  .online-user-wpms {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.1rem;
+    /* Chiều rộng cố định theo 3 cột → PC/Mobile luôn thẳng hàng kể cả khi 1 dòng trống */
+    min-width: 9.6em;
+  }
+  .ouw-line {
+    display: grid;
+    /* Cột cố định: nhãn | số | đơn vị — cùng layout khi có số hoặc "_" */
+    grid-template-columns: 4.6em 2.8em 2.1em;
+    align-items: baseline;
+    column-gap: 0.15rem;
+    justify-items: stretch;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .ouw-line .ouw-lb {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--dim);
+    margin-right: 0;
+    text-align: right;
+    width: 100%;
+    box-sizing: border-box;
+    /* "PC:" và "Mobile:" cùng mép phải → dấu hai chấm thẳng hàng */
+    font-variant-numeric: normal;
+  }
+  .ouw-line b {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .ouw-line .ouw-u {
+    font-size: 0.58rem;
+    font-weight: 600;
+    color: var(--dim);
+    margin-left: 0;
+    text-align: left;
+    width: 100%;
+  }
+  .ouw-line.empty {
+    color: var(--dim);
+    font-weight: 600;
+  }
+  .ouw-line.empty b { opacity: 0.55; font-weight: 600; }
+  .ouw-line.empty .ouw-u {
+    visibility: hidden; /* giữ chỗ cột đơn vị, không lệch layout */
+  }
   .online-user-ago {
     font-family: var(--font-mono);
     font-size: 0.62rem;
     font-weight: 600;
     color: var(--ink);
-    opacity: 0.55;
+    opacity: 0.7;
     line-height: 1.2;
     border: none;
     background: transparent;
     padding: 0;
+    margin-top: 0.15rem;
+    white-space: nowrap;
+  }
+  .online-user-ago.is-on {
+    color: var(--success);
+    opacity: 0.95;
+  }
+  .online-user-ago.is-off {
+    color: var(--dim);
+    opacity: 0.85;
   }
   .online-users-foot {
     flex-shrink: 0;
@@ -1034,14 +1120,139 @@
      Chế độ Player: hiện lại stats (Tất cả/Online/Offline) + search + refresh. */
   .online-users-stats { display: none !important; }
   .online-users-tools { display: none !important; }
+  .online-users-wpm-filter { display: none !important; }
   .online-users-overlay.mode-players .online-users-stats {
     display: grid !important;
   }
   .online-users-overlay.mode-players .online-users-tools {
     display: flex !important;
   }
+  .online-users-overlay.mode-players .online-users-wpm-filter {
+    display: flex !important;
+  }
   .online-users-overlay.mode-players .online-users-search {
     display: block;
+  }
+  /* Dropdown lọc WPM — dưới khung stats+search, góc trái, không khung */
+  .online-users-wpm-filter {
+    position: relative;
+    display: none;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0.35rem 0.85rem 0.2rem;
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+  }
+  .online-users-wpm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.1rem;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.15s;
+    box-shadow: none;
+  }
+  .online-users-wpm-btn:hover {
+    color: var(--accent);
+    background: transparent;
+    border: none;
+  }
+  .online-users-wpm-btn[aria-expanded="true"] {
+    color: var(--accent);
+    background: transparent;
+    border: none;
+  }
+  .online-users-wpm-btn .ouw-filter-label {
+    color: var(--dim);
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .online-users-wpm-btn .ouw-filter-value {
+    color: inherit;
+  }
+  .online-users-wpm-chevron {
+    width: 11px;
+    height: 11px;
+    flex-shrink: 0;
+    color: var(--dim);
+    transition: transform 0.18s ease, color 0.15s;
+  }
+  .online-users-wpm-btn:hover .online-users-wpm-chevron,
+  .online-users-wpm-btn[aria-expanded="true"] .online-users-wpm-chevron {
+    color: var(--accent);
+  }
+  .online-users-wpm-btn[aria-expanded="true"] .online-users-wpm-chevron {
+    transform: rotate(180deg);
+  }
+  .online-users-wpm-menu {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0.85rem;
+    z-index: 25;
+    min-width: 148px;
+    padding: 0.3rem;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+    display: none;
+  }
+  .online-users-wpm-menu.open { display: block; }
+  .online-users-wpm-opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 0.7rem;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .online-users-wpm-opt:hover { background: var(--surface-2); color: var(--accent); }
+  .online-users-wpm-opt.active {
+    color: var(--accent);
+    background: rgba(232,178,91,0.12);
+  }
+  /* Một dòng WPM đơn (PC hoặc Mobile filter): to hơn, căn phải, không nhãn */
+  .ouw-line.ouw-single {
+    grid-template-columns: minmax(0, auto) auto;
+    justify-items: end;
+    align-items: baseline;
+    column-gap: 0.25rem;
+    font-size: 1.15rem;
+    line-height: 1.2;
+  }
+  .ouw-line.ouw-single b {
+    min-width: 0;
+    text-align: right;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .ouw-line.ouw-single .ouw-u {
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+  .ouw-line.ouw-single.empty b {
+    font-size: 1.15rem;
+    opacity: 0.5;
   }
   .online-users-head-left { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
   /* Tiêu đề dạng sổ xuống: bấm Khách/Player để đổi chế độ */
@@ -1142,7 +1353,7 @@
   .online-users-tools { flex-direction: row !important; align-items: center; gap: 0.45rem !important; }
   .online-users-tools .online-users-search { flex: 1; width: auto; min-width: 0; }
   .online-users-refresh {
-    display: none; width: 36px; height: 36px; flex-shrink: 0; border-radius: 8px;
+    display: none; width: 32px; height: 32px; flex-shrink: 0; border-radius: 7px;
     border: 1px solid var(--line-strong); background: var(--surface-2); color: var(--dim);
     cursor: pointer; align-items: center; justify-content: center;
   }
@@ -4565,6 +4776,18 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
       </button>
     </div>
+    <div class="online-users-wpm-filter" id="online-users-wpm-filter">
+      <button type="button" class="online-users-wpm-btn" id="online-users-wpm-btn" onclick="toggleOnlineWpmMenu(event)" aria-haspopup="listbox" aria-expanded="false" title="Lọc hiển thị WPM">
+        <span class="ouw-filter-label">WPM</span>
+        <span class="ouw-filter-value" id="online-users-wpm-value">Tất cả</span>
+        <svg class="online-users-wpm-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="online-users-wpm-menu" id="online-users-wpm-menu" role="listbox" aria-label="Lọc WPM">
+        <button type="button" class="online-users-wpm-opt active" data-wpm-filter="all" role="option" aria-selected="true" onclick="selectOnlineWpmFilter('all', event)">Tất cả</button>
+        <button type="button" class="online-users-wpm-opt" data-wpm-filter="pc" role="option" aria-selected="false" onclick="selectOnlineWpmFilter('pc', event)">PC</button>
+        <button type="button" class="online-users-wpm-opt" data-wpm-filter="mobile" role="option" aria-selected="false" onclick="selectOnlineWpmFilter('mobile', event)">Mobile</button>
+      </div>
+    </div>
     <div class="online-users-list" id="online-users-list">
       <div class="online-users-empty">Chưa có dữ liệu…</div>
     </div>
@@ -5334,7 +5557,9 @@ async function refreshAccountFromServer() {
       bestWpmPc: typeof d.bestWpmPc === 'number' ? d.bestWpmPc : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
       displayNameChangedAt: typeof d.displayNameChangedAt === 'number' ? d.displayNameChangedAt : 0
     };
-    normalizeUserPowerFields(currentUser);
+    normalizeUserPowerFields(currentUser, d);
+    // Acc cũ chỉ có bestWpm → ghi luôn 2 field nền lên server (không mất khi xem Player)
+    await ensurePowerFieldsMigratedToServer(d);
     saveSessionUser(currentUser);
     renderAccountBadge();
     ensureRecoveryPinSet();
@@ -5613,7 +5838,10 @@ window.submitAuth = async function() {
         bestWpmMobile: typeof d.bestWpmMobile === 'number' ? d.bestWpmMobile : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
         bestWpmPc: typeof d.bestWpmPc === 'number' ? d.bestWpmPc : (typeof d.bestWpm === 'number' ? d.bestWpm : 0)
       };
-      if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
+      if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser, d);
+      if (typeof ensurePowerFieldsMigratedToServer === 'function') {
+        await ensurePowerFieldsMigratedToServer(d);
+      }
       saveSessionUser(currentUser);
       renderAccountBadge();
       setAuthForgotMode(false);
@@ -5665,7 +5893,11 @@ window.submitAuth = async function() {
           updatedAt: Date.now()
         });
       }
-      if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
+      if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser, d);
+      // Acc cũ chỉ có bestWpm → ghi 2 field nền lên server ngay khi đăng nhập
+      if (typeof ensurePowerFieldsMigratedToServer === 'function') {
+        await ensurePowerFieldsMigratedToServer(d);
+      }
       saveSessionUser(currentUser);
       renderAccountBadge();
       closeAuthModal();
@@ -5887,16 +6119,59 @@ function getMyDisplayPower() {
   return getMyBestWpmForPlatform(currentUser);
 }
 
-/** Chuẩn hoá object user: tách bestWpm → mobile/pc nếu thiếu */
+/**
+ * Chuẩn hoá object user: tách bestWpm → mobile/pc nếu thiếu.
+ * Quy tắc:
+ *  - Field nền nào đã có số → giữ nguyên
+ *  - Field nền nào thiếu → lấy từ bestWpm (legacy) để không mất dữ liệu acc cũ
+ *  - bestWpm luôn = max(mobile, pc, legacy)
+ */
 function normalizeUserPowerFields(u, d) {
   if (!u) return u;
   const src = d || u;
-  const legacy = typeof src.bestWpm === 'number' ? src.bestWpm : 0;
-  u.bestWpmMobile = typeof src.bestWpmMobile === 'number' ? src.bestWpmMobile : legacy;
-  u.bestWpmPc = typeof src.bestWpmPc === 'number' ? src.bestWpmPc : legacy;
-  // bestWpm = max 2 nền (tương thích list online cũ)
+  const legacy = (typeof src.bestWpm === 'number' && isFinite(src.bestWpm)) ? src.bestWpm : 0;
+  const hasMob = typeof src.bestWpmMobile === 'number' && isFinite(src.bestWpmMobile);
+  const hasPc = typeof src.bestWpmPc === 'number' && isFinite(src.bestWpmPc);
+  u.bestWpmMobile = hasMob ? src.bestWpmMobile : legacy;
+  u.bestWpmPc = hasPc ? src.bestWpmPc : legacy;
   u.bestWpm = Math.max(u.bestWpmMobile || 0, u.bestWpmPc || 0, legacy);
   return u;
+}
+
+/**
+ * Migrate 1 lần lên server: acc cũ chỉ có bestWpm → ghi luôn bestWpmMobile + bestWpmPc
+ * để danh sách Player / lần sau không còn mất số.
+ * Chỉ ghi khi server THIẾU field (không đè số đã tách).
+ */
+async function ensurePowerFieldsMigratedToServer(serverData) {
+  if (!currentUser || !currentUser.emailKey) return;
+  try {
+    const d = serverData || {};
+    const legacy = (typeof d.bestWpm === 'number' && isFinite(d.bestWpm)) ? d.bestWpm : 0;
+    const hasMob = typeof d.bestWpmMobile === 'number' && isFinite(d.bestWpmMobile);
+    const hasPc = typeof d.bestWpmPc === 'number' && isFinite(d.bestWpmPc);
+    // Không cần migrate nếu đã có đủ 2 field, hoặc không có legacy để đổ
+    if ((hasMob && hasPc) || (!hasMob && !hasPc && legacy <= 0)) {
+      // Vẫn đồng bộ local từ server (kể cả 0)
+      normalizeUserPowerFields(currentUser, {
+        bestWpm: legacy,
+        bestWpmMobile: hasMob ? d.bestWpmMobile : (hasPc || hasMob ? 0 : legacy),
+        bestWpmPc: hasPc ? d.bestWpmPc : (hasPc || hasMob ? 0 : legacy)
+      });
+      return;
+    }
+    const nextMobile = hasMob ? d.bestWpmMobile : legacy;
+    const nextPc = hasPc ? d.bestWpmPc : legacy;
+    const nextMax = Math.max(nextMobile || 0, nextPc || 0, legacy);
+    const patch = { updatedAt: Date.now(), bestWpm: nextMax };
+    if (!hasMob) patch.bestWpmMobile = nextMobile;
+    if (!hasPc) patch.bestWpmPc = nextPc;
+    await update(ref(db, 'users/' + currentUser.emailKey), patch);
+    currentUser.bestWpmMobile = nextMobile;
+    currentUser.bestWpmPc = nextPc;
+    currentUser.bestWpm = nextMax;
+    saveSessionUser(currentUser);
+  } catch (e) {}
 }
 
 async function maybeUpdateBestWpm(wpm) {
@@ -5907,16 +6182,50 @@ async function maybeUpdateBestWpm(wpm) {
   const curPlat = getMyBestWpmForPlatform(currentUser, plat);
   if (n <= curPlat) return;
   try {
-    const nextMobile = plat === 'mobile' ? n : getMyBestWpmForPlatform(currentUser, 'mobile');
-    const nextPc = plat === 'pc' ? n : getMyBestWpmForPlatform(currentUser, 'pc');
-    const nextMax = Math.max(nextMobile, nextPc, currentUser.bestWpm || 0);
+    // Đọc server trước khi ghi — tránh mất field nền kia / race khi multi-tab
+    let serverHasMob = typeof currentUser.bestWpmMobile === 'number';
+    let serverHasPc = typeof currentUser.bestWpmPc === 'number';
+    let serverLegacy = typeof currentUser.bestWpm === 'number' ? currentUser.bestWpm : 0;
+    try {
+      const snap = await get(ref(db, 'users/' + currentUser.emailKey));
+      if (snap.exists()) {
+        const d = snap.val() || {};
+        serverHasMob = typeof d.bestWpmMobile === 'number' && isFinite(d.bestWpmMobile);
+        serverHasPc = typeof d.bestWpmPc === 'number' && isFinite(d.bestWpmPc);
+        if (typeof d.bestWpm === 'number' && isFinite(d.bestWpm)) serverLegacy = d.bestWpm;
+        // Lấy số nền hiện có trên server làm chuẩn (không tin cache local cũ)
+        if (serverHasMob) currentUser.bestWpmMobile = d.bestWpmMobile;
+        if (serverHasPc) currentUser.bestWpmPc = d.bestWpmPc;
+        currentUser.bestWpm = Math.max(
+          serverHasMob ? d.bestWpmMobile : 0,
+          serverHasPc ? d.bestWpmPc : 0,
+          serverLegacy
+        );
+      }
+    } catch (eRead) {}
+
+    // Nền hiện tại phải cao hơn số đang có (sau khi sync server)
+    const curPlatFresh = getMyBestWpmForPlatform(currentUser, plat);
+    if (n <= curPlatFresh) return;
+
+    const nextMobile = plat === 'mobile'
+      ? n
+      : (serverHasMob ? currentUser.bestWpmMobile : serverLegacy);
+    const nextPc = plat === 'pc'
+      ? n
+      : (serverHasPc ? currentUser.bestWpmPc : serverLegacy);
+    const nextMax = Math.max(nextMobile || 0, nextPc || 0, serverLegacy, n);
+
     const patch = {
       [field]: n,
-      bestWpm: nextMax, // legacy / admin online
+      bestWpm: nextMax,
       updatedAt: Date.now()
     };
+    // Migrate nền còn lại nếu server chưa từng ghi — giữ dữ liệu legacy, không để = 0
+    if (plat === 'pc' && !serverHasMob) patch.bestWpmMobile = nextMobile;
+    if (plat === 'mobile' && !serverHasPc) patch.bestWpmPc = nextPc;
+
     await update(ref(db, 'users/' + currentUser.emailKey), patch);
-    currentUser[field] = n;
     currentUser.bestWpmMobile = nextMobile;
     currentUser.bestWpmPc = nextPc;
     currentUser.bestWpm = nextMax;
@@ -5946,9 +6255,13 @@ function isAdmin() {
 const PRESENCE_PATH = 'presence';
 const PRESENCE_HEARTBEAT_MS = 30000; // 30s — cập nhật thường hơn, đếm chính xác hơn
 const PRESENCE_FRESH_MS = 75000;    // 75s — quá hạn coi như offline (2.5 × heartbeat)
+const PRESENCE_IDLE_MS = 2 * 60 * 1000; // 2 phút không tương tác → tab offline
 let _presenceSid = null;
 let _presenceUnsub = null;
 let _presenceHeartbeat = null;
+let _presenceIdleCheck = null;
+let _lastActivityAt = Date.now();
+let _presenceIdleOffline = false; // tab này đã gỡ presence vì idle (có thể online lại khi tương tác)
 let _onlineCount = 0;
 let _onlineLogged = 0;
 let _onlineGuest = 0;
@@ -5956,6 +6269,7 @@ let _lastOnlineShown = -1;
 /** Cache presence rows cho panel admin */
 let _presenceRows = []; // [{ sid, ts, account, name, wpm, isLogged, devices }]
 let _onlineUsersFilter = 'all'; // all | logged | guest
+let _onlineWpmFilter = 'all'; // all | pc | mobile — lọc hiển thị WPM trong danh sách Player
 let _onlineUsersPanelOpen = false;
 let _onlineAgoTimer = null;
 /** Cache avatar online list: emailKey → dataUrl|null (null = đã fetch, không có avt) */
@@ -6035,15 +6349,68 @@ function getOrCreatePresenceSid() {
   }
 }
 
-function getPresenceSince() {
+/** since tab này (sessionStorage) */
+function getLocalTabSince() {
   try {
     let v = Number(sessionStorage.getItem('wwb_presence_since'));
-    if (!v || !isFinite(v)) { v = Date.now(); sessionStorage.setItem('wwb_presence_since', String(v)); }
+    if (!v || !isFinite(v)) {
+      v = Date.now();
+      sessionStorage.setItem('wwb_presence_since', String(v));
+    }
     return v;
   } catch (e) {
     if (!window._presenceSinceMem) window._presenceSinceMem = Date.now();
     return window._presenceSinceMem;
   }
+}
+
+/**
+ * Thời điểm vào web đầu tiên của phiên online hiện tại.
+ * Nhiều tab cùng acc → min(since) các node đang sống + tab này.
+ * localStorage chỉ dùng để tab mới mở kế thừa mốc (có TTL, tránh “online từ hôm qua”).
+ */
+function getPresenceSince() {
+  let v = getLocalTabSince();
+  try {
+    if (currentUser && currentUser.emailKey) {
+      const acc = String(currentUser.emailKey).trim();
+      const lsKey = 'wwb_acc_online_since_' + acc;
+      const now = Date.now();
+      // Min với peer đang online (nhiều tab/máy)
+      let hasPeer = false;
+      for (const r of (_presenceRows || [])) {
+        if (r && r.isLogged && r.account === acc && typeof r.since === 'number' && r.since > 0) {
+          hasPeer = true;
+          v = Math.min(v, r.since);
+        }
+      }
+      // Tab mới trên cùng máy: đọc shared nếu còn tươi (tab khác vừa ghi ≤ 3 phút)
+      try {
+        const raw = localStorage.getItem(lsKey);
+        if (raw) {
+          const parts = String(raw).split('|');
+          const sharedSince = Number(parts[0]);
+          const sharedUpd = Number(parts[1] || 0);
+          if (sharedSince > 0 && sharedUpd > 0 && (now - sharedUpd) < 3 * 60 * 1000) {
+            v = Math.min(v, sharedSince);
+          }
+        }
+        localStorage.setItem(lsKey, String(v) + '|' + String(now));
+      } catch (e2) {}
+      try { sessionStorage.setItem('wwb_presence_since', String(v)); } catch (e4) {}
+    }
+  } catch (e) {}
+  return v;
+}
+
+function clearAccountOnlineSince() {
+  try {
+    if (currentUser && currentUser.emailKey) {
+      localStorage.removeItem('wwb_acc_online_since_' + String(currentUser.emailKey).trim());
+    }
+  } catch (e) {}
+  try { sessionStorage.removeItem('wwb_presence_since'); } catch (e2) {}
+  window._presenceSinceMem = null;
 }
 
 function presencePayload() {
@@ -6053,7 +6420,8 @@ function presencePayload() {
     account: null,
     name: null,
     wpm: null,
-    guestKey: null
+    guestKey: null,
+    plat: (typeof getPowerPlatform === 'function') ? getPowerPlatform() : 'pc'
   };
   if (currentUser && currentUser.emailKey) {
     const key = String(currentUser.emailKey).trim();
@@ -6199,11 +6567,74 @@ async function cancelUserLastSeenOnDisconnect() {
   } catch (e) {}
 }
 
-function writePresenceNow() {
+function isPresenceTabActive() {
+  return (Date.now() - (_lastActivityAt || 0)) < PRESENCE_IDLE_MS;
+}
+
+function touchPresenceActivity() {
+  _lastActivityAt = Date.now();
+  if (_presenceIdleOffline && _presenceSid) {
+    _presenceIdleOffline = false;
+    // Online lại — giữ nguyên since (không reset thời gian online)
+    writePresenceNow(true);
+  }
+}
+
+/** Gỡ presence tab này vì idle (tab khác còn tương tác → acc vẫn online) */
+function goPresenceIdleOffline() {
+  if (!_presenceSid || _presenceIdleOffline) return;
+  _presenceIdleOffline = true;
+  try {
+    remove(ref(db, PRESENCE_PATH + '/' + _presenceSid)).catch(() => {});
+  } catch (e) {}
+}
+
+/**
+ * Ghi presence. force=true bỏ qua check idle (dùng khi vừa tương tác lại).
+ * Idle > 2 phút → không ghi, xóa node tab này.
+ */
+function writePresenceNow(force) {
+  if (!_presenceSid && !force) {
+    const key = getMyPresenceNodeKey();
+    if (!key) return;
+  }
+  if (!force && !isPresenceTabActive()) {
+    goPresenceIdleOffline();
+    return;
+  }
   const key = getMyPresenceNodeKey();
   if (!key) return;
   if (!_presenceSid) _presenceSid = key;
-  set(ref(db, PRESENCE_PATH + '/' + key), presencePayload()).catch(() => {});
+  _presenceIdleOffline = false;
+  const payload = presencePayload();
+  set(ref(db, PRESENCE_PATH + '/' + key), payload).catch(() => {});
+  // Gia hạn shared since trên máy (tab khác mở trong 3 phút sẽ kế thừa)
+  try {
+    if (payload.account && typeof payload.since === 'number') {
+      localStorage.setItem('wwb_acc_online_since_' + payload.account, String(payload.since) + '|' + String(Date.now()));
+    }
+  } catch (e) {}
+}
+
+function setupPresenceActivityListeners() {
+  if (window._presenceActivityBound) return;
+  window._presenceActivityBound = true;
+  let moveThrottle = 0;
+  const onAct = () => { touchPresenceActivity(); };
+  const onMove = () => {
+    const now = Date.now();
+    if (now - moveThrottle < 4000) return;
+    moveThrottle = now;
+    touchPresenceActivity();
+  };
+  try {
+    document.addEventListener('pointerdown', onAct, { passive: true });
+    document.addEventListener('keydown', onAct, { passive: true });
+    document.addEventListener('touchstart', onAct, { passive: true });
+    document.addEventListener('click', onAct, { passive: true });
+    document.addEventListener('scroll', onMove, { passive: true });
+    document.addEventListener('mousemove', onMove, { passive: true });
+  } catch (e) {}
 }
 
 /** Xóa node presence hiện tại (và node guestKey cũ nếu còn sót từ bản trước) */
@@ -6249,23 +6680,34 @@ async function startPresence() {
       await armUserLastSeenOnDisconnect();
     }
   } catch (e) {}
+  setupPresenceActivityListeners();
+  _lastActivityAt = Date.now();
+  _presenceIdleOffline = false;
   if (_presenceHeartbeat) clearInterval(_presenceHeartbeat);
   _presenceHeartbeat = setInterval(() => {
-    if (typeof document !== 'undefined' && document.hidden) return;
-    writePresenceNow();
+    if (isPresenceTabActive()) writePresenceNow();
+    else goPresenceIdleOffline();
   }, PRESENCE_HEARTBEAT_MS);
+  // Check idle dày hơn heartbeat để offline đúng ~2 phút, không chờ thêm 30s
+  if (_presenceIdleCheck) clearInterval(_presenceIdleCheck);
+  _presenceIdleCheck = setInterval(() => {
+    if (!isPresenceTabActive()) goPresenceIdleOffline();
+  }, 15000);
 }
 
 function stopPresence() {
   if (_presenceHeartbeat) { clearInterval(_presenceHeartbeat); _presenceHeartbeat = null; }
+  if (_presenceIdleCheck) { clearInterval(_presenceIdleCheck); _presenceIdleCheck = null; }
   if (_presenceSid) {
     removeMyPresenceNodes();
     _presenceSid = null;
   }
+  _presenceIdleOffline = false;
   try {
     if (currentUser && currentUser.emailKey) {
       markUserLastSeen(false);
       cancelUserLastSeenOnDisconnect();
+      clearAccountOnlineSince();
     } else {
       clearCachedGuestNum();
     }
@@ -6364,6 +6806,8 @@ function parsePresenceSnapshot(val) {
           ? String(row.name).trim()
           : rawAcc;
         const wpm = (typeof row.wpm === 'number' && isFinite(row.wpm)) ? row.wpm : null;
+        const platRaw = row.plat != null ? String(row.plat).toLowerCase() : '';
+        const plat = (platRaw === 'mobile' || platRaw === 'pc') ? platRaw : null;
         accountBest.set(rawAcc, {
           sid: k,
           ts,
@@ -6371,7 +6815,8 @@ function parsePresenceSnapshot(val) {
           name,
           wpm,
           isLogged: true,
-          devices: 1
+          devices: 1,
+          plat
         });
       }
     } else {
@@ -6467,6 +6912,43 @@ function escapeOnlineHtml(s) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 }
+
+function closeOnlineWpmMenu() {
+  const menu = document.getElementById('online-users-wpm-menu');
+  const btn = document.getElementById('online-users-wpm-btn');
+  if (menu) menu.classList.remove('open');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+window.toggleOnlineWpmMenu = function(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('online-users-wpm-menu');
+  const btn = document.getElementById('online-users-wpm-btn');
+  if (!menu || !btn) return;
+  const open = !menu.classList.contains('open');
+  try { if (typeof closeOnlineModeMenu === 'function') closeOnlineModeMenu(); } catch (e) {}
+  menu.classList.toggle('open', open);
+  btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+};
+window.selectOnlineWpmFilter = function(filter, event) {
+  if (event) event.stopPropagation();
+  const next = (filter === 'pc' || filter === 'mobile') ? filter : 'all';
+  _onlineWpmFilter = next;
+  const labels = { all: 'Tất cả', pc: 'PC', mobile: 'Mobile' };
+  const valEl = document.getElementById('online-users-wpm-value');
+  if (valEl) valEl.textContent = labels[next] || 'Tất cả';
+  document.querySelectorAll('#online-users-wpm-menu [data-wpm-filter]').forEach(btn => {
+    const on = btn.getAttribute('data-wpm-filter') === next;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  closeOnlineWpmMenu();
+  if (typeof renderOnlineUsersList === 'function') renderOnlineUsersList();
+};
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('online-users-wpm-filter');
+  if (!wrap || wrap.contains(e.target)) return;
+  closeOnlineWpmMenu();
+});
 
 window.setOnlineUsersFilter = function(filter) {
   _onlineUsersFilter = filter || 'all';
@@ -6693,6 +7175,10 @@ function sanitizePlayer(key, d) {
   d = d || {};
   const num = v => (typeof v === 'number' && isFinite(v)) ? v : null;
   const pc = num(d.bestWpmPc), mob = num(d.bestWpmMobile), legacy = num(d.bestWpm);
+  // Acc cũ chỉ có bestWpm → đổ vào cả 2 nền khi hiển thị (không mất số)
+  // Acc đã tách 1 phần: nền thiếu → fallback legacy; nền đã có → giữ nguyên
+  const wpmPc = pc != null ? pc : (legacy || 0);
+  const wpmMobile = mob != null ? mob : (legacy || 0);
   let av = d.avatar;
   if (!(typeof av === 'string' && av.length > 32 &&
         (av.startsWith('data:image/') || av.startsWith('https://') || av.startsWith('http://')))) av = null;
@@ -6704,9 +7190,9 @@ function sanitizePlayer(key, d) {
     createdAt: num(d.createdAt),
     updatedAt: num(d.updatedAt),
     lastSeen: num(d.lastSeen),
-    wpmPc: pc || 0,
-    wpmMobile: mob || 0,
-    best: Math.max(pc || 0, mob || 0, legacy || 0)
+    wpmPc: wpmPc,
+    wpmMobile: wpmMobile,
+    best: Math.max(wpmPc, wpmMobile, legacy || 0)
   };
 }
 
@@ -6902,6 +7388,7 @@ function renderPlayersList() {
   const q = ((searchEl && searchEl.value) || '').trim().toLowerCase();
   const onlineSet = new Set(_presenceRows.filter(r => r.isLogged && r.account).map(r => r.account));
   const sinceMap = new Map(_presenceRows.filter(r => r.isLogged && r.account && r.since).map(r => [r.account, r.since]));
+  const platMap = new Map(_presenceRows.filter(r => r.isLogged && r.account).map(r => [r.account, r.plat || null]));
   const fmtInGame = ms => {
     const sec = Math.max(0, Math.floor(ms / 1000));
     if (sec < 60) return sec + ' giây';
@@ -6934,7 +7421,19 @@ function renderPlayersList() {
     if (_playersHasMore && !_playersLoading && !_playersError) loadMorePlayers(true);
   }
 
-  rows = rows.slice().sort((a, b) => ((b.best > 0) - (a.best > 0)) || (b.best - a.best));
+  // Sắp xếp theo bộ lọc WPM: PC/Mobile → theo nền đó (cao → thấp); Tất cả → theo best
+  const wpmF = _onlineWpmFilter || 'all';
+  rows = rows.slice().sort((a, b) => {
+    if (wpmF === 'pc') {
+      const av = a.wpmPc || 0, bv = b.wpmPc || 0;
+      return ((bv > 0) - (av > 0)) || (bv - av);
+    }
+    if (wpmF === 'mobile') {
+      const av = a.wpmMobile || 0, bv = b.wpmMobile || 0;
+      return ((bv > 0) - (av > 0)) || (bv - av);
+    }
+    return ((b.best > 0) - (a.best > 0)) || (b.best - a.best);
+  });
 
   let html = '';
   for (const p of rows) {
@@ -6965,12 +7464,22 @@ function renderPlayersList() {
         : ((typeof p.createdAt === 'number' && p.createdAt > 0) ? p.createdAt : 0));
       offlineLabel = last ? fmtOffline(Date.now() - last) : 'OFF';
     }
-    // Admin: giữ tag Admin + Online/OFF… (thời gian online hoặc offline)
+    // Chỉ giữ tag Admin cạnh tên — thời gian on/off chuyển xuống góc phải (chỗ "tạo …" cũ)
     let tag = '';
     if (isAd) tag += '<span class="online-user-tag admin">Admin</span>';
-    if (onlineDur) tag += '<span class="online-user-tag time">' + escapeOnlineHtml(onlineDur) + '</span>';
-    else if (online) tag += '<span class="online-user-tag logged">Online</span>';
-    else tag += '<span class="online-user-tag off">' + escapeOnlineHtml(offlineLabel) + '</span>';
+    // Trạng thái on/off + nền tảng (PC/Mobile) cho dòng góc phải
+    let statusAgo = '';
+    let statusClass = 'is-off';
+    if (online) {
+      const plat = platMap.get(p.key);
+      const platLb = plat === 'mobile' ? 'Mobile' : (plat === 'pc' ? 'PC' : null);
+      const dur = onlineDur || 'Online';
+      statusAgo = platLb ? (platLb + ' ' + dur) : dur;
+      statusClass = 'is-on';
+    } else {
+      statusAgo = offlineLabel;
+      statusClass = 'is-off';
+    }
     // Admin chỉ thấy tên tài khoản (local), không hiện đuôi .wordwar.vn
     const accountLabel = (() => {
       let s = String(p.email || p.key || '').trim();
@@ -6982,12 +7491,30 @@ function renderPlayersList() {
       if (!p.email && /_wordwar_vn$/i.test(s)) s = s.replace(/_wordwar_vn$/i, '').replace(/_/g, '.');
       return s;
     })();
-    const meta = escapeOnlineHtml(accountLabel);
+    const createdStr = formatPlayerDate(p.createdAt);
+    // Meta: tên tài khoản + ngày tạo (bỏ chữ "tạo") đứng cạnh nhau
+    const metaHtml = '<span class="ou-acc">' + escapeOnlineHtml(accountLabel) + '</span>'
+      + (createdStr ? '<span class="ou-created">' + escapeOnlineHtml(createdStr) + '</span>' : '');
     // Non-admin: không thấy tên tài khoản; nếu chưa đặt tên hiển thị (tên = key) thì che
     const shownName = admin ? p.name : (p.name === p.key ? 'Người chơi' : p.name);
-    const wpmHtml = p.best > 0
-      ? '<div class="online-user-wpm">' + escapeOnlineHtml(p.best) + '<span>WPM</span></div>'
-      : '<div class="online-user-wpm empty">—</div>';
+    const wpmLine = (label, n) => (n > 0)
+      ? '<div class="ouw-line"><span class="ouw-lb">' + label + ':</span><b>' + escapeOnlineHtml(n) + '</b><span class="ouw-u">wpm</span></div>'
+      : '<div class="ouw-line empty"><span class="ouw-lb">' + label + ':</span><b>_</b><span class="ouw-u">wpm</span></div>';
+    // PC/Mobile filter: chỉ 1 số, không nhãn "PC/Mobile" — chỉ "N wpm"
+    const wpmSingle = (n) => (n > 0)
+      ? '<div class="ouw-line ouw-single"><b>' + escapeOnlineHtml(n) + '</b><span class="ouw-u">wpm</span></div>'
+      : '<div class="ouw-line ouw-single empty"><b>_</b></div>';
+    let wpmHtml;
+    if (wpmF === 'pc') {
+      wpmHtml = '<div class="online-user-wpms">' + wpmSingle(p.wpmPc) + '</div>';
+    } else if (wpmF === 'mobile') {
+      wpmHtml = '<div class="online-user-wpms">' + wpmSingle(p.wpmMobile) + '</div>';
+    } else {
+      wpmHtml = '<div class="online-user-wpms">' +
+        wpmLine('PC', p.wpmPc) +
+        wpmLine('Mobile', p.wpmMobile) +
+      '</div>';
+    }
     const canDel = admin && !ADMIN_KEYS.includes(p.key) && !(currentUser && p.key === currentUser.emailKey);
     html += '<div class="online-user-row"' + (canDel ? ' style="cursor:pointer" data-key="' + escapeOnlineHtml(p.key) + '" ondblclick="deletePlayerRow(this)"' : '') +
       ' title="PC ' + p.wpmPc + ' · Mobile ' + p.wpmMobile + (canDel ? ' · nhấp đúp để xóa' : '') + '">' +
@@ -6997,10 +7524,10 @@ function renderPlayersList() {
           (online ? '<span class="online-user-dot"></span>' : '') +
           '<div class="online-user-name">' + escapeOnlineHtml(shownName) + '</div>' + tag +
         '</div>' +
-        (admin ? '<div class="online-user-meta">' + meta + '</div>' : '') +
+        (admin ? '<div class="online-user-meta">' + metaHtml + '</div>' : '') +
       '</div>' +
       '<div class="online-user-side">' + wpmHtml +
-        (admin ? '<div class="online-user-ago">tạo ' + escapeOnlineHtml(formatPlayerDate(p.createdAt)) + '</div>' : '') +
+        '<div class="online-user-ago ' + statusClass + '">' + escapeOnlineHtml(statusAgo) + '</div>' +
       '</div>' +
     '</div>';
   }
@@ -7046,6 +7573,7 @@ window.deletePlayerRow = async function(el) {
 
 window.closeOnlineUsersPanel = function() {
   try { closeOnlineModeMenu(); } catch (e) {}
+  try { closeOnlineWpmMenu(); } catch (e) {}
 
   const ov = document.getElementById('online-users-overlay');
   const btn = document.getElementById('admin-online-list-btn');
@@ -7076,9 +7604,12 @@ function syncAdminPresenceState() {
   updateAdminOnlineUI();
 }
 
-// Tab hiện lại → heartbeat ngay (không chờ đủ 60s)
+// Tab hiện lại → coi như tương tác + heartbeat; tab ẩn không gia hạn idle
 document.addEventListener('visibilitychange', () => {
-  if (!document.hidden && _presenceSid) writePresenceNow();
+  if (!document.hidden && _presenceSid) {
+    touchPresenceActivity();
+    writePresenceNow(true);
+  }
 });
 
 currentUser = loadSessionUser();

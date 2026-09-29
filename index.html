@@ -1028,20 +1028,16 @@
   .online-user-wpms {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-end;
     gap: 0.1rem;
-    /* Chiều rộng cố định theo 3 cột → PC/Mobile luôn thẳng hàng kể cả khi 1 dòng trống */
-    min-width: 9.6em;
   }
   .ouw-line {
     display: grid;
-    /* Cột cố định: nhãn | số | đơn vị — cùng layout khi có số hoặc "_" */
-    grid-template-columns: 4.6em 2.8em 2.1em;
+    /* Cột nhãn cố định (PC / Mobile) → dấu : thẳng hàng; số luôn bắt đầu cùng cột sau dấu : */
+    grid-template-columns: 4.2em minmax(2.2em, auto) auto;
     align-items: baseline;
-    column-gap: 0.15rem;
-    justify-items: stretch;
-    width: 100%;
-    box-sizing: border-box;
+    column-gap: 0.2rem;
+    justify-items: start;
     font-family: var(--font-mono);
     font-size: 0.74rem;
     font-weight: 700;
@@ -1063,26 +1059,21 @@
   }
   .ouw-line b {
     font-variant-numeric: tabular-nums;
+    min-width: 2.2em;
     text-align: right;
-    width: 100%;
-    box-sizing: border-box;
+    justify-self: stretch;
   }
   .ouw-line .ouw-u {
     font-size: 0.58rem;
     font-weight: 600;
     color: var(--dim);
     margin-left: 0;
-    text-align: left;
-    width: 100%;
   }
   .ouw-line.empty {
     color: var(--dim);
     font-weight: 600;
   }
   .ouw-line.empty b { opacity: 0.55; font-weight: 600; }
-  .ouw-line.empty .ouw-u {
-    visibility: hidden; /* giữ chỗ cột đơn vị, không lệch layout */
-  }
   .online-user-ago {
     font-family: var(--font-mono);
     font-size: 0.62rem;
@@ -7499,7 +7490,7 @@ function renderPlayersList() {
     const shownName = admin ? p.name : (p.name === p.key ? 'Người chơi' : p.name);
     const wpmLine = (label, n) => (n > 0)
       ? '<div class="ouw-line"><span class="ouw-lb">' + label + ':</span><b>' + escapeOnlineHtml(n) + '</b><span class="ouw-u">wpm</span></div>'
-      : '<div class="ouw-line empty"><span class="ouw-lb">' + label + ':</span><b>_</b><span class="ouw-u">wpm</span></div>';
+      : '<div class="ouw-line empty"><span class="ouw-lb">' + label + ':</span><b>_</b></div>';
     // PC/Mobile filter: chỉ 1 số, không nhãn "PC/Mobile" — chỉ "N wpm"
     const wpmSingle = (n) => (n > 0)
       ? '<div class="ouw-line ouw-single"><b>' + escapeOnlineHtml(n) + '</b><span class="ouw-u">wpm</span></div>'

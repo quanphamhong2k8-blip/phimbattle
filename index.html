@@ -1002,9 +1002,11 @@
     text-align: right;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 0.15rem;
-    min-width: 3.2rem;
+    align-items: flex-end; /* cả khối PC/Mobile + thời gian sát mép phải */
+    justify-content: flex-start;
+    gap: 0.12rem;
+    min-width: 0;
+    margin-left: auto;
   }
   .online-user-wpm {
     font-family: var(--font-mono);
@@ -1028,16 +1030,23 @@
   .online-user-wpms {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: stretch;
     gap: 0.1rem;
+    /* max-content → không giãn full cột side; cả khối neo mép phải */
+    width: max-content;
+    max-width: 100%;
+    margin-left: auto;
+    box-sizing: border-box;
   }
   .ouw-line {
     display: grid;
-    /* Cột nhãn cố định (PC / Mobile) → dấu : thẳng hàng; số luôn bắt đầu cùng cột sau dấu : */
-    grid-template-columns: 4.2em minmax(2.2em, auto) auto;
+    /* Cột cố định: nhãn | số | đơn vị — PC/Mobile thẳng hàng cột */
+    grid-template-columns: 4.6em 2.8em 2.1em;
     align-items: baseline;
-    column-gap: 0.2rem;
-    justify-items: start;
+    column-gap: 0.15rem;
+    justify-items: stretch;
+    width: max-content;
+    box-sizing: border-box;
     font-family: var(--font-mono);
     font-size: 0.74rem;
     font-weight: 700;
@@ -1059,21 +1068,26 @@
   }
   .ouw-line b {
     font-variant-numeric: tabular-nums;
-    min-width: 2.2em;
     text-align: right;
-    justify-self: stretch;
+    width: 100%;
+    box-sizing: border-box;
   }
   .ouw-line .ouw-u {
     font-size: 0.58rem;
     font-weight: 600;
     color: var(--dim);
     margin-left: 0;
+    text-align: left;
+    width: 100%;
   }
   .ouw-line.empty {
     color: var(--dim);
     font-weight: 600;
   }
   .ouw-line.empty b { opacity: 0.55; font-weight: 600; }
+  .ouw-line.empty .ouw-u {
+    visibility: hidden; /* giữ chỗ cột đơn vị, không lệch layout */
+  }
   .online-user-ago {
     font-family: var(--font-mono);
     font-size: 0.62rem;
@@ -1086,6 +1100,13 @@
     padding: 0;
     margin-top: 0.15rem;
     white-space: nowrap;
+    width: max-content;
+    max-width: 100%;
+    margin-left: auto;
+    text-align: right;
+    box-sizing: border-box;
+    /* Chuyển on ↔ off mượt, không nhảy màu đột ngột */
+    transition: color 0.28s ease, opacity 0.28s ease;
   }
   .online-user-ago.is-on {
     color: var(--success);
@@ -1381,7 +1402,7 @@
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     flex-shrink: 0;
-    max-width: min(200px, 42vw);
+    max-width: min(280px, 52vw);
   }
   .account-avatar {
     width: 52px;
@@ -1419,6 +1440,13 @@
   .account-badge.logged-in .account-info {
     display: flex;
   }
+  .account-name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    min-width: 0;
+    max-width: 100%;
+  }
   .account-name {
     font-family: var(--font-display);
     font-size: 1.05rem;
@@ -1429,10 +1457,29 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 160px;
+    max-width: 120px;
+    min-width: 0;
   }
   .account-name:hover {
     color: var(--accent);
+  }
+  /* Đồng hồ hoạt động 00:00:00 — cạnh tên, không reset trong phiên */
+  .account-timer {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+    color: var(--dim);
+    line-height: 1.15;
+    white-space: nowrap;
+    opacity: 0.9;
+    user-select: none;
+    pointer-events: none;
+  }
+  .account-badge.logged-in .account-timer {
+    color: rgba(236, 231, 221, 0.72);
   }
   .account-power {
     font-family: var(--font-mono);
@@ -1448,14 +1495,15 @@
   }
   @media (max-width: 420px) {
     .account-badge {
-      max-width: min(150px, 38vw);
+      max-width: min(200px, 48vw);
       gap: 0.4rem;
     }
     .account-avatar {
       width: 42px;
       height: 42px;
     }
-    .account-name { max-width: 90px; font-size: 0.92rem; }
+    .account-name { max-width: 72px; font-size: 0.92rem; }
+    .account-timer { font-size: 0.62rem; letter-spacing: 0.03em; }
     .account-power { font-size: 0.65rem; }
   }
 
@@ -1589,7 +1637,8 @@
     position: absolute;
     right: 0.35rem;
     top: 50%;
-    transform: translateY(-50%);
+    /* Khóa translateY — không để hover pixel ghi đè (nút mắt bị nhảy lệch) */
+    transform: translateY(-50%) !important;
     width: 36px;
     height: 36px;
     border: none;
@@ -1602,10 +1651,22 @@
     justify-content: center;
     padding: 0;
     -webkit-tap-highlight-color: transparent;
-    transition: color 0.15s, background 0.15s;
+    transition: color 0.15s, background 0.15s !important;
+    box-shadow: none !important;
+    filter: none !important;
   }
-  .auth-pass-toggle:hover { color: var(--ink); background: rgba(236,231,221,0.06); }
-  .auth-pass-toggle:active { transform: translateY(-50%) scale(0.94); }
+  .auth-pass-toggle:hover {
+    color: var(--ink);
+    background: rgba(236,231,221,0.06);
+    transform: translateY(-50%) !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+  .auth-pass-toggle:active {
+    transform: translateY(-50%) scale(0.94) !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
   .auth-pass-toggle svg { width: 18px; height: 18px; display: block; pointer-events: none; }
   .auth-error {
     font-size: 0.82rem;
@@ -1789,7 +1850,7 @@
     position: absolute;
     right: 0.35rem;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-50%) !important;
     width: 36px;
     height: 36px;
     border: none;
@@ -1802,8 +1863,22 @@
     justify-content: center;
     padding: 0;
     -webkit-tap-highlight-color: transparent;
+    transition: color 0.15s, background 0.15s !important;
+    box-shadow: none !important;
+    filter: none !important;
   }
-  .recovery-pin-toggle:hover { color: var(--ink); background: rgba(236,231,221,0.06); }
+  .recovery-pin-toggle:hover {
+    color: var(--ink);
+    background: rgba(236,231,221,0.06);
+    transform: translateY(-50%) !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+  .recovery-pin-toggle:active {
+    transform: translateY(-50%) scale(0.94) !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
   .recovery-pin-toggle svg { width: 18px; height: 18px; display: block; pointer-events: none; }
   .recovery-pin-error {
     font-size: 0.82rem;
@@ -1818,6 +1893,27 @@
 
   /* Edit name modal — reuse auth-overlay styles */
   .edit-name-panel { max-width: 320px; }
+  .edit-name-warn {
+    margin: 0 0 0.85rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid rgba(232, 178, 91, 0.35);
+    background: rgba(232, 178, 91, 0.08);
+    color: var(--dim);
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: left;
+  }
+  .edit-name-warn strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .edit-name-panel .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
   .card .card-sub {
     font-family: var(--font-body);
     font-size: 0.85rem;
@@ -4158,9 +4254,7 @@
     .sound-option,
     .auth-close,
     .auth-link-btn,
-    .auth-pass-toggle,
     .auth-avatar-pick,
-    .recovery-pin-toggle,
     .lobby-chat-btn,
     .admin-online-list-btn,
     .lobby-chat-send:not(:disabled),
@@ -4196,9 +4290,7 @@
     .sound-option:hover,
     .auth-close:hover,
     .auth-link-btn:hover,
-    .auth-pass-toggle:hover,
     .auth-avatar-pick:hover,
-    .recovery-pin-toggle:hover,
     .lobby-chat-btn:hover,
     .admin-online-list-btn:hover,
     .lobby-chat-send:not(:disabled):hover,
@@ -4393,7 +4485,10 @@
         <img id="account-avatar-img" alt="" style="display:none;">
       </div>
       <div class="account-info">
-        <div class="account-name" id="account-name" onclick="event.stopPropagation(); openEditName()"></div>
+        <div class="account-name-row">
+          <div class="account-name" id="account-name" onclick="event.stopPropagation(); openEditName()"></div>
+          <span class="account-timer" id="account-timer" title="Thời gian hoạt động" aria-label="Thời gian hoạt động">00:00:00</span>
+        </div>
         <div class="account-power">Lực chiến <span id="account-power-plat" style="opacity:.75;font-weight:500;"></span>: <strong id="account-wpm">0</strong> WPM</div>
       </div>
     </div>
@@ -4847,7 +4942,7 @@
       <label for="auth-pass">Mật khẩu</label>
       <div class="auth-pass-wrap">
         <input type="password" id="auth-pass" maxlength="32" placeholder="Mật khẩu" autocomplete="current-password">
-        <button type="button" class="auth-pass-toggle" id="auth-pass-toggle" onclick="toggleAuthPassword()" title="Hiện mật khẩu" aria-label="Hiện mật khẩu" aria-pressed="false">
+        <button type="button" class="auth-pass-toggle" id="auth-pass-toggle" onclick="toggleAuthPassword(event)" title="Hiện mật khẩu" aria-label="Hiện mật khẩu" aria-pressed="false">
           <svg class="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           <svg class="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
         </button>
@@ -4951,13 +5046,16 @@
   <div class="auth-panel edit-name-panel" onclick="event.stopPropagation()">
     <button type="button" class="auth-close" onclick="closeEditName()" aria-label="Đóng">×</button>
     <div class="auth-title">Sửa tên</div>
+    <div class="edit-name-warn" id="edit-name-warn">
+      Sau khi lưu tên mới, bạn <strong>không thể đổi tên trong 2 ngày</strong> tiếp theo.
+    </div>
     <div class="auth-field">
       <label for="edit-name-input">Tên hiển thị (tối đa 15 ký tự)</label>
-      <input type="text" id="edit-name-input" maxlength="15" placeholder="Tên hiển thị">
+      <input type="text" id="edit-name-input" maxlength="15" placeholder="Tên hiển thị" autocomplete="off">
     </div>
     <div class="auth-error" id="edit-name-error"></div>
     <div class="auth-actions">
-      <button type="button" class="btn btn-orange" onclick="submitEditName()">LƯU</button>
+      <button type="button" class="btn btn-orange" id="edit-name-save" onclick="submitEditName()" disabled>LƯU</button>
     </div>
   </div>
 </div>
@@ -5454,6 +5552,89 @@ async function ensureRecoveryPinSet() {
   });
 })();
 
+/* ============================================================
+   Đồng hồ online (00:00:00) — cạnh tên tài khoản
+   - Chỉ đếm khi tab đang ONLINE (có presence / đang tương tác)
+   - Idle ≥ 2 phút / đóng tab / offline → TẠM DỪNG (không mất số đã đếm)
+   - Online lại → tiếp tục từ tổng đã lưu (không reset)
+   ============================================================ */
+const ACTIVITY_TOTAL_KEY = 'wwb_online_total_ms';
+let _activityTotalMs = 0;   // tổng ms đã cộng dồn (khi đang pause)
+let _activitySegStart = 0;  // Date.now() khi đang đếm; 0 = đang dừng
+let _activityTimerId = null;
+
+function loadActivityTotal() {
+  try {
+    const n = Number(localStorage.getItem(ACTIVITY_TOTAL_KEY));
+    if (Number.isFinite(n) && n >= 0) _activityTotalMs = Math.floor(n);
+  } catch (e) {}
+}
+
+function saveActivityTotal() {
+  try {
+    localStorage.setItem(ACTIVITY_TOTAL_KEY, String(Math.max(0, Math.floor(_activityTotalMs))));
+  } catch (e) {}
+}
+
+function getActivityElapsedMs() {
+  let ms = _activityTotalMs;
+  if (_activitySegStart) ms += Math.max(0, Date.now() - _activitySegStart);
+  return Math.max(0, ms);
+}
+
+function formatActivityHMS(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  return String(h).padStart(2, '0') + ':' +
+    String(m).padStart(2, '0') + ':' +
+    String(s).padStart(2, '0');
+}
+
+function updateActivityTimerDisplay() {
+  const el = document.getElementById('account-timer');
+  if (!el) return;
+  el.textContent = formatActivityHMS(getActivityElapsedMs());
+}
+
+/** Tạm dừng đếm — cộng đoạn hiện tại vào tổng, lưu localStorage */
+function pauseActivityTimer() {
+  if (!_activitySegStart) {
+    updateActivityTimerDisplay();
+    return;
+  }
+  _activityTotalMs += Math.max(0, Date.now() - _activitySegStart);
+  _activitySegStart = 0;
+  saveActivityTotal();
+  updateActivityTimerDisplay();
+}
+
+/** Tiếp tục đếm (chỉ khi đang dừng) — không reset tổng */
+function resumeActivityTimer() {
+  if (_activitySegStart) {
+    updateActivityTimerDisplay();
+    return;
+  }
+  _activitySegStart = Date.now();
+  updateActivityTimerDisplay();
+}
+
+function startActivityTimer() {
+  loadActivityTotal();
+  // Mở app = đang online → bắt đầu/tiếp tục đếm
+  resumeActivityTimer();
+  updateActivityTimerDisplay();
+  if (_activityTimerId) return;
+  _activityTimerId = setInterval(updateActivityTimerDisplay, 1000);
+  try {
+    document.addEventListener('visibilitychange', () => {
+      // Chỉ refresh UI khi hiện lại; pause/resume do presence idle (2 phút) quyết định
+      if (!document.hidden) updateActivityTimerDisplay();
+    });
+  } catch (e) {}
+}
+
 function loadSessionUser() {
   try {
     const raw = localStorage.getItem(ACCOUNT_LS_KEY);
@@ -5608,7 +5789,7 @@ window.closeAccountMenu = function() {
   if (ov) ov.classList.remove('show');
 };
 
-const DISPLAY_NAME_COOLDOWN_MS = 48 * 60 * 60 * 1000; // 48 giờ
+const DISPLAY_NAME_COOLDOWN_MS = 48 * 60 * 60 * 1000; // 2 ngày (48 giờ)
 
 function formatNameCooldownLeft(ms) {
   if (ms <= 0) return '';
@@ -5621,8 +5802,19 @@ function formatNameCooldownLeft(ms) {
   return h + ' giờ';
 }
 
+/** Admin không bị khóa đổi tên */
+function canBypassNameChangeLock() {
+  try {
+    return (typeof isAdmin === 'function' && isAdmin());
+  } catch (e) {
+    return false;
+  }
+}
+
 async function getNameChangeLockInfo() {
-  if (!currentUser || !currentUser.emailKey) return { locked: false, leftMs: 0 };
+  if (!currentUser || !currentUser.emailKey) return { locked: false, leftMs: 0, changedAt: 0 };
+  // Admin: luôn được đổi tên, không áp dụng cooldown 2 ngày
+  if (canBypassNameChangeLock()) return { locked: false, leftMs: 0, changedAt: 0, bypass: true };
   let changedAt = typeof currentUser.displayNameChangedAt === 'number' ? currentUser.displayNameChangedAt : 0;
   try {
     const snap = await get(ref(db, 'users/' + currentUser.emailKey + '/displayNameChangedAt'));
@@ -5635,25 +5827,57 @@ async function getNameChangeLockInfo() {
   return { locked: leftMs > 0, leftMs: Math.max(0, leftMs), changedAt };
 }
 
+/** Chỉ bật nút Lưu khi đã nhập tên mới (khác tên hiện tại) và không bị khóa */
+function syncEditNameSaveBtn() {
+  const inp = document.getElementById('edit-name-input');
+  const btn = document.getElementById('edit-name-save');
+  if (!btn) return;
+  if (!inp || inp.disabled) {
+    btn.disabled = true;
+    return;
+  }
+  const cur = String((currentUser && currentUser.displayName) || '').trim().replace(/\s+/g, ' ');
+  const next = String(inp.value || '').trim().replace(/\s+/g, ' ');
+  const ok = next.length >= 1 && next.length <= (typeof DISPLAY_NAME_MAX === 'number' ? DISPLAY_NAME_MAX : 15) && next !== cur;
+  btn.disabled = !ok;
+}
+
 window.openEditName = async function() {
   if (!currentUser) return;
   const inp = document.getElementById('edit-name-input');
   const err = document.getElementById('edit-name-error');
   const ov = document.getElementById('edit-name-overlay');
+  const warn = document.getElementById('edit-name-warn');
+  const btn = document.getElementById('edit-name-save');
   if (inp) {
     inp.value = currentUser.displayName || defaultNameFromEmail(currentUser.email) || '';
     inp.disabled = false;
   }
   if (err) err.textContent = '';
-  // Kiểm tra khóa 48h
+  if (btn) btn.disabled = true;
+
+  // Admin: không khóa + ẩn cảnh báo 2 ngày (hoặc đổi nội dung)
+  const isAdm = canBypassNameChangeLock();
+  if (warn) {
+    if (isAdm) {
+      warn.innerHTML = 'Tài khoản <strong>Admin</strong> có thể đổi tên bất kỳ lúc nào (không bị khóa 2 ngày).';
+    } else {
+      warn.innerHTML = 'Sau khi lưu tên mới, bạn <strong>không thể đổi tên trong 2 ngày</strong> tiếp theo.';
+    }
+  }
+
+  // Kiểm tra khóa 2 ngày (admin bỏ qua)
   const lock = await getNameChangeLockInfo();
-  if (lock.locked) {
+  if (lock.locked && !isAdm) {
     if (err) err.textContent = 'Chỉ đổi tên được sau ' + formatNameCooldownLeft(lock.leftMs) + ' nữa';
     if (inp) inp.disabled = true;
+    if (btn) btn.disabled = true;
   }
   if (ov) ov.classList.add('show');
+  syncEditNameSaveBtn();
   setTimeout(function() {
     if (inp && !inp.disabled) { inp.focus(); inp.select(); }
+    syncEditNameSaveBtn();
   }, 50);
 };
 window.closeEditName = function() {
@@ -5661,7 +5885,20 @@ window.closeEditName = function() {
   if (ov) ov.classList.remove('show');
   const inp = document.getElementById('edit-name-input');
   if (inp) inp.disabled = false;
+  const btn = document.getElementById('edit-name-save');
+  if (btn) btn.disabled = true;
 };
+
+// Bật/tắt nút Lưu theo nội dung ô tên
+(function bindEditNameInput() {
+  const inp = document.getElementById('edit-name-input');
+  if (!inp || inp._editNameBound) return;
+  inp._editNameBound = true;
+  const onChange = function() { syncEditNameSaveBtn(); };
+  inp.addEventListener('input', onChange);
+  inp.addEventListener('change', onChange);
+  inp.addEventListener('keyup', onChange);
+})();
 
 function compressImageToDataUrl(file, maxSide, quality) {
   // Avatar tài khoản: đủ nét trên màn retina, vẫn gọn cho Firebase (~80–150KB)
@@ -5741,7 +5978,10 @@ window.openAuthAvatarOnly = function() {
   input.click();
 };
 
-window.toggleAuthPassword = function() {
+window.toggleAuthPassword = function(event) {
+  if (event) {
+    try { event.preventDefault(); event.stopPropagation(); } catch (e) {}
+  }
   const input = document.getElementById('auth-pass');
   const btn = document.getElementById('auth-pass-toggle');
   if (!input || !btn) return;
@@ -5754,6 +5994,7 @@ window.toggleAuthPassword = function() {
   btn.title = show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu';
   btn.setAttribute('aria-label', show ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
   btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+  try { input.focus(); } catch (e2) {}
 };
 
 window.submitAuth = async function() {
@@ -6017,6 +6258,7 @@ window.submitEditName = async function() {
   if (!currentUser || !currentUser.emailKey) return;
   const inp = document.getElementById('edit-name-input');
   const err = document.getElementById('edit-name-error');
+  const btn = document.getElementById('edit-name-save');
   const newName = String(inp && inp.value || '').trim().replace(/\s+/g, ' ');
   if (err) err.textContent = '';
   if (inp && inp.disabled) {
@@ -6027,24 +6269,33 @@ window.submitEditName = async function() {
     if (err) err.textContent = 'Tên phải từ 1–' + DISPLAY_NAME_MAX + ' ký tự';
     return;
   }
-  if (newName === (currentUser.displayName || '').trim()) {
-    closeEditName();
+  // Bắt buộc nhập tên MỚI (khác tên hiện tại) mới cho lưu
+  if (newName === (currentUser.displayName || '').trim().replace(/\s+/g, ' ')) {
+    if (err) err.textContent = 'Hãy nhập tên mới khác tên hiện tại';
+    if (btn) btn.disabled = true;
     return;
   }
-  // Khóa 48h kể từ lần đổi trước
-  const lock = await getNameChangeLockInfo();
-  if (lock.locked) {
-    if (err) err.textContent = 'Chỉ đổi tên được sau ' + formatNameCooldownLeft(lock.leftMs) + ' nữa';
-    if (inp) inp.disabled = true;
-    return;
+  const isAdm = canBypassNameChangeLock();
+  // Khóa 2 ngày kể từ lần đổi trước — admin bỏ qua
+  if (!isAdm) {
+    const lock = await getNameChangeLockInfo();
+    if (lock.locked) {
+      if (err) err.textContent = 'Chỉ đổi tên được sau ' + formatNameCooldownLeft(lock.leftMs) + ' nữa';
+      if (inp) inp.disabled = true;
+      if (btn) btn.disabled = true;
+      return;
+    }
   }
   const now = (typeof nowServer === 'function') ? nowServer() : Date.now();
+  if (btn) btn.disabled = true;
   try {
-    await update(ref(db, 'users/' + currentUser.emailKey), {
+    const patch = {
       displayName: newName,
-      displayNameChangedAt: now,
       updatedAt: now
-    });
+    };
+    // Admin vẫn ghi mốc đổi tên (lịch sử) nhưng không bị khóa lần sau
+    patch.displayNameChangedAt = now;
+    await update(ref(db, 'users/' + currentUser.emailKey), patch);
     currentUser.displayName = newName;
     currentUser.displayNameChangedAt = now;
     if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
@@ -6056,10 +6307,11 @@ window.submitEditName = async function() {
       renderLobbyChatMsgs();
     }
     closeEditName();
-    showToast('Đã đổi tên · khóa 48 giờ');
+    showToast(isAdm ? 'Đã đổi tên' : 'Đã đổi tên · khóa 2 ngày');
   } catch (e) {
     console.error(e);
     if (err) err.textContent = 'Lỗi kết nối. Thử lại.';
+    syncEditNameSaveBtn();
   }
 };
 
@@ -6568,6 +6820,11 @@ function touchPresenceActivity() {
     _presenceIdleOffline = false;
     // Online lại — giữ nguyên since (không reset thời gian online)
     writePresenceNow(true);
+    // Đồng hồ online: tiếp tục đếm
+    try { if (typeof resumeActivityTimer === 'function') resumeActivityTimer(); } catch (eR) {}
+  } else if (!_presenceIdleOffline) {
+    // Đang online và có tương tác — đảm bảo đồng hồ đang chạy
+    try { if (typeof resumeActivityTimer === 'function') resumeActivityTimer(); } catch (eR2) {}
   }
 }
 
@@ -6578,6 +6835,8 @@ function goPresenceIdleOffline() {
   try {
     remove(ref(db, PRESENCE_PATH + '/' + _presenceSid)).catch(() => {});
   } catch (e) {}
+  // Idle ≥ 2 phút → dừng đồng hồ online (giữ tổng đã đếm)
+  try { if (typeof pauseActivityTimer === 'function') pauseActivityTimer(); } catch (eP) {}
 }
 
 /**
@@ -6598,7 +6857,16 @@ function writePresenceNow(force) {
   if (!_presenceSid) _presenceSid = key;
   _presenceIdleOffline = false;
   const payload = presencePayload();
-  set(ref(db, PRESENCE_PATH + '/' + key), payload).catch(() => {});
+  const myRef = ref(db, PRESENCE_PATH + '/' + key);
+  set(myRef, payload).catch(() => {});
+  // Re-arm onDisconnect sau mỗi lần ghi — sau reconnect handler cũ đã fire/hết
+  // → đóng tab / mất mạng vẫn xóa presence, admin không kẹt "online ma"
+  try {
+    onDisconnect(myRef).remove().catch(() => {});
+    if (payload.account && typeof armUserLastSeenOnDisconnect === 'function') {
+      armUserLastSeenOnDisconnect();
+    }
+  } catch (eArm) {}
   // Gia hạn shared since trên máy (tab khác mở trong 3 phút sẽ kế thừa)
   try {
     if (payload.account && typeof payload.since === 'number') {
@@ -6674,6 +6942,8 @@ async function startPresence() {
   setupPresenceActivityListeners();
   _lastActivityAt = Date.now();
   _presenceIdleOffline = false;
+  // Presence online → đồng hồ tiếp tục đếm
+  try { if (typeof resumeActivityTimer === 'function') resumeActivityTimer(); } catch (eR) {}
   if (_presenceHeartbeat) clearInterval(_presenceHeartbeat);
   _presenceHeartbeat = setInterval(() => {
     if (isPresenceTabActive()) writePresenceNow();
@@ -6694,6 +6964,7 @@ function stopPresence() {
     _presenceSid = null;
   }
   _presenceIdleOffline = false;
+  try { if (typeof pauseActivityTimer === 'function') pauseActivityTimer(); } catch (eP) {}
   try {
     if (currentUser && currentUser.emailKey) {
       markUserLastSeen(false);
@@ -6705,33 +6976,86 @@ function stopPresence() {
   } catch (e) {}
 }
 
-/** Đóng tab / rời trang → xóa presence ngay (không chờ timeout) */
+/**
+ * Đóng tab / rời trang → xóa presence + lastSeen NGAY trên server.
+ * Lý do: SDK remove() thường không kịp gửi khi trình duyệt đang tắt tab
+ * → admin vẫn thấy "PC N giây" online tới khi hết hạn freshness (~75s).
+ * Đồng hồ cá nhân dừng được vì chỉ ghi localStorage; presence cần REST keepalive.
+ */
 function presenceUnloadCleanup() {
+  // 1) Đồng hồ online local — dừng + lưu tổng
+  try { if (typeof pauseActivityTimer === 'function') pauseActivityTimer(); } catch (eP) {}
+
+  let key = null;
   try {
-    if (!_presenceSid && !(typeof getOrCreatePresenceSid === 'function')) return;
-    const key = _presenceSid || (typeof getOrCreatePresenceSid === 'function' ? getOrCreatePresenceSid() : null);
-    if (key) {
-      remove(ref(db, PRESENCE_PATH + '/' + key)).catch(() => {});
+    key = _presenceSid || (typeof getOrCreatePresenceSid === 'function' ? getOrCreatePresenceSid() : null);
+  } catch (e0) {}
+
+  const base = (typeof firebaseConfig !== 'undefined' && firebaseConfig && firebaseConfig.databaseURL)
+    ? String(firebaseConfig.databaseURL).replace(/\/$/, '')
+    : '';
+
+  // 2) REST DELETE presence — request keepalive sống sót khi unload (quan trọng nhất)
+  if (key && base) {
+    try {
+      fetch(base + '/' + PRESENCE_PATH + '/' + encodeURIComponent(key) + '.json', {
+        method: 'DELETE',
+        keepalive: true,
+        cache: 'no-store',
+        mode: 'cors'
+      }).catch(() => {});
+    } catch (eFetch) {}
+  }
+  // SDK remove song song (nếu còn kịp)
+  if (key) {
+    try { remove(ref(db, PRESENCE_PATH + '/' + key)).catch(() => {}); } catch (eRm) {}
+  }
+
+  // 3) Dọn node guest legacy (nếu có)
+  try {
+    if (!(currentUser && currentUser.emailKey) && typeof guestPresencePathKey === 'function') {
+      const legacy = guestPresencePathKey(getGuestKey());
+      if (legacy && legacy !== key) {
+        if (base) {
+          try {
+            fetch(base + '/' + PRESENCE_PATH + '/' + encodeURIComponent(legacy) + '.json', {
+              method: 'DELETE', keepalive: true, cache: 'no-store', mode: 'cors'
+            }).catch(() => {});
+          } catch (eL) {}
+        }
+        try { remove(ref(db, PRESENCE_PATH + '/' + legacy)).catch(() => {}); } catch (eL2) {}
+      }
     }
-    try {
-      if (!(currentUser && currentUser.emailKey) && typeof guestPresencePathKey === 'function') {
-        const legacy = guestPresencePathKey(getGuestKey());
-        if (legacy) remove(ref(db, PRESENCE_PATH + '/' + legacy)).catch(() => {});
+  } catch (e2) {}
+
+  // 4) lastSeen — admin hiện OFF ngay từ lúc thoát web
+  try {
+    if (currentUser && currentUser.emailKey) {
+      const accKey = String(currentUser.emailKey).trim();
+      const ts = Date.now();
+      if (base && accKey) {
+        try {
+          fetch(base + '/users/' + encodeURIComponent(accKey) + '.json', {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lastSeen: ts }),
+            keepalive: true,
+            cache: 'no-store',
+            mode: 'cors'
+          }).catch(() => {});
+        } catch (ePatch) {}
       }
-    } catch (e2) {}
-    try {
-      if (currentUser && currentUser.emailKey) {
-        // Mốc thoát acc — OFF tính từ đây (tab/máy khác vào lại acc sẽ online; khi họ thoát lastSeen cập nhật lại)
-        markUserLastSeen(false);
-      } else {
-        clearCachedGuestNum();
-      }
-    } catch (e3) {}
-  } catch (e) {}
+      try { markUserLastSeen(false); } catch (eM) {}
+    } else {
+      try { clearCachedGuestNum(); } catch (eG) {}
+    }
+  } catch (e3) {}
 }
 try {
   window.addEventListener('pagehide', presenceUnloadCleanup);
   window.addEventListener('beforeunload', presenceUnloadCleanup);
+  // Mobile / bfcache: freeze cũng coi như rời trang tạm
+  window.addEventListener('freeze', presenceUnloadCleanup);
 } catch (e) {}
 
 function updateAdminOnlineUI() {
@@ -6864,11 +7188,33 @@ function parsePresenceSnapshot(val) {
   return { rows, total: logged + guest, logged, guest };
 }
 
+let _prevOnlineAccounts = new Set();
+
 function applyPresenceParse(parsed) {
   _presenceRows = parsed.rows;
   _onlineCount = parsed.total;
   _onlineLogged = parsed.logged;
   _onlineGuest = parsed.guest;
+  // Cập nhật mốc online gần nhất — vừa offline → OFF đếm từ lúc đó (không dùng updatedAt cũ)
+  try {
+    const now = Date.now();
+    const onlineKeys = new Set();
+    for (const r of parsed.rows) {
+      if (r && r.isLogged && r.account) {
+        const k = String(r.account);
+        onlineKeys.add(k);
+        const t = (typeof r.ts === 'number' && r.ts > 0) ? r.ts : now;
+        _accountLastOnlineAt[k] = Math.max(_accountLastOnlineAt[k] || 0, t);
+      }
+    }
+    // Account vừa rời presence → chốt mốc = now để hiện "OFF 0 giây" ngay
+    for (const k of _prevOnlineAccounts) {
+      if (!onlineKeys.has(k)) {
+        _accountLastOnlineAt[k] = Math.max(_accountLastOnlineAt[k] || 0, now);
+      }
+    }
+    _prevOnlineAccounts = onlineKeys;
+  } catch (e) {}
   updateAdminOnlineUI();
   if (_onlineUsersPanelOpen) renderOnlineUsersList();
 }
@@ -6894,6 +7240,78 @@ function formatPresenceAgo(ts) {
   const m = Math.floor(sec / 60);
   if (m < 60) return m + 'p trước';
   return Math.floor(m / 60) + 'h trước';
+}
+
+/** Định dạng thời gian online: "N giây" / "N phút" / … */
+function formatOnlineDuration(ms) {
+  const sec = Math.max(0, Math.floor(ms / 1000));
+  if (sec < 60) return sec + ' giây';
+  const m = Math.floor(sec / 60);
+  if (m < 60) return m + ' phút';
+  const h = Math.floor(m / 60);
+  if (h < 24) {
+    const rem = m % 60;
+    return rem ? (h + ' giờ ' + rem + ' phút') : (h + ' giờ');
+  }
+  return Math.floor(h / 24) + ' ngày';
+}
+
+/** Định dạng offline: "OFF N giây" / … */
+function formatOfflineDuration(ms) {
+  const sec = Math.max(0, Math.floor(ms / 1000));
+  if (sec < 60) return 'OFF ' + sec + ' giây';
+  const m = Math.floor(sec / 60);
+  if (m < 60) return 'OFF ' + m + ' phút';
+  const h = Math.floor(m / 60);
+  if (h < 24) return 'OFF ' + h + ' giờ';
+  const d = Math.floor(h / 24);
+  if (d < 7) return 'OFF ' + d + ' ngày';
+  const w = Math.floor(d / 7);
+  if (w < 5) return 'OFF ' + w + ' tuần';
+  const mo = Math.floor(d / 30);
+  if (mo < 12) return 'OFF ' + mo + ' tháng';
+  return 'OFF ' + Math.floor(d / 365) + ' năm';
+}
+
+/** Mốc online gần nhất theo account — dùng tính OFF chính xác ngay khi vừa offline */
+const _accountLastOnlineAt = Object.create(null);
+
+/**
+ * Tick nhẹ: chỉ cập nhật text/class nhãn on/off (PC/Mobile N giây),
+ * không rebuild cả danh sách → mượt, đúng từng giây.
+ */
+function tickOnlineAgoLabels() {
+  if (!_onlineUsersPanelOpen) return;
+  const now = Date.now();
+  const nodes = document.querySelectorAll('#online-users-list .online-user-ago[data-ago-mode]');
+  if (!nodes.length) return;
+  nodes.forEach(el => {
+    const mode = el.getAttribute('data-ago-mode');
+    if (mode === 'on') {
+      const since = Number(el.getAttribute('data-ago-since')) || 0;
+      const plat = el.getAttribute('data-ago-plat') || '';
+      const dur = since > 0 ? formatOnlineDuration(now - since) : 'Online';
+      const platLb = plat === 'mobile' ? 'Mobile' : (plat === 'pc' ? 'PC' : '');
+      const text = platLb ? (platLb + ' ' + dur) : dur;
+      if (el.textContent !== text) el.textContent = text;
+      if (!el.classList.contains('is-on')) {
+        el.classList.add('is-on');
+        el.classList.remove('is-off');
+      }
+    } else if (mode === 'off') {
+      const last = Number(el.getAttribute('data-ago-last')) || 0;
+      const text = last > 0 ? formatOfflineDuration(now - last) : 'OFF';
+      if (el.textContent !== text) el.textContent = text;
+      if (!el.classList.contains('is-off')) {
+        el.classList.add('is-off');
+        el.classList.remove('is-on');
+      }
+    } else if (mode === 'guest') {
+      const ts = Number(el.getAttribute('data-ago-ts')) || 0;
+      const text = formatPresenceAgo(ts);
+      if (el.textContent !== text) el.textContent = text;
+    }
+  });
 }
 
 function escapeOnlineHtml(s) {
@@ -7099,7 +7517,9 @@ function renderOnlineUsersList() {
         '</div>' +
         '<div class="online-user-side">' +
           wpmHtml +
-          '<div class="online-user-ago">' + escapeOnlineHtml(formatPresenceAgo(r.ts)) + '</div>' +
+          '<div class="online-user-ago is-on" data-ago-mode="guest" data-ago-ts="' + (r.ts || 0) + '">' +
+            escapeOnlineHtml(formatPresenceAgo(r.ts)) +
+          '</div>' +
         '</div>' +
       '</div>';
     }
@@ -7135,10 +7555,11 @@ window.openOnlineUsersPanel = function() {
   }
   renderOnlineUsersList();
   if (_onlineAgoTimer) clearInterval(_onlineAgoTimer);
+  // Tick 1s: chỉ cập nhật nhãn PC/Mobile N giây — on/off mượt, không rebuild list
   _onlineAgoTimer = setInterval(() => {
     if (!_onlineUsersPanelOpen) return;
-    renderOnlineUsersList();
-  }, 10000);
+    tickOnlineAgoLabels();
+  }, 1000);
   // Chỉ focus ô tìm khi đang ở chế độ Player (chế độ Khách đã ẩn search)
   if (_onlineUsersMode === 'players') {
     const search = document.getElementById('online-users-search');
@@ -7380,19 +7801,14 @@ function renderPlayersList() {
   const onlineSet = new Set(_presenceRows.filter(r => r.isLogged && r.account).map(r => r.account));
   const sinceMap = new Map(_presenceRows.filter(r => r.isLogged && r.account && r.since).map(r => [r.account, r.since]));
   const platMap = new Map(_presenceRows.filter(r => r.isLogged && r.account).map(r => [r.account, r.plat || null]));
-  const fmtInGame = ms => {
-    const sec = Math.max(0, Math.floor(ms / 1000));
-    if (sec < 60) return sec + ' giây';
-    const m = Math.floor(sec / 60);
-    if (m < 60) return m + ' phút';
-    const h = Math.floor(m / 60);
-    if (h < 24) {
-      const rem = m % 60;
-      return rem ? (h + ' giờ ' + rem + ' phút') : (h + ' giờ');
+  // Cập nhật mốc last-online từ presence hiện tại
+  for (const r of _presenceRows) {
+    if (r && r.isLogged && r.account) {
+      const k = String(r.account);
+      const t = (typeof r.ts === 'number' && r.ts > 0) ? r.ts : Date.now();
+      _accountLastOnlineAt[k] = Math.max(_accountLastOnlineAt[k] || 0, t);
     }
-    const d = Math.floor(h / 24);
-    return d + ' ngày';
-  };
+  }
   const loaded = _players.length;
   const total = _playersTotal != null ? Math.max(_playersTotal, loaded) : loaded;
   const elT = document.getElementById('ou-stat-total');
@@ -7412,8 +7828,27 @@ function renderPlayersList() {
     if (_playersHasMore && !_playersLoading && !_playersError) loadMorePlayers(true);
   }
 
-  // Sắp xếp theo bộ lọc WPM: PC/Mobile → theo nền đó (cao → thấp); Tất cả → theo best
+  // Sắp xếp:
+  // - Lọc PC/Mobile (WPM): theo WPM nền đó (cao → thấp)
+  // - Tất cả: online lâu nhất → online ít nhất → offline mới nhất → offline lâu nhất
   const wpmF = _onlineWpmFilter || 'all';
+  const _sortNow = Date.now();
+  const _onlineDurMs = (p) => {
+    if (!onlineSet.has(p.key)) return -1;
+    const since = sinceMap.get(p.key) || 0;
+    return since > 0 ? Math.max(0, _sortNow - since) : 0;
+  };
+  const _offlineDurMs = (p) => {
+    if (onlineSet.has(p.key)) return -1;
+    const last = Math.max(
+      (typeof p.lastSeen === 'number' && p.lastSeen > 0) ? p.lastSeen : 0,
+      _accountLastOnlineAt[p.key] || 0,
+      (typeof p.updatedAt === 'number' && p.updatedAt > 0) ? p.updatedAt : 0,
+      (typeof p.createdAt === 'number' && p.createdAt > 0) ? p.createdAt : 0
+    );
+    // Không có mốc → coi như offline lâu nhất
+    return last > 0 ? Math.max(0, _sortNow - last) : Number.MAX_SAFE_INTEGER;
+  };
   rows = rows.slice().sort((a, b) => {
     if (wpmF === 'pc') {
       const av = a.wpmPc || 0, bv = b.wpmPc || 0;
@@ -7423,50 +7858,52 @@ function renderPlayersList() {
       const av = a.wpmMobile || 0, bv = b.wpmMobile || 0;
       return ((bv > 0) - (av > 0)) || (bv - av);
     }
-    return ((b.best > 0) - (a.best > 0)) || (b.best - a.best);
+    // Tất cả: online trước, offline sau
+    const aOn = onlineSet.has(a.key);
+    const bOn = onlineSet.has(b.key);
+    if (aOn !== bOn) return aOn ? -1 : 1;
+    if (aOn && bOn) {
+      // Online lâu nhất → online thấp nhất
+      return _onlineDurMs(b) - _onlineDurMs(a);
+    }
+    // Offline thấp nhất (mới offline) → offline lâu nhất
+    return _offlineDurMs(a) - _offlineDurMs(b);
   });
 
   let html = '';
   for (const p of rows) {
     const online = onlineSet.has(p.key);
     const isAd = isOnlineAdminAccount(p.key);
-    const onlineDur = online && sinceMap.get(p.key) ? fmtInGame(Date.now() - sinceMap.get(p.key)) : null;
-    // Offline bao lâu (dựa updatedAt hồ sơ — lần hoạt động gần nhất đã lưu)
-    const fmtOffline = (ms) => {
-      const sec = Math.max(0, Math.floor(ms / 1000));
-      if (sec < 60) return 'OFF ' + sec + ' giây';
-      const m = Math.floor(sec / 60);
-      if (m < 60) return 'OFF ' + m + ' phút';
-      const h = Math.floor(m / 60);
-      if (h < 24) return 'OFF ' + h + ' giờ';
-      const d = Math.floor(h / 24);
-      if (d < 7) return 'OFF ' + d + ' ngày';
-      const w = Math.floor(d / 7);
-      if (w < 5) return 'OFF ' + w + ' tuần';
-      const mo = Math.floor(d / 30);
-      if (mo < 12) return 'OFF ' + mo + ' tháng';
-      return 'OFF ' + Math.floor(d / 365) + ' năm';
-    };
+    const sinceTs = online ? (sinceMap.get(p.key) || 0) : 0;
+    const onlineDur = online && sinceTs ? formatOnlineDuration(Date.now() - sinceTs) : null;
+    // Offline: ưu tiên lastSeen → mốc presence gần nhất → updatedAt → createdAt
+    // (tránh hiện "OFF 3 ngày" khi vừa offline vì updatedAt hồ sơ cũ)
+    let offlineLast = 0;
     let offlineLabel = 'OFF';
     if (!online) {
-      // Ưu tiên lastSeen (lúc thoát acc) → updatedAt → createdAt
-      const last = (typeof p.lastSeen === 'number' && p.lastSeen > 0) ? p.lastSeen
-        : ((typeof p.updatedAt === 'number' && p.updatedAt > 0) ? p.updatedAt
-        : ((typeof p.createdAt === 'number' && p.createdAt > 0) ? p.createdAt : 0));
-      offlineLabel = last ? fmtOffline(Date.now() - last) : 'OFF';
+      const cand = [
+        (typeof p.lastSeen === 'number' && p.lastSeen > 0) ? p.lastSeen : 0,
+        _accountLastOnlineAt[p.key] || 0,
+        (typeof p.updatedAt === 'number' && p.updatedAt > 0) ? p.updatedAt : 0,
+        (typeof p.createdAt === 'number' && p.createdAt > 0) ? p.createdAt : 0
+      ];
+      offlineLast = Math.max.apply(null, cand);
+      offlineLabel = offlineLast ? formatOfflineDuration(Date.now() - offlineLast) : 'OFF';
     }
-    // Chỉ giữ tag Admin cạnh tên — thời gian on/off chuyển xuống góc phải (chỗ "tạo …" cũ)
+    // Chỉ giữ tag Admin cạnh tên — thời gian on/off góc phải
     let tag = '';
     if (isAd) tag += '<span class="online-user-tag admin">Admin</span>';
-    // Trạng thái on/off + nền tảng (PC/Mobile) cho dòng góc phải
+    // Trạng thái on/off + nền tảng (PC/Mobile)
     let statusAgo = '';
     let statusClass = 'is-off';
+    let agoAttrs = ' data-ago-mode="off" data-ago-last="' + (offlineLast || 0) + '"';
     if (online) {
-      const plat = platMap.get(p.key);
+      const plat = platMap.get(p.key) || '';
       const platLb = plat === 'mobile' ? 'Mobile' : (plat === 'pc' ? 'PC' : null);
       const dur = onlineDur || 'Online';
       statusAgo = platLb ? (platLb + ' ' + dur) : dur;
       statusClass = 'is-on';
+      agoAttrs = ' data-ago-mode="on" data-ago-since="' + (sinceTs || 0) + '" data-ago-plat="' + escapeOnlineHtml(plat || '') + '"';
     } else {
       statusAgo = offlineLabel;
       statusClass = 'is-off';
@@ -7490,7 +7927,7 @@ function renderPlayersList() {
     const shownName = admin ? p.name : (p.name === p.key ? 'Người chơi' : p.name);
     const wpmLine = (label, n) => (n > 0)
       ? '<div class="ouw-line"><span class="ouw-lb">' + label + ':</span><b>' + escapeOnlineHtml(n) + '</b><span class="ouw-u">wpm</span></div>'
-      : '<div class="ouw-line empty"><span class="ouw-lb">' + label + ':</span><b>_</b></div>';
+      : '<div class="ouw-line empty"><span class="ouw-lb">' + label + ':</span><b>_</b><span class="ouw-u">wpm</span></div>';
     // PC/Mobile filter: chỉ 1 số, không nhãn "PC/Mobile" — chỉ "N wpm"
     const wpmSingle = (n) => (n > 0)
       ? '<div class="ouw-line ouw-single"><b>' + escapeOnlineHtml(n) + '</b><span class="ouw-u">wpm</span></div>'
@@ -7518,7 +7955,7 @@ function renderPlayersList() {
         (admin ? '<div class="online-user-meta">' + metaHtml + '</div>' : '') +
       '</div>' +
       '<div class="online-user-side">' + wpmHtml +
-        '<div class="online-user-ago ' + statusClass + '">' + escapeOnlineHtml(statusAgo) + '</div>' +
+        '<div class="online-user-ago ' + statusClass + '"' + agoAttrs + '>' + escapeOnlineHtml(statusAgo) + '</div>' +
       '</div>' +
     '</div>';
   }
@@ -7605,6 +8042,8 @@ document.addEventListener('visibilitychange', () => {
 
 currentUser = loadSessionUser();
 renderAccountBadge();
+// Đồng hồ hoạt động 00:00:00 cạnh tên — chạy ngay, không reset
+try { startActivityTimer(); } catch (eAct) {}
 if (currentUser) {
   // Acc đã login từ trước (kể cả trước khi có hệ PIN) → kiểm tra & bắt buộc đặt PIN nếu chưa
   ensureRecoveryPinSet();

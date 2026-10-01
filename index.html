@@ -917,6 +917,8 @@
     min-width: 0;
   }
   .online-user-name {
+    position: relative;
+    z-index: 1;
     font-family: var(--font-display);
     font-size: 0.98rem;
     font-weight: 800;
@@ -926,6 +928,15 @@
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.2;
+  }
+  .online-user-name.is-admin-force {
+    cursor: pointer !important;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    color: var(--accent);
+  }
+  .online-user-name.is-admin-force:hover {
+    filter: brightness(1.12);
   }
   .online-user-tag {
     flex-shrink: 0;
@@ -976,12 +987,12 @@
   .online-user-meta {
     font-family: var(--font-mono);
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--dim);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.2;
+    line-height: 1.25;
     display: flex;
     align-items: baseline;
     gap: 0.45rem;
@@ -991,11 +1002,25 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 500;
   }
   .online-user-meta .ou-created {
     flex-shrink: 0;
     opacity: 0.75;
-    font-weight: 500;
+    font-weight: 400;
+  }
+  /* UID dòng riêng — xám, không đậm, dưới tài khoản + ngày tạo */
+  .online-user-meta.ou-uid-row {
+    margin-top: 0.06rem;
+  }
+  .online-user-meta .ou-uid,
+  .online-user-meta.ou-uid-row .ou-uid {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.1em;
+    opacity: 0.8;
+    font-weight: 400;
+    color: #9a9aa3;
   }
   .online-user-side {
     flex-shrink: 0;
@@ -1481,6 +1506,22 @@
   .account-badge.logged-in .account-timer {
     color: rgba(236, 231, 221, 0.72);
   }
+  .account-uid {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.12em;
+    color: var(--dim);
+    line-height: 1.25;
+    white-space: nowrap;
+    opacity: 0.72;
+    user-select: text;
+  }
+  .account-badge.logged-in .account-uid {
+    color: rgba(180, 180, 188, 0.78);
+    font-weight: 400;
+  }
   .account-power {
     font-family: var(--font-mono);
     font-size: 0.72rem;
@@ -1493,6 +1534,42 @@
     color: var(--accent);
     font-weight: 600;
   }
+  .account-menu-head {
+    padding: 0.55rem 0.85rem 0.45rem;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 0.2rem;
+  }
+  .account-menu-name {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .account-menu-acc {
+    margin-top: 0.18rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--dim);
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .account-menu-uid {
+    margin-top: 0.22rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.12em;
+    color: #9a9aa3;
+    opacity: 0.9;
+  }
   @media (max-width: 420px) {
     .account-badge {
       max-width: min(200px, 48vw);
@@ -1504,6 +1581,7 @@
     }
     .account-name { max-width: 72px; font-size: 0.92rem; }
     .account-timer { font-size: 0.62rem; letter-spacing: 0.03em; }
+    .account-uid { font-size: 0.58rem; letter-spacing: 0.1em; }
     .account-power { font-size: 0.65rem; }
   }
 
@@ -1527,6 +1605,11 @@
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+  }
+  /* Form cưỡng chế đổi tên / sửa tên — phải trên panel Player (z=460) */
+  #admin-force-name-overlay,
+  #edit-name-overlay {
+    z-index: 480;
   }
   .auth-panel {
     width: 100%;
@@ -1674,6 +1757,23 @@
     text-align: center;
     min-height: 1.2em;
     margin-bottom: 0.55rem;
+  }
+  /* Lỗi ngay dưới ô tài khoản — hiện khi gõ ký tự cấm */
+  .auth-field-error {
+    display: none;
+    margin: 0.4rem 0 0;
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid rgba(232, 91, 91, 0.35);
+    background: rgba(232, 91, 91, 0.08);
+    color: var(--danger);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: left;
+  }
+  .auth-field-error.show {
+    display: block;
   }
   .auth-actions {
     display: flex;
@@ -2715,8 +2815,27 @@
     background: var(--accent);
     box-shadow: none;
   }
-  .word.correct { color: var(--success); text-shadow: none; }
-  .word.wrong { color: var(--danger); text-decoration: line-through; opacity: 0.85; }
+  /* Kết quả cuối: không tô full từ — màu theo từng ký tự (đúng xanh / sai đỏ) */
+  .word.correct,
+  .word.wrong {
+    text-shadow: none;
+    text-decoration: none;
+    opacity: 1;
+  }
+  .word.correct .typing-char.typing-correct,
+  .word.wrong .typing-char.typing-correct,
+  .word .typing-char.typing-correct {
+    color: var(--success) !important;
+    background: transparent !important;
+    text-shadow: none !important;
+  }
+  .word.correct .typing-char.typing-wrong,
+  .word.wrong .typing-char.typing-wrong,
+  .word .typing-char.typing-wrong {
+    color: #e03e3e !important;
+    background: transparent !important;
+    text-shadow: none !important;
+  }
 
   .word-type-input {
     width: 100%;
@@ -3352,6 +3471,8 @@
     font-weight: 700;
     color: var(--dim);
     box-shadow: none;
+    overflow: visible;
+    position: relative;
   }
   .practice-stat {
     display: inline-flex;
@@ -3373,6 +3494,9 @@
     justify-content: center;
     gap: 0.55rem;
     flex-wrap: wrap;
+    overflow: visible;
+    position: relative;
+    z-index: 5;
   }
   .practice-timer-reveal {
     display: none;
@@ -3456,6 +3580,78 @@
     opacity: 0.45;
     cursor: not-allowed;
     transform: none;
+  }
+  /* Ô ⏱ Ns — bấm để chọn 15s / 30s / 60s (WPM test) */
+  .practice-stat-time {
+    position: relative;
+    user-select: none;
+  }
+  .practice-stat-time.is-selectable {
+    cursor: pointer;
+  }
+  .practice-stat-time.is-selectable:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .practice-stat-time.is-menu-open {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  /* Mũi tên sổ xuống / sổ lên (dropdown) cạnh số giây */
+  .practice-stat-caret {
+    display: none;
+    margin-left: 0.28em;
+    width: 0.55em;
+    height: 0.55em;
+    border-right: 1.8px solid currentColor;
+    border-bottom: 1.8px solid currentColor;
+    transform: rotate(45deg) translateY(-0.12em);
+    opacity: 0.9;
+    flex-shrink: 0;
+    pointer-events: none;
+    transition: transform 0.18s ease;
+  }
+  .practice-stat-time.is-selectable .practice-stat-caret {
+    display: inline-block;
+  }
+  .practice-stat-time.is-menu-open .practice-stat-caret {
+    transform: rotate(-135deg) translateY(-0.08em);
+    opacity: 1;
+  }
+  .practice-wpm-dur-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    min-width: 5.5rem;
+    padding: 0.3rem;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    box-shadow: 0 10px 28px rgba(0,0,0,0.45);
+    display: none;
+  }
+  .practice-wpm-dur-menu.open { display: block; }
+  .practice-wpm-dur-opt {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem 0.7rem;
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .practice-wpm-dur-opt:hover { background: var(--surface-2); color: var(--accent); }
+  .practice-wpm-dur-opt.active {
+    color: var(--accent);
+    background: rgba(232,178,91,0.12);
   }
   .practice-stat-wpm {
     color: var(--accent);
@@ -4489,6 +4685,7 @@
           <div class="account-name" id="account-name" onclick="event.stopPropagation(); openEditName()"></div>
           <span class="account-timer" id="account-timer" title="Thời gian hoạt động" aria-label="Thời gian hoạt động">00:00:00</span>
         </div>
+        <div class="account-uid" id="account-uid" title="UID tài khoản"></div>
         <div class="account-power">Lực chiến <span id="account-power-plat" style="opacity:.75;font-weight:500;"></span>: <strong id="account-wpm">0</strong> WPM</div>
       </div>
     </div>
@@ -4664,10 +4861,18 @@
       <span class="practice-title-text">CHẾ ĐỘ LUYỆN TẬP</span>
     </div>
     <div class="practice-stats-row">
-      <div class="practice-stats">
-        <span class="practice-stat practice-stat-time">
+      <div class="practice-stats" id="practice-stats-pill">
+        <span class="practice-stat practice-stat-time" id="practice-stat-time"
+          onclick="togglePracticeWpmDurationMenu(event)"
+          title="Chọn thời gian WPM test" role="button" tabindex="0"
+          aria-haspopup="listbox" aria-expanded="false">
           <span class="practice-stat-icon">⏱</span>
-          <span id="practice-timer">0</span><span id="practice-timer-suffix">s</span>
+          <span id="practice-timer">0</span><span id="practice-timer-suffix">s</span><span class="practice-stat-caret" aria-hidden="true"></span>
+          <div class="practice-wpm-dur-menu" id="practice-wpm-dur-menu" role="listbox" aria-label="Thời gian WPM test" onclick="event.stopPropagation()">
+            <button type="button" class="practice-wpm-dur-opt" data-sec="15" role="option" onclick="selectPracticeWpmDuration(15, event)">15s</button>
+            <button type="button" class="practice-wpm-dur-opt" data-sec="30" role="option" onclick="selectPracticeWpmDuration(30, event)">30s</button>
+            <button type="button" class="practice-wpm-dur-opt" data-sec="60" role="option" onclick="selectPracticeWpmDuration(60, event)">60s</button>
+          </div>
         </span>
         <span class="practice-stat-dot">·</span>
         <span class="practice-stat practice-stat-ok">
@@ -4688,7 +4893,7 @@
     </div>
   </div>
 
-  <!-- Kết quả WPM 30 giây -->
+  <!-- Kết quả WPM test -->
   <div id="practice-result-overlay" class="practice-result-overlay" onclick="if(event.target===this)closePracticeResult()">
     <div class="practice-result-card">
       <h2>Kết quả</h2>
@@ -4937,6 +5142,7 @@
         <input type="text" id="auth-email" maxlength="48" placeholder="tenban" autocomplete="username" inputmode="text" spellcheck="false" autocapitalize="off" autocorrect="off">
         <span class="auth-account-suffix" id="auth-account-suffix">.wordwar.vn</span>
       </div>
+      <div class="auth-field-error" id="auth-email-error" role="alert" aria-live="polite"></div>
     </div>
     <div class="auth-field">
       <label for="auth-pass">Mật khẩu</label>
@@ -4963,7 +5169,7 @@
     <div class="auth-link-row" id="auth-forgot-row">
       <button type="button" class="auth-link-btn" id="auth-forgot-btn" onclick="toggleAuthForgotMode()">Quên mật khẩu?</button>
     </div>
-    <div class="auth-hint" id="auth-hint">Địa chỉ dạng tenban.wordwar.vn · Chưa có → tạo mới · Đã có → đăng nhập · Tên hiển thị lấy từ tài khoản (sửa sau)</div>
+    <div class="auth-hint" id="auth-hint">Chỉ chữ và số (vd: tenban) · Chưa có → tạo mới · Đã có → đăng nhập · Tên hiển thị sửa sau</div>
   </div>
 </div>
 
@@ -5033,6 +5239,11 @@
 <!-- Account menu (đăng xuất / đổi avatar) -->
 <div class="account-menu-overlay" id="account-menu-overlay" onclick="if(event.target===this)closeAccountMenu()">
   <div class="account-menu" onclick="event.stopPropagation()">
+    <div class="account-menu-head">
+      <div class="account-menu-name" id="account-menu-name">—</div>
+      <div class="account-menu-acc" id="account-menu-acc" style="display:none;"></div>
+      <div class="account-menu-uid" id="account-menu-uid">uid:————</div>
+    </div>
     <button type="button" onclick="openAuthAvatarOnly()">Đổi avatar</button>
     <button type="button" onclick="openEditName(); closeAccountMenu();">Sửa tên</button>
     <button type="button" onclick="openChangePass(); closeAccountMenu();">Đổi mật khẩu</button>
@@ -5049,6 +5260,9 @@
     <div class="edit-name-warn" id="edit-name-warn">
       Sau khi lưu tên mới, bạn <strong>không thể đổi tên trong 2 ngày</strong> tiếp theo.
     </div>
+    <div class="edit-name-warn edit-name-force-warn" id="edit-name-force-warn" style="display:none;border-color:rgba(232,91,91,0.4);background:rgba(232,91,91,0.1);">
+      <strong>Admin đã cưỡng chế đổi tên</strong> của bạn. Vui lòng đặt tên mới phù hợp (không dùng từ ngữ nhạy cảm).
+    </div>
     <div class="auth-field">
       <label for="edit-name-input">Tên hiển thị (tối đa 15 ký tự)</label>
       <input type="text" id="edit-name-input" maxlength="15" placeholder="Tên hiển thị" autocomplete="off">
@@ -5056,6 +5270,25 @@
     <div class="auth-error" id="edit-name-error"></div>
     <div class="auth-actions">
       <button type="button" class="btn btn-orange" id="edit-name-save" onclick="submitEditName()" disabled>LƯU</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin: cưỡng chế đổi tên player -->
+<div class="auth-overlay" id="admin-force-name-overlay" onclick="if(event.target===this)closeAdminForceRename()">
+  <div class="auth-panel edit-name-panel" onclick="event.stopPropagation()">
+    <button type="button" class="auth-close" onclick="closeAdminForceRename()" aria-label="Đóng">×</button>
+    <div class="auth-title">Cưỡng chế đổi tên</div>
+    <div class="edit-name-warn" id="admin-force-name-meta" style="margin-bottom:0.75rem;">
+      —
+    </div>
+    <div class="auth-field">
+      <label for="admin-force-name-input">Tên mới (tối đa 15 ký tự)</label>
+      <input type="text" id="admin-force-name-input" maxlength="15" placeholder="Tên mới" autocomplete="off">
+    </div>
+    <div class="auth-error" id="admin-force-name-error"></div>
+    <div class="auth-actions">
+      <button type="button" class="btn btn-orange" id="admin-force-name-save" onclick="submitAdminForceRename()">ÁP DỤNG</button>
     </div>
   </div>
 </div>
@@ -5211,29 +5444,27 @@ function normalizeAccountId(raw) {
   return local + '.wordwar.vn';
 }
 
-/** Local-part legacy (đăng nhập acc cũ): 3–32 ký tự, chữ/số, giữa cho phép . _ - */
-function isValidAccountLocal(local) {
-  return /^[a-zA-Z0-9](?:[a-zA-Z0-9._-]{1,30}[a-zA-Z0-9])?$/.test(local) && local.length >= 3 && local.length <= 32;
-}
-
 /**
- * Local-part đăng ký MỚI (từ nay): không cho . , / ; @ và ký tự đặc biệt tương tự.
- * Cho phép: chữ HOA/thường, số, gạch dưới _, gạch ngang - ; 3–32 ký tự.
+ * Tên tài khoản: CHỈ chữ cái (a–z, A–Z) và số (0–9).
+ * Không được dùng bất kỳ ký tự đặc biệt nào (_, -, ., /, …).
+ * 3–32 ký tự.
  */
-function isValidAccountLocalNew(local) {
+function isValidAccountLocal(local) {
   local = String(local || '');
-  if (local.length < 3 || local.length > 32) return false;
-  // Cấm rõ: . , / ; @ và mọi ký tự không phải chữ/số/_/-
-  if (/[.,\/;@]/.test(local)) return false;
-  return /^[a-zA-Z0-9](?:[a-zA-Z0-9_-]{1,30}[a-zA-Z0-9])?$/.test(local);
+  return local.length >= 3 && local.length <= 32 && /^[a-zA-Z0-9]+$/.test(local);
 }
 
+/** Đăng ký mới — cùng quy tắc chỉ chữ + số */
+function isValidAccountLocalNew(local) {
+  return isValidAccountLocal(local);
+}
+
+/** true nếu có ký tự không phải chữ/số */
 function hasForbiddenAccountChars(local) {
-  return /[.,\/;@]/.test(String(local || ''));
+  return /[^a-zA-Z0-9]/.test(String(local || ''));
 }
 
 function isValidEmail(email) {
-  // Đăng nhập: vẫn chấp nhận local legacy (có dấu chấm…)
   const full = normalizeAccountId(email);
   if (!full.toLowerCase().endsWith('.wordwar.vn')) return false;
   const local = full.slice(0, -'.wordwar.vn'.length);
@@ -5250,21 +5481,67 @@ function defaultNameFromEmail(email) {
   return cleaned.slice(0, DISPLAY_NAME_MAX) || 'Player';
 }
 
-/** Ô nhập tài khoản chỉ giữ phần local — nếu người dùng gõ/dán kèm đuôi .wordwar.vn hoặc @wordwar.vn thì tự cắt bỏ (đuôi đã hiển thị sẵn bên phải ô nhập) */
+/** Hiện / ẩn lỗi ngay dưới ô tài khoản */
+function setAuthEmailFieldError(msg) {
+  const box = document.getElementById('auth-email-error');
+  if (!box) return;
+  if (msg) {
+    box.textContent = msg;
+    box.classList.add('show');
+  } else {
+    box.textContent = '';
+    box.classList.remove('show');
+  }
+}
+
+/** Ô nhập tài khoản: cắt đuôi domain + hiện lỗi ngay khi gõ ký tự cấm */
 (function setupAuthAccountSuffixInput() {
   const el = document.getElementById('auth-email');
   if (!el) return;
-  el.addEventListener('input', () => {
+
+  function validateAuthEmailLive() {
     const start = el.selectionStart, before = el.value.length;
     let v = el.value;
-    // Cắt đuôi domain nếu user gõ/dán kèm
-    let stripped = v.replace(/@wordwar\.vn\s*$/i, '').replace(/\.wordwar\.vn\s*$/i, '');
-    // Chặn , / ; @ khi gõ (acc mới không dùng; vẫn cho phép . để đăng nhập acc cũ)
-    stripped = stripped.replace(/[,/;@]/g, '');
+    let msg = '';
+
+    // Cắt đuôi domain nếu user gõ/dán kèm (đuôi đã hiện sẵn bên phải)
+    const withoutDomain = v.replace(/@wordwar\.vn\s*$/i, '').replace(/\.wordwar\.vn\s*$/i, '');
+    // Phát hiện ký tự không phải chữ/số TRƯỚC khi lọc
+    if (/[^a-zA-Z0-9]/.test(withoutDomain)) {
+      msg = 'Tên tài khoản chỉ được dùng chữ và số (không ký tự đặc biệt)';
+    }
+
+    // Chỉ giữ chữ + số
+    let stripped = withoutDomain.replace(/[^a-zA-Z0-9]/g, '');
+
     if (stripped !== v) {
       el.value = stripped;
       const diff = before - stripped.length;
       if (start != null) el.selectionStart = el.selectionEnd = Math.max(0, start - diff);
+    }
+
+    setAuthEmailFieldError(msg);
+  }
+
+  el.addEventListener('input', validateAuthEmailLive);
+  el.addEventListener('paste', function() {
+    setTimeout(validateAuthEmailLive, 0);
+  });
+  el.addEventListener('blur', function() {
+    // Khi rời ô: nếu còn lỗi định dạng độ dài (tuỳ chọn — chỉ hiện khi đã gõ gì đó)
+    const v = String(el.value || '').trim();
+    if (!v) {
+      setAuthEmailFieldError('');
+      return;
+    }
+    if (/[.,/;@]/.test(v) || /[^a-zA-Z0-9_\-]/.test(v)) {
+      // input handler đã xử lý
+      return;
+    }
+    if (v.length < 3) {
+      setAuthEmailFieldError('Tên tài khoản tối thiểu 3 ký tự');
+    } else if (v.length > 32) {
+      setAuthEmailFieldError('Tên tài khoản tối đa 32 ký tự');
     }
   });
 })();
@@ -5273,6 +5550,60 @@ function normalizeDisplayName(name, fallbackEmail) {
   const s = String(name || '').trim().replace(/\s+/g, ' ');
   if (s) return s.slice(0, DISPLAY_NAME_MAX);
   return defaultNameFromEmail(fallbackEmail);
+}
+
+/** Gốc từ nhạy cảm — chặn đặt tên (kể cả lặp chữ: lồnnnnn) */
+const NAME_PROFANITY_ROOTS = [
+  'lồn', 'lon', 'cặc', 'cac', 'cức', 'cuc', 'địt', 'dit', 'đụ', 'du',
+  'đéo', 'deo', 'đĩ', 'buồi', 'buoi', 'lìn', 'lin', 'đít', 'dit',
+  'fuck', 'shit', 'dick', 'pussy', 'asshole', 'cunt'
+];
+
+/** Chuẩn hoá để nhận diện né: bỏ khoảng/dấu tách, gộp chữ lặp, bỏ dấu thanh (so khớp) */
+function normalizeNameForProfanity(raw) {
+  let s = String(raw || '').toLowerCase().normalize('NFC');
+  // Bỏ khoảng, gạch, chấm, số chen giữa (l ồ n, l0n, …)
+  s = s.replace(/[\s._\-0-9`'\"!@#$%^&*()+=\[\]{}|\\:;,<>?/~]+/g, '');
+  // Gộp chữ lặp: lồnnnnn → lồn, caaaaặc → cặc
+  try {
+    s = s.replace(/(.)\1+/gu, '$1');
+  } catch (e) {
+    s = s.replace(/(.)\1+/g, '$1');
+  }
+  return s;
+}
+
+function stripDiacriticsVi(s) {
+  try {
+    return String(s).normalize('NFD').replace(/\p{M}/gu, '');
+  } catch (e) {
+    return String(s)
+      .replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a')
+      .replace(/[èéẹẻẽêềếệểễ]/g, 'e')
+      .replace(/[ìíịỉĩ]/g, 'i')
+      .replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o')
+      .replace(/[ùúụủũưừứựửữ]/g, 'u')
+      .replace(/[ỳýỵỷỹ]/g, 'y')
+      .replace(/đ/g, 'd');
+  }
+}
+
+/** true nếu tên chứa từ nhạy cảm (kể cả viết lặp / né dấu) */
+function containsProfanityName(name) {
+  const n = normalizeNameForProfanity(name);
+  if (!n) return false;
+  const ns = stripDiacriticsVi(n);
+  for (let i = 0; i < NAME_PROFANITY_ROOTS.length; i++) {
+    const root = normalizeNameForProfanity(NAME_PROFANITY_ROOTS[i]);
+    if (!root) continue;
+    const rs = stripDiacriticsVi(root);
+    if (n.indexOf(root) !== -1 || ns.indexOf(rs) !== -1) return true;
+  }
+  return false;
+}
+
+function getProfanityNameError() {
+  return 'Tên không được chứa từ ngữ nhạy cảm';
 }
 
 async function hashPassword(pass) {
@@ -5554,31 +5885,64 @@ async function ensureRecoveryPinSet() {
 
 /* ============================================================
    Đồng hồ online (00:00:00) — cạnh tên tài khoản
-   - Chỉ đếm khi tab đang ONLINE (có presence / đang tương tác)
-   - Idle ≥ 2 phút / đóng tab / offline → TẠM DỪNG (không mất số đã đếm)
-   - Online lại → tiếp tục từ tổng đã lưu (không reset)
+   - Chỉ đếm khi ONLINE + đã đăng nhập
+   - Lưu users/{emailKey}/onlineTimeMs (đồng bộ PC/Mobile)
+   - PC + Mobile cùng bật: CHỈ 1 thiết bị đếm (khóa onlineTimeLock)
+     · Máy giữ khóa: đếm + ghi server
+     · Máy kia: chỉ hiển thị tổng từ server (không cộng trùng)
+   - Khóa hết hạn ~25s không heartbeat → máy kia nhận đếm
    ============================================================ */
 const ACTIVITY_TOTAL_KEY = 'wwb_online_total_ms';
-let _activityTotalMs = 0;   // tổng ms đã cộng dồn (khi đang pause)
-let _activitySegStart = 0;  // Date.now() khi đang đếm; 0 = đang dừng
+const ACTIVITY_LOCK_STALE_MS = 25000;
+let _activityTotalMs = 0;
+let _activitySegStart = 0;
 let _activityTimerId = null;
+let _activityLastServerPush = 0;
+let _activityIsOwner = false;       // thiết bị này đang giữ quyền đếm
+let _activityFollowerPollId = null;
+let _activityLockRenewAt = 0;
+
+function activityLocalKey() {
+  if (currentUser && currentUser.emailKey) return ACTIVITY_TOTAL_KEY + '_' + currentUser.emailKey;
+  return ACTIVITY_TOTAL_KEY + '_guest';
+}
+
+function activityMyDeviceId() {
+  try {
+    if (typeof getOrCreateDeviceId === 'function') return getOrCreateDeviceId();
+  } catch (e) {}
+  try {
+    let id = localStorage.getItem('wwb_device_id');
+    if (!id) {
+      id = 'd_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('wwb_device_id', id);
+    }
+    return id;
+  } catch (e2) {
+    return 'd_fallback';
+  }
+}
 
 function loadActivityTotal() {
   try {
-    const n = Number(localStorage.getItem(ACTIVITY_TOTAL_KEY));
+    let n = Number(localStorage.getItem(activityLocalKey()));
+    if (!Number.isFinite(n) || n < 0) n = Number(localStorage.getItem(ACTIVITY_TOTAL_KEY));
     if (Number.isFinite(n) && n >= 0) _activityTotalMs = Math.floor(n);
   } catch (e) {}
 }
 
 function saveActivityTotal() {
   try {
-    localStorage.setItem(ACTIVITY_TOTAL_KEY, String(Math.max(0, Math.floor(_activityTotalMs))));
+    const v = String(Math.max(0, Math.floor(_activityTotalMs)));
+    localStorage.setItem(activityLocalKey(), v);
+    localStorage.setItem(ACTIVITY_TOTAL_KEY, v);
   } catch (e) {}
 }
 
 function getActivityElapsedMs() {
   let ms = _activityTotalMs;
-  if (_activitySegStart) ms += Math.max(0, Date.now() - _activitySegStart);
+  // Chỉ cộng đoạn local khi ĐANG là owner (tránh đếm trùng 2 máy)
+  if (_activityIsOwner && _activitySegStart) ms += Math.max(0, Date.now() - _activitySegStart);
   return Math.max(0, ms);
 }
 
@@ -5598,41 +5962,253 @@ function updateActivityTimerDisplay() {
   el.textContent = formatActivityHMS(getActivityElapsedMs());
 }
 
-/** Tạm dừng đếm — cộng đoạn hiện tại vào tổng, lưu localStorage */
-function pauseActivityTimer() {
-  if (!_activitySegStart) {
-    updateActivityTimerDisplay();
-    return;
+function stopActivityFollowerPoll() {
+  if (_activityFollowerPollId) {
+    try { clearInterval(_activityFollowerPollId); } catch (e) {}
+    _activityFollowerPollId = null;
   }
-  _activityTotalMs += Math.max(0, Date.now() - _activitySegStart);
-  _activitySegStart = 0;
-  saveActivityTotal();
-  updateActivityTimerDisplay();
 }
 
-/** Tiếp tục đếm (chỉ khi đang dừng) — không reset tổng */
+/** Follower: chỉ đọc onlineTimeMs từ server để hiển thị (không đếm local) */
+function startActivityFollowerPoll() {
+  stopActivityFollowerPoll();
+  if (!currentUser || !currentUser.emailKey) return;
+  _activityFollowerPollId = setInterval(async function() {
+    if (_activityIsOwner) {
+      stopActivityFollowerPoll();
+      return;
+    }
+    try {
+      await pullActivityTotalFromServer(true);
+      // Thử giành khóa nếu máy kia offline / khóa hết hạn
+      const got = await tryAcquireActivityLock();
+      if (got) {
+        stopActivityFollowerPoll();
+        if (!_activitySegStart) {
+          _activitySegStart = Date.now();
+        }
+      }
+    } catch (e) {}
+  }, 3000);
+}
+
+/**
+ * Giành quyền đếm (1 acc — 1 thiết bị).
+ * @returns {Promise<boolean>} true nếu máy này là owner
+ */
+async function tryAcquireActivityLock() {
+  if (!currentUser || !currentUser.emailKey) {
+    _activityIsOwner = false;
+    return false;
+  }
+  if (typeof db === 'undefined' || typeof ref === 'undefined' || typeof get === 'undefined') {
+    _activityIsOwner = true; // offline-local fallback
+    return true;
+  }
+  const myId = activityMyDeviceId();
+  const now = Date.now();
+  try {
+    const lockSnap = await get(ref(db, 'users/' + currentUser.emailKey + '/onlineTimeLock'));
+    const lock = lockSnap.exists() ? (lockSnap.val() || {}) : null;
+    const lockId = lock && lock.deviceId ? String(lock.deviceId) : '';
+    const lockHb = lock && typeof lock.heartbeat === 'number' ? lock.heartbeat : 0;
+    const stale = !lockId || (now - lockHb > ACTIVITY_LOCK_STALE_MS);
+    const mine = lockId === myId;
+    if (mine || stale) {
+      await update(ref(db, 'users/' + currentUser.emailKey), {
+        onlineTimeLock: { deviceId: myId, heartbeat: now }
+      });
+      _activityIsOwner = true;
+      _activityLockRenewAt = now;
+      return true;
+    }
+    _activityIsOwner = false;
+    return false;
+  } catch (e) {
+    // Lỗi mạng: giữ trạng thái cũ; ưu tiên không đếm trùng
+    return _activityIsOwner;
+  }
+}
+
+async function renewActivityLock() {
+  if (!_activityIsOwner || !currentUser || !currentUser.emailKey) return;
+  const now = Date.now();
+  if (now - _activityLockRenewAt < 10000) return;
+  _activityLockRenewAt = now;
+  try {
+    await update(ref(db, 'users/' + currentUser.emailKey), {
+      onlineTimeLock: { deviceId: activityMyDeviceId(), heartbeat: now }
+    });
+  } catch (e) {}
+}
+
+async function releaseActivityLock() {
+  if (!currentUser || !currentUser.emailKey) {
+    _activityIsOwner = false;
+    return;
+  }
+  if (!_activityIsOwner) return;
+  try {
+    const myId = activityMyDeviceId();
+    const lockSnap = await get(ref(db, 'users/' + currentUser.emailKey + '/onlineTimeLock'));
+    const lock = lockSnap.exists() ? lockSnap.val() : null;
+    if (lock && String(lock.deviceId) === myId) {
+      await update(ref(db, 'users/' + currentUser.emailKey), { onlineTimeLock: null });
+    }
+  } catch (e) {}
+  _activityIsOwner = false;
+}
+
+/** Ghi tổng lên server — CHỈ owner (tránh 2 máy ghi đè / nhân đôi) */
+async function pushActivityTotalToServer(force) {
+  if (!currentUser || !currentUser.emailKey) return;
+  if (!_activityIsOwner) return;
+  if (typeof db === 'undefined' || typeof ref === 'undefined' || typeof update === 'undefined') return;
+  const now = Date.now();
+  if (!force && now - _activityLastServerPush < 8000) return;
+  const ms = Math.max(0, Math.floor(getActivityElapsedMs()));
+  _activityLastServerPush = now;
+  try {
+    await update(ref(db, 'users/' + currentUser.emailKey), {
+      onlineTimeMs: ms,
+      onlineTimeUpdatedAt: now,
+      onlineTimeLock: { deviceId: activityMyDeviceId(), heartbeat: now }
+    });
+    _activityLockRenewAt = now;
+    if (!_activitySegStart) {
+      _activityTotalMs = ms;
+      saveActivityTotal();
+    }
+  } catch (e) {}
+}
+
+/**
+ * Tải tổng từ server.
+ * @param {boolean} displayOnly — follower: chỉ cập nhật số hiển thị, không đẩy ngược
+ */
+async function pullActivityTotalFromServer(displayOnly) {
+  if (!currentUser || !currentUser.emailKey) return;
+  if (typeof db === 'undefined' || typeof ref === 'undefined' || typeof get === 'undefined') return;
+  try {
+    const snap = await get(ref(db, 'users/' + currentUser.emailKey + '/onlineTimeMs'));
+    let serverMs = 0;
+    if (snap.exists()) {
+      const n = Number(snap.val());
+      if (Number.isFinite(n) && n >= 0) serverMs = Math.floor(n);
+    }
+    if (displayOnly || !_activityIsOwner) {
+      // Follower / chỉ xem: luôn theo server (máy kia đang đếm)
+      if (serverMs >= _activityTotalMs || displayOnly) {
+        _activityTotalMs = serverMs;
+        saveActivityTotal();
+      }
+      updateActivityTimerDisplay();
+      return;
+    }
+    loadActivityTotal();
+    if (serverMs > _activityTotalMs) {
+      _activityTotalMs = serverMs;
+      saveActivityTotal();
+    } else if (_activityTotalMs > serverMs) {
+      await pushActivityTotalToServer(true);
+    }
+    updateActivityTimerDisplay();
+  } catch (e) {}
+}
+
+/** Tạm dừng đếm — owner: cộng đoạn + ghi server + nhả khóa */
+function pauseActivityTimer() {
+  if (_activityIsOwner && _activitySegStart) {
+    _activityTotalMs += Math.max(0, Date.now() - _activitySegStart);
+    _activitySegStart = 0;
+    saveActivityTotal();
+    try { pushActivityTotalToServer(true); } catch (e) {}
+    try { releaseActivityLock(); } catch (e2) {}
+  } else {
+    _activitySegStart = 0;
+  }
+  updateActivityTimerDisplay();
+  // Sau khi pause (idle): chuyển sang follower poll để máy kia có thể nhận khóa
+  if (currentUser && currentUser.emailKey) {
+    try { startActivityFollowerPoll(); } catch (e3) {}
+  }
+}
+
+/** Tiếp tục đếm — chỉ khi giành được khóa (1 trong 2 máy) */
 function resumeActivityTimer() {
-  if (_activitySegStart) {
+  if (!currentUser || !currentUser.emailKey) {
     updateActivityTimerDisplay();
     return;
   }
-  _activitySegStart = Date.now();
+  // Thử giành quyền đếm (async — không chặn UI)
+  tryAcquireActivityLock().then(function(got) {
+    if (got) {
+      stopActivityFollowerPoll();
+      if (!_activitySegStart) _activitySegStart = Date.now();
+      updateActivityTimerDisplay();
+    } else {
+      // Máy kia đang đếm → chỉ theo dõi server
+      _activitySegStart = 0;
+      startActivityFollowerPoll();
+      pullActivityTotalFromServer(true);
+    }
+  }).catch(function() {
+    startActivityFollowerPoll();
+  });
   updateActivityTimerDisplay();
 }
 
 function startActivityTimer() {
   loadActivityTotal();
-  // Mở app = đang online → bắt đầu/tiếp tục đếm
-  resumeActivityTimer();
+  if (currentUser && currentUser.emailKey) {
+    resumeActivityTimer();
+  }
   updateActivityTimerDisplay();
   if (_activityTimerId) return;
-  _activityTimerId = setInterval(updateActivityTimerDisplay, 1000);
+  _activityTimerId = setInterval(function() {
+    updateActivityTimerDisplay();
+    if (_activityIsOwner && _activitySegStart && currentUser && currentUser.emailKey) {
+      try { pushActivityTotalToServer(false); } catch (e) {}
+      try { renewActivityLock(); } catch (e2) {}
+    }
+  }, 1000);
   try {
     document.addEventListener('visibilitychange', () => {
-      // Chỉ refresh UI khi hiện lại; pause/resume do presence idle (2 phút) quyết định
-      if (!document.hidden) updateActivityTimerDisplay();
+      if (!document.hidden) {
+        updateActivityTimerDisplay();
+        // Hiện lại tab: thử giành khóa / đồng bộ
+        try { resumeActivityTimer(); } catch (e) {}
+      } else if (_activityIsOwner) {
+        try { pushActivityTotalToServer(true); } catch (e2) {}
+      }
     });
   } catch (e) {}
+}
+
+/** Gọi sau login / refresh: nạp tổng, giành khóa hoặc theo dõi */
+async function bindActivityTimerToAccount() {
+  if (!currentUser || !currentUser.emailKey) {
+    pauseActivityTimer();
+    stopActivityFollowerPoll();
+    _activityTotalMs = 0;
+    _activityIsOwner = false;
+    updateActivityTimerDisplay();
+    return;
+  }
+  if (_activitySegStart && _activityIsOwner) {
+    _activityTotalMs += Math.max(0, Date.now() - _activitySegStart);
+  }
+  _activitySegStart = 0;
+  loadActivityTotal();
+  await pullActivityTotalFromServer(true);
+  const got = await tryAcquireActivityLock();
+  if (got) {
+    stopActivityFollowerPoll();
+    _activitySegStart = Date.now();
+  } else {
+    startActivityFollowerPoll();
+  }
+  updateActivityTimerDisplay();
 }
 
 function loadSessionUser() {
@@ -5659,6 +6235,7 @@ function saveSessionUser(user) {
     email: user.email || '',
     displayName: user.displayName,
     avatar: user.avatar || null,
+    uid: normalizeAccountUid(user.uid) || undefined,
     bestWpm: user.bestWpm || 0,
     bestWpmMobile: typeof user.bestWpmMobile === 'number' ? user.bestWpmMobile : (user.bestWpm || 0),
     bestWpmPc: typeof user.bestWpmPc === 'number' ? user.bestWpmPc : (user.bestWpm || 0)
@@ -5670,7 +6247,11 @@ function renderAccountBadge() {
   const img = document.getElementById('account-avatar-img');
   const face = document.getElementById('account-face-icon');
   const nameEl = document.getElementById('account-name');
+  const uidEl = document.getElementById('account-uid');
   const wpmEl = document.getElementById('account-wpm');
+  const menuName = document.getElementById('account-menu-name');
+  const menuAcc = document.getElementById('account-menu-acc');
+  const menuUid = document.getElementById('account-menu-uid');
   if (!badge) return;
   if (currentUser) {
     badge.classList.add('logged-in');
@@ -5678,6 +6259,29 @@ function renderAccountBadge() {
     if (logoWrap) logoWrap.classList.add('user-logged-in');
     const shown = currentUser.displayName || defaultNameFromEmail(currentUser.email) || currentUser.emailKey;
     if (nameEl) nameEl.textContent = shown;
+    // Admin cố định UID
+    const isAdm = typeof ADMIN_KEYS !== 'undefined' && ADMIN_KEYS.indexOf(currentUser.emailKey) !== -1;
+    if (isAdm) {
+      currentUser.uid = (typeof ADMIN_UID !== 'undefined') ? ADMIN_UID : '02082008';
+    }
+    const uidText = formatUidDisplay(currentUser.uid);
+    if (uidEl) {
+      uidEl.textContent = uidText || '';
+      uidEl.style.display = uidText ? '' : 'none';
+    }
+    if (menuName) menuName.textContent = shown;
+    // Menu login: Admin → tên, tài khoản, uid; Player → tên, uid
+    if (menuAcc) {
+      if (isAdm) {
+        const accLb = formatAccountLabelShort(currentUser);
+        menuAcc.textContent = accLb || currentUser.emailKey || '';
+        menuAcc.style.display = '';
+      } else {
+        menuAcc.textContent = '';
+        menuAcc.style.display = 'none';
+      }
+    }
+    if (menuUid) menuUid.textContent = uidText || 'uid:————————';
     if (wpmEl) wpmEl.textContent = String(typeof getMyDisplayPower === 'function' ? getMyDisplayPower() : (currentUser.bestWpm || 0));
     const platEl = document.getElementById('account-power-plat');
     if (platEl) {
@@ -5692,8 +6296,6 @@ function renderAccountBadge() {
       if (img) { img.removeAttribute('src'); img.style.display = 'none'; }
       if (face) face.style.display = '';
     }
-    // Seed ảnh đại diện prep từ avatar tài khoản.
-    // Dùng try/catch vì lúc load session, `let myImgs` có thể chưa chạy tới (TDZ).
     try {
       if (currentUser.avatar && myImgs && !myImgs.default) {
         myImgs.default = currentUser.avatar;
@@ -5706,6 +6308,10 @@ function renderAccountBadge() {
     if (img) { img.removeAttribute('src'); img.style.display = 'none'; }
     if (face) face.style.display = '';
     if (nameEl) nameEl.textContent = '';
+    if (uidEl) { uidEl.textContent = ''; uidEl.style.display = 'none'; }
+    if (menuName) menuName.textContent = '—';
+    if (menuAcc) { menuAcc.textContent = ''; menuAcc.style.display = 'none'; }
+    if (menuUid) menuUid.textContent = 'uid:————————';
     if (wpmEl) wpmEl.textContent = '0';
   }
   // Cập nhật badge admin + presence khi login/logout
@@ -5727,14 +6333,21 @@ async function refreshAccountFromServer() {
       bestWpm: typeof d.bestWpm === 'number' ? d.bestWpm : 0,
       bestWpmMobile: typeof d.bestWpmMobile === 'number' ? d.bestWpmMobile : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
       bestWpmPc: typeof d.bestWpmPc === 'number' ? d.bestWpmPc : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
-      displayNameChangedAt: typeof d.displayNameChangedAt === 'number' ? d.displayNameChangedAt : 0
+      displayNameChangedAt: typeof d.displayNameChangedAt === 'number' ? d.displayNameChangedAt : 0,
+      forceRenameByAdmin: !!d.forceRenameByAdmin,
+      forceRenameAt: typeof d.forceRenameAt === 'number' ? d.forceRenameAt : 0,
+      forceRenameFrom: d.forceRenameFrom || null,
+      uid: normalizeAccountUid(d.uid) || undefined
     };
     normalizeUserPowerFields(currentUser, d);
     // Acc cũ chỉ có bestWpm → ghi luôn 2 field nền lên server (không mất khi xem Player)
     await ensurePowerFieldsMigratedToServer(d);
+    try { await ensureUserUid(currentUser, d); } catch (eUid) {}
     saveSessionUser(currentUser);
     renderAccountBadge();
     ensureRecoveryPinSet();
+    try { if (typeof startForceRenameListener === 'function') startForceRenameListener(); } catch (eFr) {}
+    try { if (typeof bindActivityTimerToAccount === 'function') bindActivityTimerToAccount(); } catch (eAt) {}
   } catch (e) {}
 }
 
@@ -5770,6 +6383,7 @@ window.openAuthModal = function() {
     _pt.setAttribute('aria-pressed', 'false');
   }
   if (errEl) errEl.textContent = '';
+  try { if (typeof setAuthEmailFieldError === 'function') setAuthEmailFieldError(''); } catch (e) {}
   const ov = document.getElementById('auth-overlay');
   if (ov) ov.classList.add('show');
   setTimeout(function() { if (emailEl) emailEl.focus(); }, 50);
@@ -5778,6 +6392,7 @@ window.openAuthModal = function() {
 window.closeAuthModal = function() {
   const ov = document.getElementById('auth-overlay');
   if (ov) ov.classList.remove('show');
+  try { if (typeof setAuthEmailFieldError === 'function') setAuthEmailFieldError(''); } catch (e) {}
 };
 
 window.openAccountMenu = function() {
@@ -5848,6 +6463,7 @@ window.openEditName = async function() {
   const err = document.getElementById('edit-name-error');
   const ov = document.getElementById('edit-name-overlay');
   const warn = document.getElementById('edit-name-warn');
+  const forceWarn = document.getElementById('edit-name-force-warn');
   const btn = document.getElementById('edit-name-save');
   if (inp) {
     inp.value = currentUser.displayName || defaultNameFromEmail(currentUser.email) || '';
@@ -5856,22 +6472,43 @@ window.openEditName = async function() {
   if (err) err.textContent = '';
   if (btn) btn.disabled = true;
 
-  // Admin: không khóa + ẩn cảnh báo 2 ngày (hoặc đổi nội dung)
+  // Làm mới cờ cưỡng chế từ server (nếu admin vừa đổi khi player đang online)
+  let forced = !!(currentUser.forceRenameByAdmin);
+  try {
+    if (currentUser.emailKey) {
+      const snap = await get(ref(db, 'users/' + currentUser.emailKey + '/forceRenameByAdmin'));
+      if (snap.exists()) {
+        forced = !!snap.val();
+        currentUser.forceRenameByAdmin = forced;
+      }
+    }
+  } catch (e) {}
+
   const isAdm = canBypassNameChangeLock();
+  if (forceWarn) {
+    forceWarn.style.display = (forced && !isAdm) ? 'block' : 'none';
+  }
   if (warn) {
     if (isAdm) {
       warn.innerHTML = 'Tài khoản <strong>Admin</strong> có thể đổi tên bất kỳ lúc nào (không bị khóa 2 ngày).';
+      warn.style.display = '';
+    } else if (forced) {
+      // Đã hiện force-warn — ẩn cảnh báo 2 ngày (được đổi ngay sau cưỡng chế)
+      warn.style.display = 'none';
     } else {
+      warn.style.display = '';
       warn.innerHTML = 'Sau khi lưu tên mới, bạn <strong>không thể đổi tên trong 2 ngày</strong> tiếp theo.';
     }
   }
 
-  // Kiểm tra khóa 2 ngày (admin bỏ qua)
-  const lock = await getNameChangeLockInfo();
-  if (lock.locked && !isAdm) {
-    if (err) err.textContent = 'Chỉ đổi tên được sau ' + formatNameCooldownLeft(lock.leftMs) + ' nữa';
-    if (inp) inp.disabled = true;
-    if (btn) btn.disabled = true;
+  // Khóa 2 ngày — admin hoặc bị cưỡng chế thì bỏ qua
+  if (!isAdm && !forced) {
+    const lock = await getNameChangeLockInfo();
+    if (lock.locked) {
+      if (err) err.textContent = 'Chỉ đổi tên được sau ' + formatNameCooldownLeft(lock.leftMs) + ' nữa';
+      if (inp) inp.disabled = true;
+      if (btn) btn.disabled = true;
+    }
   }
   if (ov) ov.classList.add('show');
   syncEditNameSaveBtn();
@@ -6008,10 +6645,14 @@ window.submitAuth = async function() {
   if (errEl) errEl.textContent = '';
   if (!isValidEmail(email)) {
     const localTry = email ? email.slice(0, -'.wordwar.vn'.length) : emailRaw;
-    if (hasForbiddenAccountChars(localTry) || /[.,\/;@]/.test(emailRaw)) {
-      if (errEl) errEl.textContent = 'Tên tài khoản không được chứa . , / ; @ (vd: TenBan.wordwar.vn)';
+    if (hasForbiddenAccountChars(localTry) || hasForbiddenAccountChars(emailRaw)) {
+      if (errEl) errEl.textContent = 'Tên tài khoản chỉ được dùng chữ và số (vd: TenBan)';
+    } else if (!localTry || localTry.length < 3) {
+      if (errEl) errEl.textContent = 'Tên tài khoản tối thiểu 3 ký tự (chỉ chữ và số)';
+    } else if (localTry.length > 32) {
+      if (errEl) errEl.textContent = 'Tên tài khoản tối đa 32 ký tự';
     } else {
-      if (errEl) errEl.textContent = 'Tài khoản dạng TenBan.wordwar.vn (3–32 ký tự, chữ/số, có thể dùng _ -)';
+      if (errEl) errEl.textContent = 'Tài khoản dạng TenBan.wordwar.vn (3–32 ký tự, chỉ chữ và số)';
     }
     return;
   }
@@ -6068,17 +6709,20 @@ window.submitAuth = async function() {
         avatar: d.avatar || null,
         bestWpm: typeof d.bestWpm === 'number' ? d.bestWpm : 0,
         bestWpmMobile: typeof d.bestWpmMobile === 'number' ? d.bestWpmMobile : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
-        bestWpmPc: typeof d.bestWpmPc === 'number' ? d.bestWpmPc : (typeof d.bestWpm === 'number' ? d.bestWpm : 0)
+        bestWpmPc: typeof d.bestWpmPc === 'number' ? d.bestWpmPc : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
+        uid: normalizeAccountUid(d.uid) || undefined
       };
       if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser, d);
       if (typeof ensurePowerFieldsMigratedToServer === 'function') {
         await ensurePowerFieldsMigratedToServer(d);
       }
+      try { await ensureUserUid(currentUser, d); } catch (eUid) {}
       saveSessionUser(currentUser);
       renderAccountBadge();
       setAuthForgotMode(false);
       closeAuthModal();
       showToast('Đã đặt lại mật khẩu — xin chào, ' + currentUser.displayName + '!');
+      try { if (typeof bindActivityTimerToAccount === 'function') bindActivityTimerToAccount(); } catch (eAt) {}
     } catch (e) {
       console.error(e);
       if (errEl) errEl.textContent = 'Lỗi kết nối. Thử lại.';
@@ -6111,7 +6755,12 @@ window.submitAuth = async function() {
         avatar: d.avatar || null,
         bestWpm: typeof d.bestWpm === 'number' ? d.bestWpm : 0,
         bestWpmMobile: typeof d.bestWpmMobile === 'number' ? d.bestWpmMobile : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
-        bestWpmPc: typeof d.bestWpmPc === 'number' ? d.bestWpmPc : (typeof d.bestWpm === 'number' ? d.bestWpm : 0)
+        bestWpmPc: typeof d.bestWpmPc === 'number' ? d.bestWpmPc : (typeof d.bestWpm === 'number' ? d.bestWpm : 0),
+        displayNameChangedAt: typeof d.displayNameChangedAt === 'number' ? d.displayNameChangedAt : 0,
+        forceRenameByAdmin: !!d.forceRenameByAdmin,
+        forceRenameAt: typeof d.forceRenameAt === 'number' ? d.forceRenameAt : 0,
+        forceRenameFrom: d.forceRenameFrom || null,
+        uid: normalizeAccountUid(d.uid) || undefined
       };
       if (_authAvatarDataUrl) {
         await update(userRef, { avatar: _authAvatarDataUrl, updatedAt: Date.now() });
@@ -6130,19 +6779,22 @@ window.submitAuth = async function() {
       if (typeof ensurePowerFieldsMigratedToServer === 'function') {
         await ensurePowerFieldsMigratedToServer(d);
       }
+      try { await ensureUserUid(currentUser, d); } catch (eUid) {}
       saveSessionUser(currentUser);
       renderAccountBadge();
       closeAuthModal();
       showToast('Xin chào, ' + currentUser.displayName + '!');
       ensureRecoveryPinSet();
+      try { if (typeof startForceRenameListener === 'function') startForceRenameListener(); } catch (eFr) {}
+      try { if (typeof bindActivityTimerToAccount === 'function') bindActivityTimerToAccount(); } catch (eAt) {}
     } else {
-      // ── Đăng ký mới: cấm . , / ; @ trong tên tài khoản (acc cũ vẫn đăng nhập được) ──
+      // ── Đăng ký mới: chỉ chữ và số ──
       const localPart = email.slice(0, -'.wordwar.vn'.length);
       if (!isValidAccountLocalNew(localPart)) {
         if (errEl) {
           errEl.textContent = hasForbiddenAccountChars(localPart)
-            ? 'Tạo tài khoản mới không được dùng . , / ; @ trong tên (vd: TenBan, khong dung Ten.Ban)'
-            : 'Tên tài khoản mới: 3–32 ký tự, chỉ chữ/số/_/- , bắt đầu và kết thúc bằng chữ hoặc số';
+            ? 'Tên tài khoản chỉ được dùng chữ và số (không ký tự đặc biệt)'
+            : 'Tên tài khoản: 3–32 ký tự, chỉ chữ cái và số';
         }
         return;
       }
@@ -6208,6 +6860,10 @@ window.submitAuth = async function() {
       if (btn) { btn.disabled = true; btn.textContent = 'Đang tạo…'; }
 
       const disp = defaultNameFromEmail(email);
+      // UID 8 số — admin cố định 02082008
+      const newUid = (typeof ADMIN_KEYS !== 'undefined' && ADMIN_KEYS.indexOf(key) !== -1)
+        ? ((typeof ADMIN_UID !== 'undefined') ? ADMIN_UID : '02082008')
+        : generateAccountUid();
       const payload = {
         email: email, // giữ hoa/thường như người dùng đăng ký
         displayName: disp,
@@ -6215,6 +6871,7 @@ window.submitAuth = async function() {
         recoveryCodeHash: null,
         recoveryPinSet: false, // đặt PIN ngay sau khi vào acc
         avatar: _authAvatarDataUrl || null,
+        uid: newUid,
         bestWpm: 0,
         bestWpmMobile: 0,
         bestWpmPc: 0,
@@ -6235,6 +6892,7 @@ window.submitAuth = async function() {
         email: payload.email,
         displayName: disp,
         avatar: payload.avatar,
+        uid: newUid,
         bestWpm: 0,
         bestWpmMobile: 0,
         bestWpmPc: 0
@@ -6243,6 +6901,7 @@ window.submitAuth = async function() {
       saveSessionUser(currentUser);
       renderAccountBadge();
       closeAuthModal();
+      try { if (typeof bindActivityTimerToAccount === 'function') bindActivityTimerToAccount(); } catch (eAt) {}
       // Vào acc xong → bắt buộc đặt mã PIN 6 số
       showRecoveryPinModal('setup');
     }
@@ -6269,6 +6928,10 @@ window.submitEditName = async function() {
     if (err) err.textContent = 'Tên phải từ 1–' + DISPLAY_NAME_MAX + ' ký tự';
     return;
   }
+  if (containsProfanityName(newName)) {
+    if (err) err.textContent = getProfanityNameError();
+    return;
+  }
   // Bắt buộc nhập tên MỚI (khác tên hiện tại) mới cho lưu
   if (newName === (currentUser.displayName || '').trim().replace(/\s+/g, ' ')) {
     if (err) err.textContent = 'Hãy nhập tên mới khác tên hiện tại';
@@ -6276,8 +6939,9 @@ window.submitEditName = async function() {
     return;
   }
   const isAdm = canBypassNameChangeLock();
-  // Khóa 2 ngày kể từ lần đổi trước — admin bỏ qua
-  if (!isAdm) {
+  const forced = !!(currentUser.forceRenameByAdmin);
+  // Khóa 2 ngày — admin hoặc vừa bị cưỡng chế thì bỏ qua
+  if (!isAdm && !forced) {
     const lock = await getNameChangeLockInfo();
     if (lock.locked) {
       if (err) err.textContent = 'Chỉ đổi tên được sau ' + formatNameCooldownLeft(lock.leftMs) + ' nữa';
@@ -6291,17 +6955,20 @@ window.submitEditName = async function() {
   try {
     const patch = {
       displayName: newName,
-      updatedAt: now
+      updatedAt: now,
+      displayNameChangedAt: now,
+      // Player đã tự đặt tên mới → xóa cờ cưỡng chế
+      forceRenameByAdmin: false,
+      forceRenameAt: null,
+      forceRenameFrom: null
     };
-    // Admin vẫn ghi mốc đổi tên (lịch sử) nhưng không bị khóa lần sau
-    patch.displayNameChangedAt = now;
     await update(ref(db, 'users/' + currentUser.emailKey), patch);
     currentUser.displayName = newName;
     currentUser.displayNameChangedAt = now;
+    currentUser.forceRenameByAdmin = false;
     if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
     saveSessionUser(currentUser);
     renderAccountBadge();
-    // Đồng bộ tên mới lên presence + chat identity
     if (typeof writePresenceNow === 'function') writePresenceNow();
     if (typeof _lobbyChatOpen !== 'undefined' && _lobbyChatOpen && typeof renderLobbyChatMsgs === 'function') {
       renderLobbyChatMsgs();
@@ -6315,16 +6982,164 @@ window.submitEditName = async function() {
   }
 };
 
+/**
+ * Admin cưỡng chế đổi tên — quy trình:
+ * 1) Nhấp tên player → hộp xác nhận (giống xóa tài khoản)
+ * 2) Xác nhận → chỉ gắn cờ forceRenameByAdmin (KHÔNG đổi tên hộ)
+ * 3) Bên player: hiện form Sửa tên để họ tự đặt tên mới
+ */
+window.openAdminForceRename = async function(emailKey, event) {
+  if (event) {
+    try { event.preventDefault(); event.stopPropagation(); } catch (e) {}
+  }
+  if (typeof isAdmin !== 'function' || !isAdmin()) {
+    try { showToast('Chỉ Admin mới cưỡng chế đổi tên'); } catch (e0) {}
+    return;
+  }
+  if (!emailKey) return;
+  if (ADMIN_KEYS.includes(emailKey)) {
+    showToast('Không thể cưỡng chế đổi tên Admin');
+    return;
+  }
+  const p = (_players || []).find(x => x.key === emailKey);
+  const nm = (p && p.name) || '—';
+  const acc = (p && (p.email || p.key)) || emailKey;
+  const label = nm + ' (' + acc + ')';
+
+  // Xác nhận lần 1 — giống xóa tài khoản
+  let ok = false;
+  if (typeof showConfirmDialog === 'function') {
+    ok = await showConfirmDialog({
+      icon: '✏️',
+      title: 'Cưỡng chế đổi tên?',
+      message: 'Yêu cầu player này đổi tên hiển thị?\n\n' + label + '\n\nHọ sẽ thấy form đổi tên và phải tự đặt tên mới.',
+      okText: 'Cưỡng chế',
+      cancelText: 'Hủy'
+    });
+  } else {
+    ok = confirm('Cưỡng chế đổi tên?\n\n' + label);
+  }
+  if (!ok) return;
+
+  // Xác nhận lần 2
+  if (typeof showConfirmDialog === 'function') {
+    ok = await showConfirmDialog({
+      icon: '⚠️',
+      title: 'Xác nhận lần cuối',
+      message: 'Cưỡng chế đổi tên cho:\n' + label + '\n\nKhông thể hoàn tác yêu cầu này (player phải tự đổi tên).',
+      okText: 'Xác nhận',
+      cancelText: 'Hủy'
+    });
+  } else {
+    ok = confirm('XÁC NHẬN LẦN CUỐI\n\nCưỡng chế đổi tên ' + label + '?');
+  }
+  if (!ok) return;
+
+  const now = (typeof nowServer === 'function') ? nowServer() : Date.now();
+  try {
+    // Chỉ gắn cờ — admin KHÔNG nhập/đổi tên hộ
+    await update(ref(db, 'users/' + emailKey), {
+      forceRenameByAdmin: true,
+      forceRenameAt: now,
+      forceRenameFrom: (p && p.name) || null,
+      updatedAt: now
+    });
+    showToast('Đã yêu cầu player đổi tên');
+  } catch (e) {
+    console.error(e);
+    alert('Lỗi cưỡng chế đổi tên (' + ((e && (e.code || e.message)) || 'không rõ') + '). Kiểm tra rules Firebase.');
+  }
+};
+
+// Ủy quyền click: nhấp tên player → xác nhận cưỡng chế
+(function bindAdminForceRenameClicks() {
+  function onListClick(e) {
+    const t = e.target && e.target.closest ? e.target.closest('.online-user-name.is-admin-force') : null;
+    if (!t) return;
+    const key = t.getAttribute('data-force-key');
+    if (!key) return;
+    openAdminForceRename(key, e);
+  }
+  function onListKey(e) {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const t = e.target && e.target.closest ? e.target.closest('.online-user-name.is-admin-force') : null;
+    if (!t) return;
+    const key = t.getAttribute('data-force-key');
+    if (!key) return;
+    openAdminForceRename(key, e);
+  }
+  document.addEventListener('click', onListClick, true);
+  document.addEventListener('keydown', onListKey, true);
+})();
+
+window.closeAdminForceRename = function() {
+  const ov = document.getElementById('admin-force-name-overlay');
+  if (ov) ov.classList.remove('show');
+};
+window.submitAdminForceRename = function() { /* deprecated — admin không đổi tên hộ */ };
+
+/** Player đang online: lắng nghe cờ cưỡng chế → mở form Sửa tên ngay */
+let _forceRenameUnsub = null;
+let _forceRenamePrompted = false;
+function stopForceRenameListener() {
+  if (_forceRenameUnsub) {
+    try { _forceRenameUnsub(); } catch (e) {}
+    _forceRenameUnsub = null;
+  }
+  _forceRenamePrompted = false;
+}
+function startForceRenameListener() {
+  stopForceRenameListener();
+  if (!currentUser || !currentUser.emailKey) return;
+  // Admin không bị cưỡng chế
+  if (typeof isAdmin === 'function' && isAdmin()) return;
+  const key = currentUser.emailKey;
+  try {
+    const r = ref(db, 'users/' + key + '/forceRenameByAdmin');
+    _forceRenameUnsub = onValue(r, (snap) => {
+      const forced = !!snap.val();
+      if (currentUser) currentUser.forceRenameByAdmin = forced;
+      if (!forced) {
+        _forceRenamePrompted = false;
+        return;
+      }
+      // Đã hiện form rồi thì không spam
+      if (_forceRenamePrompted) return;
+      const ov = document.getElementById('edit-name-overlay');
+      if (ov && ov.classList.contains('show')) {
+        _forceRenamePrompted = true;
+        return;
+      }
+      _forceRenamePrompted = true;
+      try { showToast('Admin yêu cầu bạn đổi tên hiển thị'); } catch (eT) {}
+      setTimeout(function() {
+        try { if (typeof openEditName === 'function') openEditName(); } catch (eO) {}
+      }, 300);
+    }, () => {});
+  } catch (e) {}
+}
+
 window.logoutAccount = function() {
   try {
+    // Lưu đồng hồ + nhả khóa đếm trước khi clear session
+    try { if (typeof pauseActivityTimer === 'function') pauseActivityTimer(); } catch (eA) {}
+    try { if (typeof stopActivityFollowerPoll === 'function') stopActivityFollowerPoll(); } catch (eF) {}
     if (currentUser && currentUser.emailKey) markUserLastSeen(false);
     if (typeof cancelUserLastSeenOnDisconnect === 'function') cancelUserLastSeenOnDisconnect();
     if (typeof stopPresence === 'function') { /* presence restart as guest below */ }
+    if (typeof stopForceRenameListener === 'function') stopForceRenameListener();
   } catch (e) {}
 
   closeAccountMenu();
   currentUser = null;
   saveSessionUser(null);
+  // Guest: không đếm / về 0 trên UI
+  try {
+    _activityTotalMs = 0;
+    _activitySegStart = 0;
+    _activityIsOwner = false;
+    if (typeof updateActivityTimerDisplay === 'function') updateActivityTimerDisplay();
+  } catch (e2) {}
   renderAccountBadge();
   showToast('Đã đăng xuất');
 };
@@ -6488,6 +7303,83 @@ function getMyDisplayName() {
 // Admin cố định: phamquan.wordwar.vn → emailKey phamquan_wordwar_vn (chữ thường)
 // Tài khoản hoa/thường khác (vd PhamQuan.wordwar.vn) là user thường, không phải admin
 const ADMIN_KEYS = ['phamquan_wordwar_vn'];
+/** UID admin cố định 8 số */
+const ADMIN_UID = '02082008';
+
+/** Sinh UID 8 chữ số (10000000–99999999), tránh trùng ADMIN_UID */
+function generateAccountUid() {
+  let s;
+  do {
+    s = String(Math.floor(10000000 + Math.random() * 90000000));
+  } while (s === ADMIN_UID);
+  return s;
+}
+
+function normalizeAccountUid(raw) {
+  const s = String(raw == null ? '' : raw).replace(/\D/g, '');
+  if (s.length === 8) return s;
+  return '';
+}
+
+function formatUidDisplay(uid) {
+  const s = normalizeAccountUid(uid);
+  return s ? ('uid:' + s) : '';
+}
+
+/** Nhãn tài khoản ngắn (bỏ đuôi .wordwar.vn) — dùng menu login admin */
+function formatAccountLabelShort(user) {
+  if (!user) return '';
+  let s = String(user.email || user.emailKey || '').trim();
+  if (!s) return '';
+  const lower = s.toLowerCase();
+  if (lower.endsWith('.wordwar.vn')) s = s.slice(0, -'.wordwar.vn'.length);
+  else if (lower.endsWith('@wordwar.vn')) s = s.slice(0, -'@wordwar.vn'.length);
+  if (!user.email && /_wordwar_vn$/i.test(s)) s = s.replace(/_wordwar_vn$/i, '').replace(/_/g, '.');
+  return s;
+}
+
+/**
+ * Đảm bảo user có uid 8 số trên object + server.
+ * Admin luôn = 02082008.
+ */
+async function ensureUserUid(user, serverData) {
+  if (!user || !user.emailKey) return;
+  const isAdm = ADMIN_KEYS.indexOf(user.emailKey) !== -1;
+  if (isAdm) {
+    user.uid = ADMIN_UID;
+    try {
+      if (!serverData || normalizeAccountUid(serverData.uid) !== ADMIN_UID) {
+        if (typeof db !== 'undefined' && typeof ref !== 'undefined' && typeof update !== 'undefined') {
+          await update(ref(db, 'users/' + user.emailKey), { uid: ADMIN_UID });
+        }
+      }
+    } catch (e) {}
+    return;
+  }
+  const fromServer = serverData ? normalizeAccountUid(serverData.uid) : '';
+  const fromUser = normalizeAccountUid(user.uid);
+  if (fromServer) {
+    user.uid = fromServer;
+    return;
+  }
+  if (fromUser) {
+    user.uid = fromUser;
+    try {
+      if (typeof db !== 'undefined' && typeof ref !== 'undefined' && typeof update !== 'undefined') {
+        await update(ref(db, 'users/' + user.emailKey), { uid: fromUser });
+      }
+    } catch (e) {}
+    return;
+  }
+  const neu = generateAccountUid();
+  user.uid = neu;
+  try {
+    if (typeof db !== 'undefined' && typeof ref !== 'undefined' && typeof update !== 'undefined') {
+      await update(ref(db, 'users/' + user.emailKey), { uid: neu });
+    }
+  } catch (e) {}
+}
+
 function isAdmin() {
   return !!(currentUser && currentUser.emailKey && ADMIN_KEYS.includes(currentUser.emailKey));
 }
@@ -7594,11 +8486,22 @@ function sanitizePlayer(key, d) {
   let av = d.avatar;
   if (!(typeof av === 'string' && av.length > 32 &&
         (av.startsWith('data:image/') || av.startsWith('https://') || av.startsWith('http://')))) av = null;
+  // UID 8 số — admin cố định 02082008
+  let uid = '';
+  try {
+    if (typeof ADMIN_KEYS !== 'undefined' && ADMIN_KEYS.indexOf(String(key)) !== -1) {
+      uid = (typeof ADMIN_UID !== 'undefined') ? ADMIN_UID : '02082008';
+    } else if (d.uid != null) {
+      const u = String(d.uid).replace(/\D/g, '');
+      if (u.length === 8) uid = u;
+    }
+  } catch (e) {}
   return {
     key: String(key),
     email: d.email != null ? String(d.email) : '',
     name: (d.displayName != null && String(d.displayName).trim()) ? String(d.displayName).trim() : String(key),
     avatar: av,
+    uid: uid,
     createdAt: num(d.createdAt),
     updatedAt: num(d.updatedAt),
     lastSeen: num(d.lastSeen),
@@ -7823,7 +8726,8 @@ function renderPlayersList() {
   else if (_onlineUsersFilter === 'guest') rows = rows.filter(p => !onlineSet.has(p.key));
   if (q) {
     rows = rows.filter(p => p.name.toLowerCase().includes(q) ||
-      (admin && (p.key.toLowerCase().includes(q) || p.email.toLowerCase().includes(q))));
+      (admin && (p.key.toLowerCase().includes(q) || p.email.toLowerCase().includes(q) ||
+        (p.uid && String(p.uid).includes(q)))));
     // Đang tìm mà chưa tải hết → tự tải nốt để tìm được mọi tài khoản
     if (_playersHasMore && !_playersLoading && !_playersError) loadMorePlayers(true);
   }
@@ -7920,9 +8824,23 @@ function renderPlayersList() {
       return s;
     })();
     const createdStr = formatPlayerDate(p.createdAt);
-    // Meta: tên tài khoản + ngày tạo (bỏ chữ "tạo") đứng cạnh nhau
-    const metaHtml = '<span class="ou-acc">' + escapeOnlineHtml(accountLabel) + '</span>'
+    // UID: admin cố định 02082008; player lấy từ hồ sơ
+    let uidShow = p.uid || '';
+    if (!uidShow && isAd) uidShow = (typeof ADMIN_UID !== 'undefined') ? ADMIN_UID : '02082008';
+    // Dòng 1: tên tài khoản + ngày tạo
+    // Dòng 2: uid:xxxxxxxx (xám, không đậm)
+    const metaLine1 = (accountLabel
+        ? '<span class="ou-acc">' + escapeOnlineHtml(accountLabel) + '</span>'
+        : '')
       + (createdStr ? '<span class="ou-created">' + escapeOnlineHtml(createdStr) + '</span>' : '');
+    const metaUidLine = uidShow
+      ? '<div class="online-user-meta ou-uid-row"><span class="ou-uid" title="UID">' +
+          escapeOnlineHtml('uid:' + uidShow) + '</span></div>'
+      : '';
+    const metaBlock = (metaLine1
+        ? '<div class="online-user-meta">' + metaLine1 + '</div>'
+        : '')
+      + metaUidLine;
     // Non-admin: không thấy tên tài khoản; nếu chưa đặt tên hiển thị (tên = key) thì che
     const shownName = admin ? p.name : (p.name === p.key ? 'Người chơi' : p.name);
     const wpmLine = (label, n) => (n > 0)
@@ -7950,9 +8868,18 @@ function renderPlayersList() {
       '<div class="online-user-info">' +
         '<div class="online-user-name-row">' +
           (online ? '<span class="online-user-dot"></span>' : '') +
-          '<div class="online-user-name">' + escapeOnlineHtml(shownName) + '</div>' + tag +
+          '<div class="online-user-name' + (admin && !ADMIN_KEYS.includes(p.key) ? ' is-admin-force' : '') + '"' +
+            (admin && !ADMIN_KEYS.includes(p.key)
+              ? ' data-force-key="' + escapeOnlineHtml(p.key) + '" title="Nhấp để cưỡng chế đổi tên" role="button" tabindex="0"'
+              : '') +
+          '>' + escapeOnlineHtml(shownName) + '</div>' + tag +
         '</div>' +
-        (admin ? '<div class="online-user-meta">' + metaHtml + '</div>' : '') +
+        (admin
+          ? metaBlock
+          : (uidShow
+              ? '<div class="online-user-meta ou-uid-row"><span class="ou-uid" title="UID">' +
+                  escapeOnlineHtml('uid:' + uidShow) + '</span></div>'
+              : '')) +
       '</div>' +
       '<div class="online-user-side">' + wpmHtml +
         '<div class="online-user-ago ' + statusClass + '"' + agoAttrs + '>' + escapeOnlineHtml(statusAgo) + '</div>' +
@@ -8042,12 +8969,14 @@ document.addEventListener('visibilitychange', () => {
 
 currentUser = loadSessionUser();
 renderAccountBadge();
-// Đồng hồ hoạt động 00:00:00 cạnh tên — chạy ngay, không reset
+// Đồng hồ hoạt động 00:00:00 cạnh tên — gắn tài khoản, đồng bộ PC/Mobile
 try { startActivityTimer(); } catch (eAct) {}
 if (currentUser) {
   // Acc đã login từ trước (kể cả trước khi có hệ PIN) → kiểm tra & bắt buộc đặt PIN nếu chưa
   ensureRecoveryPinSet();
   refreshAccountFromServer();
+  try { if (typeof startForceRenameListener === 'function') startForceRenameListener(); } catch (eFr0) {}
+  try { if (typeof bindActivityTimerToAccount === 'function') bindActivityTimerToAccount(); } catch (eAt0) {}
   setTimeout(() => { if (currentUser) ensureRecoveryPinSet(); }, 600);
   setTimeout(() => { if (currentUser) ensureRecoveryPinSet(); }, 2000);
 }
@@ -8345,6 +9274,7 @@ window.sendLobbyChat = async function() {
 
 // Presence: mọi người ghi node mình + lắng nghe đếm / danh sách online
 startPresence();
+try { if (typeof syncPracticeWpmDurationUI === 'function') syncPracticeWpmDurationUI(); } catch (eWpmDur) {}
 startAdminOnlineListener();
 updateAdminOnlineUI();
 startLobbyChatListener();
@@ -8364,238 +9294,935 @@ startLobbyChatListener();
 })();
 
 // ══════════════════════════════════════════════════════════════════════════
-// KHO CÂU GÕ (100 câu do người dùng tự soạn sẵn, không chứa dấu câu)
-// Mỗi câu là 1 mảng các từ đơn — được TÁCH sẵn để giữ nguyên cơ chế gõ/bôi
-// vàng từng từ một như cũ. Đọc nối tiếp các từ trong 1 câu sẽ ra 1 câu hoàn
-// chỉnh có nghĩa.
+// KHO TỪ ĐƠN — gộp từ wpm_single_words_500 + extra_1000 + single_2000 (unique)
+// Chỉ từ đơn, không còn câu dài / cụm từ nhiều tiếng
 // ══════════════════════════════════════════════════════════════════════════
-const QUOTES = [
-  ["hãy","để","sự","tò","mò","dẫn","đường","và","luyện","tập","mỗi","ngày","để","tiến","bộ","hơn"],
-  ["chặng","đường","dài","tới","thành","công","luôn","được","lót","bằng","sự","kiên","nhẫn","và","nỗ","lực"],
-  ["mỗi","lần","thất","bại","là","một","bài","học","quý","giá","giúp","ta","trưởng","thành","hơn","trong","cuộc","sống"],
-  ["đừng","so","sánh","bản","thân","với","người","khác","mà","hãy","so","với","chính","mình","của","ngày","hôm","qua"],
-  ["sự","chăm","chỉ","hôm","nay","sẽ","tạo","nên","thành","quả","ngọt","ngào","cho","tương","lai","mai","sau"],
-  ["kiên","trì","là","chìa","khóa","mở","cánh","cửa","dẫn","tới","mọi","ước","mơ","và","hoài","bão","lớn","lao"],
-  ["hãy","tin","rằng","bạn","có","thể","làm","được","thì","bạn","đã","đi","được","nửa","chặng","đường","rồi"],
-  ["cuộc","sống","không","cho","ta","thứ","gì","miễn","phí","nên","hãy","đánh","đổi","bằng","mồ","hôi","nước","mắt"],
-  ["đừng","sợ","thay","đổi","vì","thay","đổi","là","cơ","hội","để","ta","khám","phá","phiên","bản","tốt","hơn"],
-  ["người","thông","minh","là","người","biết","học","hỏi","từ","sai","lầm","của","chính","mình","và","người","khác"],
-  ["thời","gian","là","tài","sản","quý","giá","nhất","nên","đừng","lãng","phí","nó","vào","những","việc","vô","nghĩa"],
-  ["hãy","bắt","đầu","từ","những","việc","nhỏ","nhất","vì","vĩ","đại","luôn","nảy","sinh","từ","điều","giản","đơn"],
-  ["sức","mạnh","thực","sự","đến","từ","việc","vượt","qua","nỗi","sợ","và","bước","ra","khỏi","vùng","an","toàn"],
-  ["đam","mê","là","ngọn","lửa","thắp","sáng","con","đường","đi","qua","những","đêm","dài","tăm","tối","nhất"],
-  ["hãy","luyện","tập","như","thể","bạn","chưa","bao","giờ","chiến","thắng","và","chiến","đấu","như","kẻ","không","có","gì"],
-  ["thành","công","không","phải","là","đích","đến","mà","là","hành","trình","ta","trải","nghiệm","mỗi","ngày"],
-  ["đừng","để","những","lời","chỉ","trích","làm","bạn","nản","lòng","mà","hãy","biến","nó","thành","động","lực"],
-  ["kỷ","luật","bản","thân","là","nền","tảng","vững","chắc","để","xây","dựng","một","cuộc","sống","tự","do","và","ý","nghĩa"],
-  ["mỗi","ngày","thức","dậy","với","một","nụ","cười","và","lòng","biết","ơn","sẽ","khiến","cuộc","sống","tươi","đẹp","hơn"],
-  ["hãy","dám","ước","mơ","lớn","vì","những","giới","hạn","chỉ","tồn","tại","trong","tâm","trí","của","bạn","mà","thôi"],
-  ["sự","tử","tế","không","tốn","kém","gì","nhưng","lại","mang","lại","giá","trị","tinh","thần","vô","cùng","to","lớn"],
-  ["cách","tốt","nhất","để","dự","đoán","tương","lai","là","tạo","ra","nó","bằng","hành","động","cụ","thể","ngay","bây","giờ"],
-  ["đừng","chờ","đợi","cơ","hội","mà","hãy","chủ","động","tạo","ra","cơ","hội","bằng","năng","lực","của","chính","mình"],
-  ["học","cách","buông","bỏ","những","gì","không","thuộc","về","mình","để","nhận","lấy","điều","thực","sự","xứng","đáng"],
-  ["người","thành","công","không","phải","không","gặp","khó","khăn","mà","là","người","không","bao","giờ","bỏ","cuộc"],
-  ["hãy","sống","trọn","vẹn","từng","khoảnh","khắc","vì","quá","khứ","đã","qua","và","tương","lai","chưa","tới"],
-  ["sự","khiêm","tốn","giúp","ta","mở","lòng","để","tiếp","thu","tri","thức","và","yêu","thương","những","người","xung","quanh"],
-  ["đừng","để","nỗi","sợ","thất","bại","cướp","đi","cơ","hội","thành","công","mà","cuộc","đời","đang","dành","cho","bạn"],
-  ["mỗi","giọt","mồ","hôi","rơi","xuống","hôm","nay","đều","là","hạt","giống","cho","niềm","vui","ngày","mai","nở","hoa"],
-  ["hãy","yêu","thương","bản","thân","trước","tiên","vì","bạn","không","thể","cho","điều","mình","không","có"],
-  ["tri","thức","là","ngọn","đèn","soi","đường","nhưng","hành","động","mới","là","bước","chân","đưa","ta","tới","đích"],
-  ["cuộc","sống","như","một","cuốn","sách","và","những","người","không","đi","du","lịch","chỉ","đọc","được","một","trang"],
-  ["hãy","kiên","nhẫn","với","bản","thân","vì","sự","thay","đổi","tích","cực","cần","có","thời","gian","để","nảy","mầm"],
-  ["đừng","để","hoàn","hảo","trở","thành","kẻ","thù","của","tốt","vì","hoàn","thành","tốt","hơn","hoàn","hảo","không","làm"],
-  ["sự","chân","thành","trong","lời","nói","và","việc","làm","là","cầu","nối","bền","vững","giữa","con","người","với","nhau"],
-  ["hãy","nhớ","rằng","cây","sồi","lớn","cũng","từng","là","hạt","đằng","sau","nhiều","năm","kiên","trì","vươn","lên"],
-  ["đừng","ngại","đặt","câu","hỏi","vì","câu","hỏi","hay","mở","ra","cánh","cửa","của","sự","hiểu","biết","sâu","rộng"],
-  ["bạn","mạnh","mẽ","hơn","những","gì","bạn","nghĩ","và","bạn","xứng","đáng","với","những","điều","tốt","đẹp","hơn"],
-  ["hãy","dành","thời","gian","chăm","sóc","sức","khỏe","vì","đó","là","nền","tảng","cho","mọi","thành","tựu","khác"],
-  ["sự","tập","trung","vào","hiện","tại","giúp","ta","làm","chủ","tâm","trí","và","nâng","cao","chất","lượng","cuộc","sống"],
-  ["đừng","bao","giờ","xem","nhẹ","sức","mạnh","của","những","việc","tốt","dù","nhỏ","bé","mà","bạn","làm","mỗi","ngày"],
-  ["hãy","đối","mặt","với","thử","thách","bằng","can","đảm","vì","sau","cơn","mưa","trời","lại","sáng","và","đẹp","hơn"],
-  ["người","hạnh","phúc","không","phải","là","người","có","tất","cả","mà","là","người","biết","trân","trọng","những","gì","có"],
-  ["hãy","lắng","nghe","nhiều","hơn","nói","để","hiểu","sâu","hơn","và","kết","nối","chặt","hơn","với","mọi","người"],
-  ["sự","tự","tin","đến","từ","việc","chuẩn","bị","kỹ","lưỡng","và","trải","nghiệm","thực","tế","qua","thời","gian","dài"],
-  ["đừng","để","quá","khứ","đau","buồn","định","hình","tương","lai","mà","hãy","viết","tiếp","câu","chuyện","mới"],
-  ["hãy","trân","trọng","những","người","ở","bên","bạn","khi","khó","khăn","vì","đó","là","tài","sản","vô","giá"],
-  ["rèn","luyện","thân","thể","mỗi","ngày","không","chỉ","khỏe","mạnh","mà","còn","rèn","ý","chí","sắt","đá"],
-  ["hãy","biến","ước","mơ","thành","mục","tiêu","rõ","ràng","và","chia","nhỏ","thành","từng","bước","đi","cụ","thể"],
-  ["cuộc","đời","ngắn","ngủi","nên","đừng","lãng","phí","vào","sự","ghen","tị","và","những","cảm","xúc","tiêu","cực"],
-  ["hãy","nhớ","rằng","ngày","hôm","nay","là","món","quà","quý","giá","nhất","mà","cuộc","đời","ban","tặng"],
-  ["sự","cố","gắng","không","bao","giờ","lừa","dối","bạn","dù","kết","quả","có","đến","chậm","một","chút"],
-  ["đừng","để","những","nỗi","lo","về","ngày","mai","cướp","đi","niềm","vui","của","ngày","hôm","nay"],
-  ["hãy","trở","thành","người","mà","bạn","tự","hào","khi","nhìn","lại","trong","gương","mỗi","tối"],
-  ["cuộc","sống","không","phải","lúc","nào","cũng","công","bằng","nhưng","bạn","vẫn","có","quyền","chọn","cách","phản","ứng"],
-  ["mỗi","buổi","sáng","thức","dậy","là","cơ","hội","để","viết","lại","câu","chuyện","cuộc","đời","theo","cách","mới"],
-  ["hãy","để","lòng","biết","ơn","lấp","đầy","tâm","hồn","thay","vì","để","sự","tham","lam","chiếm","lĩnh"],
-  ["người","biết","lắng","nghe","bản","thân","thường","tìm","thấy","câu","trả","lời","sâu","sắc","nhất"],
-  ["đừng","chạy","theo","hạnh","phúc","mà","hãy","tạo","ra","nó","từ","những","việc","nhỏ","bé","hàng","ngày"],
-  ["sự","bình","tĩnh","trong","khó","khăn","là","dấu","hiệu","của","người","có","nội","lực","thực","sự","mạnh","mẽ"],
-  ["hãy","học","cách","nói","không","với","những","thứ","không","phục","vụ","mục","tiêu","của","bạn"],
-  ["con","đường","đến","đỉnh","cao","luôn","đầy","chông","gai","nên","hãy","chuẩn","bị","tinh","thần","vững","vàng"],
-  ["đừng","để","ý","kiến","của","người","khác","làm","lu","mờ","tiếng","nói","bên","trong","chính","con","người","bạn"],
-  ["mỗi","lần","vấp","ngã","hãy","nhìn","xuống","đất","để","tìm","hạt","giống","cho","sự","trưởng","thành","sau","này"],
-  ["hãy","dành","thời","gian","cho","gia","đình","vì","đó","là","nơi","yêu","thương","không","bao","giờ","phai","nhạt"],
-  ["sự","tự","giác","là","năng","lực","cao","nhất","giúp","bạn","vượt","qua","mọi","giới","hạn","tự","đặt","ra"],
-  ["đừng","so","đo","thiệt","hơn","vì","cuộc","sống","là","hành","trình","cho","đi","và","nhận","lại"],
-  ["hãy","tin","vào","quá","trình","vì","mọi","thứ","tốt","đẹp","đều","cần","thời","gian","để","chín","muồi"],
-  ["người","thực","sự","giàu","có","là","người","biết","chia","sẻ","và","mang","lại","giá","trị","cho","cộng","đồng"],
-  ["đừng","để","công","nghệ","điều","khiển","bạn","mà","hãy","làm","chủ","nó","để","phục","vụ","cuộc","sống"],
-  ["hãy","nuôi","dưỡng","thói","quen","đọc","sách","vì","đó","là","cánh","cửa","dẫn","đến","thế","giới","rộng","lớn"],
-  ["sự","nhẫn","nại","không","phải","là","chờ","đợi","mà","là","giữ","vững","tinh","thần","trong","lúc","hành","động"],
-  ["đừng","ngại","thử","thách","mới","vì","đó","là","cách","duy","nhất","để","biết","bạn","có","thể","làm","gì"],
-  ["hãy","biết","ơn","những","người","đã","từ","chối","bạn","vì","họ","đã","đẩy","bạn","đi","con","đường","khác","tốt","hơn"],
-  ["cuộc","sống","đẹp","hơn","khi","ta","biết","cười","nhiều","hơn","than","vãn","và","yêu","thương","nhiều","hơn","giận","hờn"],
-  ["hãy","đặt","mục","tiêu","cao","vì","ngay","cả","khi","thất","bại","bạn","vẫn","ở","vị","trí","cao","hơn","ban","đầu"],
-  ["sự","chính","trực","là","nền","tảng","của","niềm","tin","và","không","có","gì","quý","giá","hơn","niềm","tin"],
-  ["đừng","để","nỗi","buồn","quá","khứ","che","mờ","ánh","sáng","tương","lai","đang","chờ","bạn","phía","trước"],
-  ["hãy","rèn","luyện","trí","óc","mỗi","ngày","vì","não","bộ","cũng","cần","tập","thể","dục","như","cơ","thể","vậy"],
-  ["người","thành","công","biết","rằng","thất","bại","chỉ","là","dừng","chân","nghỉ","ngơi","trước","khi","tiếp","tục"],
-  ["hãy","sống","chậm","lại","để","cảm","nhận","hương","hoa","gió","trời","và","tiếng","chim","hót","ngoài","kia"],
-  ["đừng","bao","giờ","đánh","giá","thấp","sức","mạnh","của","sự","tử","tế","trong","một","thế","giới","đầy","vội","vã"],
-  ["hãy","học","cách","tha","thứ","cho","bản","thân","vì","không","ai","hoàn","hảo","và","ai","cũng","cần","cơ","hội","thứ","hai"],
-  ["sự","tập","trung","vào","điều","tích","cực","sẽ","kéo","thêm","nhiều","điều","tích","cực","đến","với","cuộc","sống","bạn"],
-  ["đừng","để","tuổi","tác","định","nghĩa","bạn","vì","tinh","thần","trẻ","trung","không","bao","giờ","bị","thời","gian","bắt","kịp"],
-  ["hãy","làm","việc","chăm","chỉ","trong","im","lặng","và","để","thành","công","tự","nói","lên","tất","cả"],
-  ["cuộc","sống","là","bức","tranh","và","bạn","là","người","cầm","cọ","vẽ","nên","màu","sắc","riêng"],
-  ["hãy","dũng","cảm","đối","mặt","với","sự","thật","dù","nó","có","đau","đớn","vì","sự","thật","sẽ","giải","phóng","bạn"],
-  ["đừng","để","sự","hoàn","hảo","của","người","khác","làm","bạn","quên","đi","vẻ","đẹp","duy","nhất","của","chính","mình"],
-  ["mỗi","ngày","là","một","trang","giấy","trắng","hãy","viết","lên","đó","những","dòng","chữ","đẹp","nhất"],
-  ["hãy","trân","trọng","sức","khỏe","tinh","thần","như","cách","bạn","chăm","sóc","sức","khỏe","thể","chất"],
-  ["sự","kiên","trì","đánh","bại","tài","năng","khi","tài","năng","không","chịu","kiên","trì","theo","đuổi"],
-  ["đừng","ngại","hỏi","khi","không","biết","vì","hỏi","là","cách","nhanh","nhất","để","biết","thêm","điều","mới"],
-  ["hãy","tìm","kiếm","niềm","vui","trong","công","việc","vì","bạn","sẽ","dành","phần","lớn","đời","mình","cho","nó"],
-  ["cuộc","sống","thường","thưởng","cho","những","ai","dám","bước","ra","khỏi","vùng","quen","thuộc","của","mình"],
-  ["hãy","học","cách","chấp","nhận","những","gì","không","thể","thay","đổi","và","thay","đổi","những","gì","có","thể"],
-  ["đừng","để","sự","so","sánh","cướp","đi","hạnh","phúc","vì","mỗi","người","có","hành","trình","và","nhịp","độ","riêng"],
-  ["hãy","nuôi","dưỡng","ước","mơ","như","nuôi","dưỡng","một","đứa","trẻ","với","tình","yêu","và","sự","kiên","nhẫn"],
-  ["người","biết","đủ","là","người","giàu","có","thực","sự","dù","tài","sản","vật","chất","có","thể","khiêm","tốn"],
-  ["hãy","nhớ","rằng","bạn","không","cần","phải","vĩ","đại","để","bắt","đầu","nhưng","phải","bắt","đầu","để","trở","nên","vĩ","đại"],
-  ["hãy","nhớ","rằng","mỗi","ngày","bạn","thức","dậy","với","cơ","hội","thay","đổi","cuộc","đời","mình","theo","hướng","tích","cực","và","tuyệt","vời","hơn","ngày","hôm","qua"],
-  ["đừng","bao","giờ","để","những","lời","nói","tiêu","cực","của","người","khác","làm","lu","mờ","ánh","sáng","mà","bạn","đang","cố","gắng","thắp","sáng","trong","tâm","hồn","mình"],
-  ["sự","thành","công","thực","sự","không","đến","từ","việc","bạn","đạt","được","bao","nhiêu","mà","đến","từ","việc","bạn","đã","giúp","đỡ","và","truyền","cảm","hứng","cho","bao","nhiêu","người"],
-  ["hãy","kiên","nhẫn","với","bản","thân","vì","mọi","thay","đổi","lớn","lao","đều","bắt","đầu","từ","những","bước","đi","nhỏ","bé","và","sự","nhất","quán","trong","từng","ngày","qua"],
-  ["cuộc","sống","sẽ","trở","nên","tươi","đẹp","hơn","rất","nhiều","khi","bạn","học","cách","buông","bỏ","những","gì","không","thuộc","về","mình","và","trân","trọng","những","gì","đang","có"],
-  ["đừng","sợ","thất","bại","vì","thất","bại","chỉ","là","dấu","hiệu","cho","thấy","bạn","đang","dám","thử","sức","với","những","điều","vượt","quá","giới","hạn","bản","thân","hiện","tại"],
-  ["hãy","dành","thời","gian","mỗi","ngày","để","suy","ngẫm","về","những","gì","bạn","đã","làm","tốt","và","những","gì","cần","cải","thiện","để","ngày","mai","tốt","hơn","hôm","nay"],
-  ["người","thông","minh","không","phải","là","người","biết","tất","cả","mà","là","người","biết","rằng","mình","không","biết","gì","và","luôn","sẵn","sàng","học","hỏi","từ","cuộc","sống"],
-  ["hãy","tin","tưởng","vào","quá","trình","vì","mọi","thứ","tốt","đẹp","đều","cần","thời","gian","để","nảy","mầm","lớn","lên","và","đơm","hoa","kết","trái","trong","đúng","thời","điểm"],
-  ["đừng","để","quá","khứ","đau","buồn","định","nghĩa","con","người","bạn","vì","bạn","hoàn","toàn","có","quyền","viết","lại","câu","chuyện","cuộc","đời","theo","cách","riêng","của","mình"],
-  ["sự","khiêm","tốn","giúp","ta","mở","lòng","đón","nhận","tri","thức","mới","và","xây","dựng","những","mối","quan","hệ","bền","vững","dựa","trên","sự","tôn","trọng","lẫn","nhau"],
-  ["hãy","rèn","luyện","thân","thể","và","tâm","trí","mỗi","ngày","vì","sức","khỏe","là","nền","tảng","duy","nhất","giúp","bạn","theo","đuổi","mọi","ước","mơ","và","hoài","bão","lớn","lao"],
-  ["đừng","chạy","theo","hạnh","phúc","ở","phương","xa","mà","hãy","tìm","kiếm","nó","ngay","trong","những","việc","nhỏ","bé","mà","bạn","làm","mỗi","ngày","cho","bản","thân","và","người","thân"],
-  ["mỗi","lần","bạn","chọn","lòng","biết","ơn","thay","vì","phàn","nàn","thì","bạn","đang","tạo","ra","một","luồng","năng","lượng","tích","cực","lan","tỏa","đến","mọi","người","xung","quanh","mình"],
-  ["hãy","dám","ước","mơ","lớn","và","dám","hành","động","vì","những","giới","hạn","tồn","tại","chính","là","những","rào","cản","mà","bạn","tự","đặt","ra","trong","tâm","trí","mình"],
-  ["cuộc","đời","ngắn","ngủi","nên","đừng","lãng","phí","nó","vào","việc","ghen","tị","với","người","khác","mà","hãy","tập","trung","phát","triển","phiên","bản","tốt","nhất","của","chính","mình"],
-  ["hãy","học","cách","yêu","thương","bản","thân","trước","tiên","vì","khi","bạn","đầy","đủ","tình","yêu","thì","bạn","mới","có","thể","cho","đi","yêu","thương","một","cách","chân","thành","nhất"],
-  ["sự","chăm","chỉ","hôm","nay","có","thể","không","mang","lại","kết","quả","ngay","lập","tức","nhưng","chắc","chắn","sẽ","tạo","nên","thành","quả","ngọt","ngào","trong","tương","lai","không","xa"],
-  ["đừng","để","nỗi","sợ","cướp","đi","cơ","hội","thành","công","vì","can","đảm","không","phải","là","không","sợ","mà","là","vượt","qua","nỗi","sợ","đó"],
-  ["hãy","sống","trọn","vẹn","từng","khoảnh","khắc","hiện","tại","vì","quá","khứ","đã","qua","không","thể","đổi","và","tương","lai","chưa","đến","không","thể","kiểm","soát","được","điều","gì"],
-  ["thất","bại","không","phải","là","mảng","tối","duy","nhất","mà","nó","chính","là","bước","đệm","quan","trọng","đưa","ta","đến","với","thành","công"],
-  ["khi","bạn","bắt","đầu","cảm","thấy","muốn","bỏ","cuộc","hãy","nhớ","lại","lý","do","vì","sao","bạn","đã","bắt","đầu","hành","trình","này"],
-  ["đường","đi","khó","không","phải","vì","ngăn","sông","cách","núi","mà","chỉ","vì","lòng","người","ngại","núi","e","sông"],
-  ["con","đường","dài","nhất","trên","đời","chính","là","con","đường","không","bao","giờ","bắt","đầu","những","bước","đi","đầu","tiên"],
-  ["người","duy","nhất","có","thể","ngăn","cản","bạn","tiến","về","phía","trước","chính","là","bản","thân","bạn","của","ngày","hôm","nay"],
-  ["mọi","ước","mơ","đều","có","thể","trở","thành","hiện","thực","nếu","chúng","ta","có","đủ","dũng","khí","và","can","đảm","để","đuổi","theo"],
-  ["không","có","áp","lực","lớn","thì","không","thể","nào","tạo","ra","những","viên","kim","cương","lấp","lánh","giữa","màn","đêm"],
-  ["hãy","sống","như","thể","ngày","mai","bạn","phải","chết","và","hãy","học","như","bạn","sẽ","sống","vĩnh","hằng","trên","đời"],
-  ["chiến","thắng","bản","thân","mình","chính","là","chiến","thắng","vĩ","đại","và","hiển","hách","nhất","của","một","con","người"],
-  ["mỗi","buổi","sáng","thức","dậy","là","một","cơ","hội","mới","tuyệt","vời","để","bạn","viết","tiếp","ước","mơ","của","đời","mình"],
-  ["chí","làm","trai","nam","bắc","đông","tây","cho","rõ","mặt","tang","bồng","cùng","trời","đất","giữa","nhân","gian"],
-  ["thân","tại","ngục","trung","tâm","tại","ngục","ngoại","dục","thành","đại","sự","tất","tiên","thành","đại","trí"],
-  ["phong","ba","bão","táp","mới","biết","được","sức","bền","của","cây","tùng","cây","bách","giữa","mùa","đông","giá","lạnh"],
-  ["ví","không","có","cảnh","đông","tàn","thì","làm","sao","có","được","cảnh","xuân","sang","huy","hoàng","và","tươi","thắm"],
-  ["ngọc","càng","mài","thì","càng","sáng","vàng","càng","luyện","thì","càng","trong","giữa","những","sóng","gió","của","cuộc","đời"],
-  ["muốn","thấy","cầu","vồng","rực","rỡ","sau","cơn","bão","ta","phải","biết","chấp","nhận","những","cơn","mưa","rào","bất","chợt"],
-  ["thắng","không","giương","bại","không","nản","giữ","vững","chí","khí","kiên","cường","mới","làm","nên","những","việc","đại","sự"],
-  ["đừng","thở","dài","hãy","vươn","vai","mà","sống","bới","đá","xới","vàng","làm","nên","những","chuyện","lớn","cho","đời"],
-  ["chỉ","cần","bạn","luôn","hướng","về","phía","ánh","mặt","trời","mọi","bóng","tối","sẽ","tự","động","lùi","lại","phía","sau"],
-  ["hãy","là","chính","mình","một","phiên","bản","độc","bản","duy","nhất","và","rực","rỡ","nhất","giữa","chốn","nhân","gian"],
-  ["khi","bạn","thật","sự","khao","khát","một","điều","gì","cả","vũ","trụ","sẽ","hợp","lực","giúp","bạn","đạt","được","nó"],
-  ["cuộc","sống","không","phải","là","ngồi","chờ","đợi","bão","tan","mà","là","học","cách","nhảy","múa","ngay","trong","mưa"],
-  ["sự","kiên","trì","chính","là","chìa","khóa","vàng","mở","ra","những","cánh","cửa","tưởng","chừng","như","đã","bị","khóa","chặt"],
-  ["hãy","hành","động","khi","người","khác","còn","đang","ngủ","và","mơ","ước","khi","người","khác","còn","đang","ước","ao"],
-  ["mỗi","vết","sẹo","trên","hành","trình","trưởng","thành","đều","là","tấm","huy","chương","danh","giá","đánh","dấu","sự","vươn","lên"],
-  ["đừng","bao","giờ","so","sánh","chương","đầu","tiên","của","bạn","với","chương","mười","lăm","của","người","khác"],
-  ["một","ngọn","lửa","nhỏ","cũng","có","thể","xua","tan","bóng","tối","đêm","dài","nếu","bạn","không","ngừng","duy","trì","nó"],
-  ["không","một","ai","có","quyền","đánh","giá","tiềm","năng","vô","hạn","của","bạn","ngoại","trừ","chính","bản","thân","bạn"],
-  ["hãy","biết","biến","những","đau","thương","và","mất","mát","thành","sức","mạnh","to","lớn","để","vươn","lên","tầm","cao","mới"],
-  ["sự","nỗ","lực","bền","bỉ","của","ngày","hôm","nay","chính","là","nền","móng","vững","chắc","cho","tương","lai","tươi","sáng"],
-  ["khiêm","tốn","giúp","ta","mở","rộng","tầm","nhìn","còn","kiên","trì","giúp","ta","chinh","phục","mọi","đỉnh","cao"],
-  ["sự","chăm","chỉ","sẽ","luôn","đánh","bại","tài","năng","khi","tài","năng","không","chịu","làm","việc","một","cách","chăm","chỉ"],
-  ["hãy","học","cách","lắng","nghe","để","thấu","hiểu","và","học","cách","im","lặng","đúng","lúc","để","trưởng","thành","hơn"],
-  ["mỗi","bước","tiến","nhỏ","mỗi","ngày","sẽ","tạo","nên","một","bước","ngoặt","vô","cùng","lớn","trong","tương","lai"],
-  ["đừng","sợ","bản","thân","đi","chậm","chỉ","sợ","bạn","dừng","lại","và","chấp","nhận","bỏ","cuộc","giữa","chừng"],
-  ["tri","thức","chính","là","sức","mạnh","vô","giá","giúp","bạn","tự","do","xây","dựng","cuộc","đời","mà","mình","mong","muốn"],
-  ["sự","kỷ","luật","của","ngày","hôm","nay","chính","là","cái","giá","phải","trả","cho","sự","tự","do","trong","ngày","mai"],
-  ["hãy","dũng","cảm","bước","ra","khỏi","vùng","an","toàn","để","khám","phá","trọn","vẹn","sức","mạnh","tiềm","ẩn","bên","trong"],
-  ["mọi","giới","hạn","sinh","ra","là","để","con","người","vượt","qua","bằng","ý","chí","và","nghị","lực","kiên","cường"],
-  ["niềm","tin","mãnh","liệt","vào","bản","thân","chính","là","bước","khởi","đầu","cho","mọi","thành","công","rực","rỡ"],
-  ["giữa","tâm","bão","tố","chỉ","có","sự","bình","tĩnh","mới","giúp","ta","giữ","vững","tay","lái","và","vượt","qua","nguy","hiểm"],
-  ["hãy","biến","những","chướng","ngại","vật","trên","đường","thành","những","bậc","thang","vững","chắc","đưa","bạn","lên","cao"],
-  ["mặt","trời","vẫn","luôn","mọc","mỗi","ngày","để","nhắc","nhở","chúng","ta","về","những","cơ","hội","khởi","đầu","mới"],
-  ["khi","bạn","vô","tình","vấp","ngã","hãy","nhặt","lấy","một","bài","học","nào","đó","rồi","mới","đứng","dậy","tiến","lên"],
-  ["không","có","con","đường","bằng","phẳng","nào","có","thể","dẫn","ta","đến","với","đỉnh","cao","vinh","quang","của","sự","nghiệp"],
-  ["sức","mạnh","không","đến","từ","những","gì","bạn","làm","được","mà","đến","từ","việc","bạn","vượt","qua","khó","khăn"],
-  ["hãy","tự","tạo","ra","vận","may","cho","chính","mình","bằng","sự","chuẩn","bị","chu","đáo","và","nỗ","lực","không","ngừng"],
-  ["đừng","để","tiếng","ồn","của","dư","luận","xung","quanh","làm","lấp","đi","tiếng","nói","chân","thật","bên","trong","tâm","hồn"],
-  ["mỗi","thử","thách","xuất","hiện","trong","cuộc","đời","đều","mang","theo","một","bài","học","vô","giá","cho","bản","thân"],
-  ["sống","là","không","ngừng","vươn","lên","như","mầm","cây","xé","đất","để","tìm","kiếm","ánh","sáng","của","mặt","trời"],
-  ["không","có","đích","đến","nào","quá","xa","nếu","bạn","không","dừng","lại","việc","bước","đi","mỗi","ngày"],
-  ["bản","lĩnh","của","con","người","chỉ","thực","sự","bộc","lộ","khi","đứng","trước","sóng","gió","thử","thách"],
-  ["hãy","làm","những","việc","khó","khăn","khi","chúng","còn","dễ","dàng","và","làm","việc","lớn","khi","chúng","còn","nhỏ"],
-  ["thành","công","không","phải","là","chìa","khóa","mở","cửa","hạnh","phúc","mà","hạnh","phúc","mới","là","chìa","khóa","dẫn","tới","thành","công"],
-  ["người","không","biết","vượt","qua","khó","khăn","sẽ","mãi","mãi","dừng","chân","ở","phía","sau","của","sự","thất","bại"],
-  ["mọi","nỗ","lực","âm","thầm","trong","bóng","tối","rồi","sẽ","được","đền","đáp","bằng","ánh","sáng","rực","rỡ"],
-  ["đừng","để","sự","sợ","hãi","thất","bại","lớn","hơn","niềm","khao","khát","đạt","được","thành","công","của","chính","mình"],
-  ["hãy","bước","đi","bằng","chính","đôi","chân","của","mình","dù","con","đường","ấy","có","chông","gai","đến","đâu"],
-  ["sự","tập","trung","cao","độ","chính","là","vũ","khí","sắc","bén","nhất","giúp","bạn","chinh","phục","mọi","mục","tiêu"],
-  ["mỗi","khó","khăn","trải","qua","đều","mang","lại","cho","bạn","thêm","một","phần","sức","mạnh","mới"],
-  ["hãy","bắt","đầu","từ","những","việc","nhỏ","nhất","với","một","tinh","thần","quyết","tâm","và","kiên","trì","nhất"],
-  ["tương","lai","thuộc","về","những","ai","tin","tưởng","vào","vẻ","đẹp","từ","những","ước","mơ","của","chính","mình"],
-  ["đừng","đợi","đến","khi","mọi","thứ","hoàn","hảo","mới","bắt","đầu","hãy","bắt","đầu","để","mọi","thứ","trở","nên","hoàn","hảo"],
-  ["mỗi","một","ngày","mới","là","cơ","hội","để","bạn","viết","lại","câu","chuyện","đời","mình","theo","cách","tuyệt","vời","nhất"],
-  ["sự","khác","biệt","giữa","người","thành","công","và","người","thất","bại","chính","là","ý","chí","không","bao","giờ","bỏ","cuộc"],
-  ["hãy","tin","rằng","bạn","có","thể","làm","được","và","bạn","đã","đi","được","nửa","chặng","đường","đến","đích"],
-  ["cuộc","hành","trình","ngàn","dặm","luôn","luôn","phải","bắt","đầu","từ","một","bước","đi","đầu","tiên","tiên","phong"],
-  ["đừng","bao","giờ","từ","bỏ","ước","mơ","chỉ","vì","mất","quá","nhiều","thời","gian","để","thực","hiện","nó"],
-  ["sức","mạnh","vĩ","đại","nhất","của","con","người","nằm","ở","khả","năng","làm","lại","từ","đầu","sau","mỗi","thất","bại"],
-  ["hãy","sống","hết","mình","cho","hiện","tại","để","không","bao","giờ","phải","hối","tiếc","về","những","ngày","đã","qua"],
-  ["kỷ","luật","là","cầu","nối","vững","chắc","nhất","nối","liền","giữa","mục","tiêu","và","sự","thành","công","thực","tế"],
-  ["sự","kiên","nhẫn","là","yếu","tố","cốt","lõi","giúp","bạn","vượt","qua","những","giai","đoạn","khó","khăn","nhất"],
-  ["hãy","làm","chủ","suy","nghĩ","của","mình","vì","chúng","sẽ","trở","thành","hành","động","trong","tương","lai","gần"],
-  ["thái","độ","sống","tích","cực","sẽ","mở","ra","những","cánh","cửa","cơ","hội","tưởng","chừng","đã","đóng","kín"],
-  ["không","có","con","đường","ngắn","nào","dẫn","đến","những","nơi","thực","sự","đáng","để","chúng","ta","đến"],
-  ["sự","tự","do","thực","sự","chỉ","xuất","hiện","khi","bạn","có","đủ","kỷ","luật","để","kiểm","soát","bản","thân"],
-  ["hãy","không","ngừng","học","hỏi","mỗi","ngày","để","mở","rộng","tầm","nhìn","và","nâng","cao","giá","trị","bản","thân"],
-  ["mỗi","sai","lầm","đều","là","một","người","thầy","giỏi","nếu","bạn","biết","rút","ra","bài","học","từ","đó"],
-  ["hãy","giữ","vững","niềm","tin","ngay","cả","khi","cả","thế","giới","xung","quanh","nghi","ngờ","khả","năng","của","bạn"],
-  ["sự","chăm","chỉ","và","lòng","quyết","tâm","sẽ","luôn","bù","đắp","cho","những","thiếu","sót","về","mặt","tài","năng"],
-  ["không","ai","có","thể","làm","bạn","cảm","thấy","yếu","kém","nếu","không","có","sự","đồng","ý","của","chính","bạn"],
-  ["hãy","biến","những","điều","không","thể","thành","có","thể","bằng","sự","nỗ","lực","bền","bỉ","mỗi","ngày"],
-  ["giới","hạn","duy","nhất","của","bạn","chính","là","những","suy","nghĩ","hạn","hẹp","do","bạn","tự","tạo","ra"],
-  ["hãy","luôn","giữ","cho","mình","một","trái","tim","kiên","cường","và","một","tâm","hồn","tràn","đầy","hy","vọng"],
-  ["sự","kiên","trì","sẽ","biến","những","ước","mơ","xa","vời","nhất","trở","thành","hiện","thực","ngay","trước","mắt"],
-  ["đừng","để","quá","khứ","níu","chân","bạn","tiến","về","phía","tương","lai","tươi","sáng","đang","chờ","đợi"],
-  ["hãy","sống","sao","cho","mỗi","ngày","trôi","qua","đều","là","một","tác","phẩm","nghệ","thuật","đáng","tự","hào"],
-  ["sức","mạnh","của","niềm","tin","có","thể","chuyển","dời","những","núi","đá","to","lớn","nhất","trên","đường","đi"],
-  ["hãy","sẵn","sàng","đối","mặt","với","thử","thách","để","khám","phá","ra","những","khả","năng","chưa","từng","biết"],
-  ["thành","công","lớn","nhất","là","vượt","qua","được","sự","lười","biếng","và","nỗi","sợ","hãi","của","chính","mình"],
-  ["sự","trưởng","thành","không","tính","bằng","tuổi","tác","mà","tính","bằng","những","bài","học","bạn","đã","trải","qua"],
-  ["hãy","lan","tỏa","năng","lượng","tích","cực","đến","mọi","người","xung","quanh","bằng","nụ","cười","và","hành","động"],
-  ["mỗi","ngày","trôi","qua","là","một","trang","sách","mới","hãy","viết","lên","đó","những","điều","thực","sự","ý","nghĩa"],
-  ["chỉ","có","sự","chân","thành","và","nỗ","lực","thực","sự","mới","mang","lại","những","giá","trị","lâu","bền"],
-  ["hãy","mạnh","dạn","theo","đuổi","đam","mê","và","thành","công","sẽ","tự","tìm","đến","với","bạn","một","cách","tự","nhiên"],
-  ["sự","kiên","định","với","mục","tiêu","sẽ","giúp","bạn","đứng","vững","trước","mọi","sóng","gió","của","cuộc","đời"],
-  ["hãy","biết","ơn","những","khó","khăn","vì","chúng","giúp","bạn","trở","nên","mạnh","mẽ","và","vững","vàng","hơn"],
-  ["cuộc","sống","là","một","chuyến","hành","trình","dài","hãy","tận","hưởng","từng","khoảnh","khắc","trên","đường","đi"],
-  ["hãy","luôn","nỗ","lực","hết","mình","để","phiên","bản","ngày","hôm","nay","tốt","hơn","phiên","bản","ngày","hôm","qua"],
-  ["mọi","ước","mơ","vĩ","đại","đều","bắt","đầu","từ","một","người","mơ","ước","có","đủ","niềm","tin","và","sự","dũng","cảm"],
+const SINGLE_WORDS = [
+  "sai",
+  "mạnh",
+  "anh",
+  "tiền",
+  "cầm",
+  "sau",
+  "ra",
+  "tăng",
+  "cam",
+  "vì",
+  "đẹp",
+  "hoa",
+  "phút",
+  "làm",
+  "giày",
+  "cho",
+  "nắm",
+  "sớm",
+  "cũ",
+  "đắt",
+  "mang",
+  "hồng",
+  "nhìn",
+  "trên",
+  "tuần",
+  "còn",
+  "tâm",
+  "vạn",
+  "tai",
+  "bốn",
+  "xem",
+  "xanh",
+  "đất",
+  "đỏ",
+  "những",
+  "các",
+  "chỉ",
+  "không",
+  "thích",
+  "bật",
+  "sẽ",
+  "sợ",
+  "sông",
+  "sách",
+  "cao",
+  "mặt",
+  "bán",
+  "trí",
+  "trời",
+  "khô",
+  "muộn",
+  "trả",
+  "gì",
+  "triệu",
+  "vàng",
+  "ta",
+  "gió",
+  "nghĩ",
+  "rẻ",
+  "trước",
+  "chọn",
+  "cơm",
+  "ngàn",
+  "lấy",
+  "tháng",
+  "chân",
+  "bảy",
+  "ghét",
+  "đến",
+  "thì",
+  "biển",
+  "ngày",
+  "nước",
+  "nó",
+  "năm",
+  "một",
+  "quên",
+  "tìm",
+  "dài",
+  "đóng",
+  "thấy",
+  "vẫn",
+  "nói",
+  "mũ",
+  "lực",
+  "yêu",
+  "chờ",
+  "cây",
+  "đã",
+  "để",
+  "đúng",
+  "rộng",
+  "hẹp",
+  "mỗi",
+  "tin",
+  "hiểu",
+  "vơi",
+  "do",
+  "như",
+  "ngồi",
+  "đâu",
+  "mở",
+  "mình",
+  "bởi",
+  "đen",
+  "là",
+  "tám",
+  "sáu",
+  "xấu",
+  "mọi",
+  "yếu",
+  "vào",
+  "đêm",
+  "sâu",
+  "ba",
+  "vác",
+  "phố",
+  "tay",
+  "trăm",
+  "lớn",
+  "đợi",
+  "đọc",
+  "mấy",
+  "có",
+  "tốt",
+  "bơi",
+  "mưa",
+  "đầy",
+  "nhanh",
+  "được",
+  "ấm",
+  "tỷ",
+  "núi",
+  "với",
+  "đang",
+  "chạy",
+  "mũi",
+  "nhà",
+  "nóng",
+  "chúng",
+  "đây",
+  "trong",
+  "lá",
+  "nhưng",
+  "nhớ",
+  "sạch",
+  "dưới",
+  "cũng",
+  "bàn",
+  "hai",
+  "trắng",
+  "giờ",
+  "đi",
+  "tôi",
+  "đó",
+  "chị",
+  "tắt",
+  "giảm",
+  "nhiều",
+  "mây",
+  "người",
+  "lạnh",
+  "ngắn",
+  "này",
+  "bé",
+  "ai",
+  "mười",
+  "buồn",
+  "khó",
+  "mát",
+  "đường",
+  "lửa",
+  "xa",
+  "sao",
+  "bạn",
+  "đứng",
+  "mới",
+  "và",
+  "hết",
+  "họ",
+  "theo",
+  "nhỏ",
+  "nào",
+  "lại",
+  "bẩn",
+  "mà",
+  "khi",
+  "bút",
+  "uống",
+  "giây",
+  "ít",
+  "cần",
+  "viết",
+  "chậm",
+  "canh",
+  "ngủ",
+  "to",
+  "ghế",
+  "chín",
+  "thấp",
+  "cửa",
+  "muốn",
+  "sân",
+  "vẽ",
+  "thầy",
+  "bóc",
+  "đấm",
+  "cắn",
+  "quăng",
+  "chặt",
+  "hạt",
+  "khay",
+  "dê",
+  "bác",
+  "hò",
+  "gập",
+  "rương",
+  "chuột",
+  "uốn",
+  "nặn",
+  "thổi",
+  "liếm",
+  "vôi",
+  "kéo",
+  "chút",
+  "nuốt",
+  "heo",
+  "ngã",
+  "cô",
+  "tiên",
+  "trai",
+  "sáng",
+  "hến",
+  "thét",
+  "rực",
+  "mềm",
+  "tháo",
+  "tanh",
+  "lằn",
+  "thơm",
+  "dẹt",
+  "dĩa",
+  "rữa",
+  "vượn",
+  "kèo",
+  "bướm",
+  "sét",
+  "niêu",
+  "bóp",
+  "bò",
+  "hôi",
+  "ong",
+  "ngọt",
+  "rèn",
+  "mẫu",
+  "tớ",
+  "gạch",
+  "sóng",
+  "thẳng",
+  "mối",
+  "lính",
+  "khóc",
+  "chảo",
+  "cụ",
+  "vữa",
+  "chim",
+  "hắt",
+  "xi",
+  "ếch",
+  "reo",
+  "ngói",
+  "mực",
+  "béo",
+  "nụ",
+  "chê",
+  "đẩy",
+  "nhạt",
+  "phơi",
+  "giòn",
+  "vạc",
+  "báo",
+  "hái",
+  "kiến",
+  "chạm",
+  "mèo",
+  "thối",
+  "tô",
+  "truyền",
+  "bay",
+  "chủ",
+  "đắng",
+  "sương",
+  "sò",
+  "chửi",
+  "gấu",
+  "cậu",
+  "kỳ",
+  "sốt",
+  "chúa",
+  "ruột",
+  "giặc",
+  "nồi",
+  "hòm",
+  "nồng",
+  "voi",
+  "dượng",
+  "mài",
+  "mịn",
+  "chày",
+  "gội",
+  "bát",
+  "gốc",
+  "kẻ",
+  "trồng",
+  "chua",
+  "đá",
+  "triều",
+  "chùi",
+  "gọt",
+  "ốm",
+  "rắn",
+  "hút",
+  "thím",
+  "chăn",
+  "dai",
+  "chén",
+  "xốp",
+  "khen",
+  "dày",
+  "giường",
+  "lốc",
+  "khắc",
+  "ngắt",
+  "ho",
+  "quỷ",
+  "dạy",
+  "dọa",
+  "tối",
+  "mỏi",
+  "bẻ",
+  "kệ",
+  "cối",
+  "buốt",
+  "đặc",
+  "ráp",
+  "mỉm",
+  "chắt",
+  "đúc",
+  "sếu",
+  "thợ",
+  "gỡ",
+  "sống",
+  "cứng",
+  "nhặt",
+  "bón",
+  "nhẵn",
+  "gào",
+  "quan",
+  "gầy",
+  "tưới",
+  "khỉ",
+  "tủ",
+  "gối",
+  "muỗng",
+  "sấm",
+  "ốc",
+  "cay",
+  "buộc",
+  "mỏng",
+  "bùi",
+  "dẻo",
+  "vua",
+  "kỵ",
+  "mầm",
+  "rỗng",
+  "mập",
+  "nhái",
+  "múa",
+  "thau",
+  "giảng",
+  "quả",
+  "bọ",
+  "trâu",
+  "tắm",
+  "khỏe",
+  "tròn",
+  "rét",
+  "muỗi",
+  "bụi",
+  "hắc",
+  "ngáp",
+  "rùa",
+  "màn",
+  "nhện",
+  "sứa",
+  "cắt",
+  "gói",
+  "rửa",
+  "cong",
+  "trơn",
+  "xé",
+  "trộm",
+  "vuông",
+  "mặn",
+  "mốc",
+  "lau",
+  "giũa",
+  "thìa",
+  "chẻ",
+  "thô",
+  "đau",
+  "rên",
+  "vấp",
+  "tát",
+  "hát",
+  "trăn",
+  "héo",
+  "trói",
+  "giãn",
+  "bừa",
+  "thầm",
+  "nhức",
+  "thớt",
+  "củ",
+  "chùng",
+  "lội",
+  "bão",
+  "đục",
+  "thở",
+  "xà",
+  "nhông",
+  "nắn",
+  "hỏi",
+  "cóc",
+  "giặt",
+  "căng",
+  "trượt",
+  "nhảy",
+  "bụt",
+  "mượt",
+  "mâm",
+  "vỏ",
+  "mắng",
+  "khói",
+  "gieo",
+  "chiếu",
+  "bóng",
+  "thần",
+  "mợ",
+  "dì",
+  "cò",
+  "co",
+  "ma",
+  "cừu",
+  "mền",
+  "cày",
+  "chớp",
+  "cáo",
+  "cướp",
+  "chồi",
+  "trèo",
+  "ném",
+  "chú",
+  "xếp",
+  "đáp",
+  "vịt",
+  "chậu",
+  "tấm",
+  "sơn",
+  "ngựa",
+  "thâm",
+  "ruồi",
+  "mờ",
+  "ngỗng",
+  "chó",
+  "rát",
+  "măng",
+  "cột",
+  "đũa",
+  "hổ",
+  "chồn",
+  "đĩa",
+  "mệt",
+  "cấy",
+  "gặt",
+  "dân",
+  "tươi",
+  "mật",
+  "trò",
+  "nằm",
+  "bà",
+  "mắm",
+  "vụng",
+  "xách",
+  "tao",
+  "ớt",
+  "cùng",
+  "bận",
+  "vuốt",
+  "lạc",
+  "ngậy",
+  "tại",
+  "nọ",
+  "áo",
+  "suối",
+  "động",
+  "dơ",
+  "thước",
+  "kẹo",
+  "vả",
+  "khóa",
+  "cá",
+  "đếm",
+  "bạc",
+  "cả",
+  "con",
+  "tiêu",
+  "mua",
+  "tím",
+  "giữ",
+  "ăn",
+  "tá",
+  "nhiêu",
+  "thủy",
+  "chìm",
+  "xe",
+  "bè",
+  "thuyền",
+  "hắn",
+  "thời",
+  "dép",
+  "bún",
+  "ao",
+  "dễ",
+  "cháu",
+  "tặng",
+  "cặp",
+  "từng",
+  "cha",
+  "sờ",
+  "đông",
+  "mùa",
+  "tính",
+  "chiều",
+  "nón",
+  "ngửi",
+  "đảo",
+  "chồng",
+  "kia",
+  "té",
+  "trễ",
+  "mắc",
+  "biếu",
+  "sĩ",
+  "tàu",
+  "xoa",
+  "buông",
+  "hơn",
+  "túi",
+  "lo",
+  "muối",
+  "thịt",
+  "lặn",
+  "cực",
+  "lui",
+  "đồng",
+  "bãi",
+  "hét",
+  "xám",
+  "tới",
+  "trông",
+  "nhôm",
+  "quạt",
+  "la",
+  "nên",
+  "bia",
+  "y",
+  "tỏi",
+  "nắng",
+  "về",
+  "trôi",
+  "đèn",
+  "vừng",
+  "trườn",
+  "mời",
+  "vay",
+  "dầu",
+  "ngọc",
+  "ngô",
+  "vậy",
+  "chanh",
+  "lúa",
+  "mì",
+  "cua",
+  "tất",
+  "đội",
+  "nặng",
+  "đàn",
+  "chẳng",
+  "chưa",
+  "nâng",
+  "gọi",
+  "đợt",
+  "mộc",
+  "nổi",
+  "bờ",
+  "hờn",
+  "hạ",
+  "vớ",
+  "rất",
+  "kim",
+  "tuyết",
+  "mó",
+  "sắt",
+  "mày",
+  "thả",
+  "lên",
+  "bắt",
+  "đánh",
+  "hoặc",
+  "tráo",
+  "trưa",
+  "mẹ",
+  "nhẹ",
+  "ướt",
+  "lắm",
+  "đổi",
+  "đậu",
+  "nông",
+  "toàn",
+  "thu",
+  "nếm",
+  "trà",
+  "đều",
+  "phở",
+  "chào",
+  "hay",
+  "bao",
+  "chọi",
+  "mỡ",
+  "gái",
+  "hành",
+  "kìa",
+  "cát",
+  "vở",
+  "xuân",
+  "phấn",
+  "khách",
+  "vợ",
+  "hang",
+  "thổ",
+  "khuya",
+  "sang",
+  "chuẩn",
+  "nghe",
+  "mượn",
+  "hỏa",
+  "ngó",
+  "giận",
+  "lần",
+  "gạo",
+  "cháo",
+  "sỏi",
+  "cười",
+  "rau",
+  "rơi",
+  "kiếm",
+  "nhất",
+  "gừng",
+  "sắn",
+  "đồi",
+  "lệch",
+  "giúp",
+  "sáo",
+  "trái",
+  "chúc",
+  "sắp",
+  "khéo",
+  "rừng",
+  "dậy",
+  "đừng",
+  "sếp",
+  "thuở",
+  "vừa",
+  "gần",
+  "quần",
+  "xả",
+  "kẹp",
+  "tôm",
+  "nghỉ",
+  "nâu",
+  "khoai",
+  "đấy",
+  "hồ",
+  "bánh",
+  "dấm",
+  "xuống",
+  "quá",
+  "lời",
+  "qua",
+  "bằng",
+  "rảnh",
+  "vui",
+  "chớ",
+  "rượu",
+  "âu",
+  "phòng",
+  "xinh",
+  "em",
+  "leo",
+  "máy",
+  "sữa",
+  "kém",
+  "ông",
+  "lúc",
+  "tri thức",
+  "học hành",
+  "ở",
+  "vượt trội",
+  "chăm sóc",
+  "cơn mưa",
+  "sức mạnh",
+  "cải tiến",
+  "đoàn kết",
+  "xuất sắc",
+  "trân trọng",
+  "căn nhà",
+  "làm việc",
+  "nghi",
+  "chân lý",
+  "tình thương",
+  "vận động",
+  "bài học",
+  "bình an",
+  "nghị lực",
+  "văn hóa",
+  "màn hình",
+  "mơ",
+  "lái",
+  "lòng tin",
+  "biết",
+  "quyển sách",
+  "không gian",
+  "kỷ luật",
+  "bút viết",
+  "bảo tồn",
+  "thật thà",
+  "biết ơn",
+  "tự hào",
+  "hội họa",
+  "nghệ thuật",
+  "gặp",
+  "khát vọng",
+  "may mắn",
+  "trang sách",
+  "căn phòng",
+  "nhẫn nại",
+  "nâng cao",
+  "tình bạn",
+  "ý tưởng",
+  "ý chí",
+  "dòng sông",
+  "thể thao",
+  "rèn luyện",
+  "mong",
+  "ước",
+  "khiêm tốn",
+  "ngọn núi",
+  "ngọn gió",
+  "thói quen",
+  "ngoài",
+  "độc lập",
+  "hoài hoài",
+  "hòa bình",
+  "âm nhạc",
+  "tình yêu",
+  "bàn phím",
+  "tự do",
+  "dũng cảm",
+  "sự thật",
+  "thể chất",
+  "bãi biển",
+  "xài",
+  "ngành",
+  "bọn",
+  "tập",
+  "ngẫm",
+  "thành",
+  "đòi",
+  "xã",
+  "bỏ",
+  "hãi",
+  "may",
+  "lười",
+  "ngon",
+  "ninh",
+  "chợ",
+  "xóm",
+  "rán",
+  "nhai",
+  "lụa",
+  "hấp",
+  "trao",
+  "bến",
+  "chuông",
+  "tê",
+  "lanh",
+  "xoong",
+  "lưỡi",
+  "đút",
+  "râu",
+  "hẻm",
+  "xét",
+  "gửi",
+  "sới",
+  "tỉnh",
+  "vá",
+  "đầu",
+  "tóc",
+  "móng",
+  "sở",
+  "kìm",
+  "trường",
+  "hư",
+  "vườn",
+  "da",
+  "dịch",
+  "ghe",
+  "nấu",
+  "xuồng",
+  "tiệm",
+  "lột",
+  "phổi",
+  "xương",
+  "ngậm",
+  "băm",
+  "tim",
+  "nhung",
+  "ghè",
+  "chan",
+  "dữ",
+  "pháo",
+  "kèn",
+  "gắp",
+  "luyện",
+  "đan",
+  "cằm",
+  "dòm",
+  "dây",
+  "siêng",
+  "học",
+  "tượng",
+  "lớp",
+  "khét",
+  "trống",
+  "vải",
+  "múc",
+  "hầm",
+  "chữa",
+  "toan",
+  "ác",
+  "môi",
+  "miệng",
+  "chiên",
+  "xào",
+  "xưởng",
+  "sướng",
+  "chát",
+  "ga",
+  "thừng",
+  "oi",
+  "vít",
+  "lưng",
+  "nhận",
+  "mắt",
+  "quán",
+  "ban",
+  "ngón",
+  "làng",
+  "pha",
+  "thêu",
+  "hiền",
+  "cảng",
+  "già",
+  "ngõ",
+  "gấm",
+  "dở",
+  "vai",
+  "thái",
+  "dạ",
+  "dao",
+  "huyện",
+  "luộc",
+  "len",
+  "khổ",
+  "vắt",
+  "dệt",
+  "lông",
+  "ngực",
+  "thận",
+  "nhả",
+  "máu",
+  "ngoan",
+  "xin",
+  "trẻ",
+  "búa",
+  "sợi",
+  "đinh",
+  "sửa",
+  "gan",
+  "bông",
+  "lắng",
+  "răng",
+  "cổ",
+  "nướng",
+  "trộn",
+  "nợ",
+  "bụng"
 ];
 
-// Snapshot bộ câu built-in (trước khi load thêm từ GitHub).
-// Trận online CHỈ dùng bộ này → 2 máy luôn cùng nội dung chữ dù mạng tải extra khác nhau.
-const BUILTIN_QUOTES = QUOTES.map(q => (Array.isArray(q) ? q.slice() : q));
+// Tương thích: mỗi "câu" = 1 từ đơn (cơ chế batch cũ vẫn chạy được nếu cần)
+const QUOTES = SINGLE_WORDS.map(function(w) { return [w]; });
+const BUILTIN_QUOTES = QUOTES.map(function(q) { return Array.isArray(q) ? q.slice() : q; });
 const BUILTIN_QUOTE_COUNT = BUILTIN_QUOTES.length;
+const BUILTIN_SINGLE_WORDS = SINGLE_WORDS.slice();
 
 function shuffle(array) {
   let arr = [...array];
@@ -8631,78 +10258,30 @@ function seededShuffle(array, seed) {
 // (2 người chơi cùng seed + cùng batchIndex -> ra cùng chuỗi từ giống hệt nhau)
 // Chọn ngẫu nhiên (có seed) thứ tự các CÂU trong QUOTES, rồi tách từng câu
 // thành các từ đơn nối tiếp nhau cho tới khi đủ WORD_BATCH_SIZE từ.
-// Thêm câu từ GitHub raw (không nhúng JSON vào HTML — tiết kiệm dung lượng)
-const QUOTE_EXTRA_URLS = [
-  'https://raw.githubusercontent.com/quanphamhong2k8-blip/TiengViet/main/quotes_typing_game_part6_200_full_motivational.json',
-  'https://raw.githubusercontent.com/quanphamhong2k8-blip/TiengViet/main/nature_phrases.json',
-  'https://raw.githubusercontent.com/quanphamhong2k8-blip/TiengViet/main/simple_joys_phrases.json'
-];
-let _quotesExtraLoaded = false;
-
-async function loadQuoteJsonUrl(url) {
-  const res = await fetch(url, { cache: 'force-cache' });
-  if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + url);
-  const list = await res.json();
-  if (!Array.isArray(list)) return 0;
-  let added = 0;
-  for (let i = 0; i < list.length; i++) {
-    const item = list[i];
-    let words = item && item.words;
-    if (Array.isArray(words) && words.length) {
-      // Chuẩn hoá + sửa lỗi chính tả nhẹ
-      words = words
-        .map(w => String(w == null ? '' : w).trim())
-        .filter(Boolean)
-        .map(w => (w === 'dũa' ? 'giũa' : w));
-      if (words.length) {
-        QUOTES.push(words);
-        added++;
-      }
-    }
-  }
-  return added;
-}
-
-const quotesReady = (async function loadExtraQuotes() {
-  let totalAdded = 0;
-  // Tải song song các nguồn; nguồn lỗi thì bỏ qua, không chặn nguồn khác
-  const results = await Promise.allSettled(QUOTE_EXTRA_URLS.map(u => loadQuoteJsonUrl(u)));
-  results.forEach((r, idx) => {
-    if (r.status === 'fulfilled') {
-      totalAdded += r.value || 0;
-    } else {
-    }
-  });
-  _quotesExtraLoaded = true;
-})();
-
-async function ensureQuotesLoaded() {
-  try { await quotesReady; } catch (e) {}
-}
+// Không còn tải câu dài từ GitHub — chỉ dùng kho từ đơn nhúng sẵn
+let _quotesExtraLoaded = true;
+const quotesReady = Promise.resolve();
+async function ensureQuotesLoaded() { /* no-op: từ đơn đã nhúng */ }
 
 /**
- * Lô từ cho trận: mỗi CÂU có xác suất ngang nhau.
- * - Online: CHỈ dùng BUILTIN_QUOTES (cố định trong HTML) → 2 máy luôn cùng nội dung
- * - Luyện tập: dùng QUOTES đầy đủ (built-in + extra GitHub nếu tải được)
- * - Mỗi chu kỳ: xáo đều (Fisher–Yates có seed) → mỗi câu đúng 1 lần
- * - 2 client cùng wordSeed + batchIndex → cùng chuỗi (fair online)
+ * Lô từ cho trận / luyện tập.
+ * - Lấy từ SINGLE_WORDS
+ * - Cụm 2 từ ("tri thức") → tách thành 2 từ riêng liền nhau: tri + thức
+ * - Seed + batchIndex → 2 máy online cùng chuỗi
  */
+function expandWordEntry(entry) {
+  const s = String(entry == null ? '' : entry).trim();
+  if (!s) return [];
+  // Tách theo khoảng trắng → các từ đơn; cụm vẫn xuất hiện liền nhau
+  return s.split(/\s+/).filter(Boolean);
+}
+
 function getWordBatch(batchIndex) {
-  // Trận đấu: không phụ thuộc mạng tải JSON → tránh PC/mobile ra chữ khác nhau
-  const pool = (typeof isPracticeMode !== 'undefined' && isPracticeMode)
-    ? QUOTES
-    : (typeof BUILTIN_QUOTES !== 'undefined' ? BUILTIN_QUOTES : QUOTES);
-  const usable = [];
-  for (let i = 0; i < pool.length; i++) {
-    const q = pool[i];
-    if (Array.isArray(q) && q.length > 0) usable.push(q);
-  }
-  if (!usable.length) {
-    return ['hãy', 'luyện', 'tập', 'mỗi', 'ngày', 'để', 'tiến', 'bộ', 'hơn'];
-  }
-  const n = usable.length;
+  const pool = (typeof SINGLE_WORDS !== 'undefined' && SINGLE_WORDS.length)
+    ? SINGLE_WORDS
+    : ['hãy', 'luyện', 'tập', 'mỗi', 'ngày', 'để', 'tiến', 'bộ', 'hơn'];
+  const n = pool.length;
   const baseSeed = ((wordSeed + batchIndex * 2654435761) >>> 0);
-  // Hoán vị đều 0..n-1
   function shuffleIndices(seed) {
     const rng = mulberry32(seed >>> 0);
     const order = new Array(n);
@@ -8722,13 +10301,14 @@ function getWordBatch(batchIndex) {
   while (out.length < WORD_BATCH_SIZE) {
     if (oi >= n) {
       cycle++;
-      // Chu kỳ mới: seed khác, vẫn Fisher–Yates đều trên cùng tập câu
       order = shuffleIndices((baseSeed + cycle * 1597334677) >>> 0);
       oi = 0;
     }
-    const quote = usable[order[oi++]];
-    // Đẩy nguyên câu — không cắt giữa câu; câu ngắn/dài vẫn được chọn đều theo lượt
-    for (let w = 0; w < quote.length; w++) out.push(quote[w]);
+    const parts = expandWordEntry(pool[order[oi++]]);
+    for (let p = 0; p < parts.length; p++) {
+      out.push(parts[p]);
+      if (out.length >= WORD_BATCH_SIZE) break;
+    }
   }
   return out;
 }
@@ -9303,13 +10883,99 @@ let practiceElapsed = 0, practiceTimerInterval = null;
 let practiceCorrect = 0, practiceWrong = 0;
 let practiceCorrectChars = 0;
 let practiceTotalChars = 0; // ký tự net (đúng cộng, sai trừ) — cùng thi đấu
-let practiceTimedMode = false;       // true = thử thách 30 giây WPM
+let practiceTimedMode = false;       // true = thử thách WPM theo PRACTICE_WPM_SECONDS
 let practiceShowTimer = true;        // true = hiện giây thủ công khi đang tạm ẩn (mặc định hiện)
 let practiceTimerStarted = false;    // chỉ true sau lần gõ đầu
 let practiceResultUnlockAt = 0;      // mốc thời gian cho phép rời bảng kết quả WPM (chống bấm nhầm)
 let practiceStartTs = 0;
 let practiceFinished = false;
-const PRACTICE_WPM_SECONDS = 30;
+const PRACTICE_WPM_DURATION_KEY = 'wwb_practice_wpm_sec';
+const PRACTICE_WPM_DURATION_OPTIONS = [15, 30, 60];
+function loadPracticeWpmSeconds() {
+  try {
+    const n = Number(localStorage.getItem(PRACTICE_WPM_DURATION_KEY));
+    if (PRACTICE_WPM_DURATION_OPTIONS.includes(n)) return n;
+  } catch (e) {}
+  return 30;
+}
+/** Thời gian WPM test (giây) — đổi qua menu, lưu mặc định */
+let PRACTICE_WPM_SECONDS = loadPracticeWpmSeconds();
+
+/** Có thể mở menu chọn 15/30/60s trên ô ⏱ Ns */
+function canSelectPracticeWpmDuration() {
+  // Chỉ khi đang WPM test và chưa bắt đầu đếm (chưa gõ chữ đầu)
+  return !!(practiceTimedMode && !practiceTimerStarted && !practiceFinished);
+}
+
+function syncPracticeWpmDurationUI() {
+  document.querySelectorAll('#practice-wpm-dur-menu [data-sec]').forEach(btn => {
+    const on = Number(btn.getAttribute('data-sec')) === PRACTICE_WPM_SECONDS;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  const timeEl = document.getElementById('practice-stat-time');
+  if (timeEl) {
+    const selectable = canSelectPracticeWpmDuration();
+    timeEl.classList.toggle('is-selectable', selectable);
+    timeEl.title = selectable ? 'Chọn thời gian WPM test (15s / 30s / 60s)' : '';
+    if (!selectable) {
+      timeEl.classList.remove('is-menu-open');
+      timeEl.setAttribute('aria-expanded', 'false');
+      const menu = document.getElementById('practice-wpm-dur-menu');
+      if (menu) menu.classList.remove('open');
+    }
+  }
+}
+
+function closePracticeWpmDurationMenu() {
+  const menu = document.getElementById('practice-wpm-dur-menu');
+  const timeEl = document.getElementById('practice-stat-time');
+  if (menu) menu.classList.remove('open');
+  if (timeEl) {
+    timeEl.classList.remove('is-menu-open');
+    timeEl.setAttribute('aria-expanded', 'false');
+  }
+}
+
+window.togglePracticeWpmDurationMenu = function(event) {
+  if (event) event.stopPropagation();
+  if (!canSelectPracticeWpmDuration()) {
+    closePracticeWpmDurationMenu();
+    return;
+  }
+  const menu = document.getElementById('practice-wpm-dur-menu');
+  const timeEl = document.getElementById('practice-stat-time');
+  if (!menu || !timeEl) return;
+  const open = !menu.classList.contains('open');
+  menu.classList.toggle('open', open);
+  timeEl.classList.toggle('is-menu-open', open);
+  timeEl.setAttribute('aria-expanded', open ? 'true' : 'false');
+};
+
+window.selectPracticeWpmDuration = function(sec, event) {
+  if (event) event.stopPropagation();
+  if (!canSelectPracticeWpmDuration()) return;
+  const n = Number(sec);
+  if (!PRACTICE_WPM_DURATION_OPTIONS.includes(n)) return;
+  PRACTICE_WPM_SECONDS = n;
+  try { localStorage.setItem(PRACTICE_WPM_DURATION_KEY, String(n)); } catch (e) {}
+  // Cập nhật số trên ô ⏱ ngay
+  const t = document.getElementById('practice-timer');
+  if (t && practiceShowTimer) t.textContent = String(n);
+  syncPracticeWpmDurationUI();
+  closePracticeWpmDurationMenu();
+  try {
+    if (typeof showToast === 'function') showToast('WPM test: ' + n + 's');
+  } catch (e2) {}
+};
+
+try {
+  document.addEventListener('click', function(e) {
+    const timeEl = document.getElementById('practice-stat-time');
+    if (!timeEl) return;
+    if (!timeEl.contains(e.target)) closePracticeWpmDurationMenu();
+  });
+} catch (e) {}
 let matchCorrect = 0, matchWrong = 0;  // thống kê multiplayer (đồng bộ Firebase)
 let matchTotalChars = 0; // tổng ký tự (chữ + space) — tính WPM cuối trận
 let lastMatchResult = null; // { winner, meCorrect, meWrong, oppCorrect, oppWrong } — hiện lại trên prep khi chơi lại
@@ -9320,6 +10986,8 @@ let typingEngineInitialized = false;
 // Typing Engine Variables (Word Queue - kiểu gophim.html)
 let wordList = [];
 let resultList = [];
+/** Chuỗi đã gõ khi nộp từng từ — để tô xanh/đỏ theo ký tự khi render lại */
+let typedResultList = [];
 let currentWordIndex = 0;
 let totalLineOffset = 0;
 let isSubmitting = false;
@@ -10675,6 +12343,7 @@ function resetPracticeStatsUI() {
     btn.disabled = !!practiceTimedMode;
     btn.textContent = practiceTimedMode ? 'Đang test…' : 'WPM test';
   }
+  try { if (typeof syncPracticeWpmDurationUI === 'function') syncPracticeWpmDurationUI(); } catch (e) {}
 }
 
 function stopPracticeTimer() {
@@ -10782,6 +12451,9 @@ function ensurePracticeTimerStarted() {
   stopPracticeTimer();
   practiceTimerInterval = setInterval(tickPracticeTimer, 200);
   tickPracticeTimer();
+  // Đã bắt đầu đếm → khóa đổi 15/30/60s trên ô ⏱
+  try { if (typeof syncPracticeWpmDurationUI === 'function') syncPracticeWpmDurationUI(); } catch (e) {}
+  try { if (typeof closePracticeWpmDurationMenu === 'function') closePracticeWpmDurationMenu(); } catch (e2) {}
 }
 
 window.startPractice = function() {
@@ -10872,7 +12544,7 @@ function finishPracticeWpm() {
 
   const total = practiceCorrect + practiceWrong;
   const acc = total > 0 ? Math.round((practiceCorrect / total) * 100) : 0;
-  // WPM chuẩn: (tổng ký tự ÷ 5) ÷ phút; bài test 30s → minutes = 0.5
+  // WPM chuẩn: (tổng ký tự ÷ 5) ÷ phút
   const minutes = PRACTICE_WPM_SECONDS / 60;
   const wpm = Math.max(0, Math.round((practiceTotalChars / 5) / minutes));
   // Lưu lực chiến (best WPM luyện tập) nếu cao hơn
@@ -10891,13 +12563,13 @@ function finishPracticeWpm() {
   if (el('pr-wrong')) el('pr-wrong').textContent = String(practiceWrong);
   if (el('pr-acc')) el('pr-acc').textContent = acc + '%';
   if (el('pr-chars')) el('pr-chars').textContent = String(practiceTotalChars);
-  // WPM hiện lại trên overlay kết quả
 
   const btn = document.getElementById('practice-wpm-btn');
   if (btn) {
     btn.disabled = false;
     btn.textContent = 'WPM test';
   }
+  try { if (typeof syncPracticeWpmDurationUI === 'function') syncPracticeWpmDurationUI(); } catch (e) {}
   const t = document.getElementById('practice-timer');
   const suf = document.getElementById('practice-timer-suffix');
   if (t) t.textContent = '0';
@@ -11859,12 +13531,33 @@ function initWordGame() {
   wordList = [...getWordBatch(wordBatchIndex), ...getWordBatch(wordBatchIndex + 1)];
   wordBatchIndex += 2;
   resultList = new Array(wordList.length).fill(null);
+  typedResultList = new Array(wordList.length).fill(null);
   currentWordIndex = 0;
   totalLineOffset = 0;
   _currentWordEl = null;
   setWordScroll(0);
   renderAllWords();
   updateCurrentWordHighlight();
+}
+
+/** Kết quả cuối theo từng ký tự: đúng → xanh, sai/thiếu → đỏ.
+ *  Gõ THỪA ký tự (vd: "xongh" cho "xong") → cả từ đỏ (không tô xanh prefix). */
+function applyWordCharResult(span, target, typed) {
+  if (!span) return;
+  const chars = span.querySelectorAll('.typing-char');
+  const tChars = Array.from(target || '');
+  const typedChars = Array.from(typed || '');
+  const hasExtra = typedChars.length > tChars.length;
+  for (let i = 0; i < chars.length; i++) {
+    const el = chars[i];
+    el.classList.remove('typing-correct', 'typing-wrong', 'typing-extra', 'cursor-before', 'typing-cursor-end');
+    // Thừa ký tự = sai cả từ; thiếu/sai vị trí = đỏ từng chữ
+    if (!hasExtra && i < typedChars.length && typedChars[i] === tChars[i]) {
+      el.classList.add('typing-correct');
+    } else {
+      el.classList.add('typing-wrong');
+    }
+  }
 }
 
 function renderAllWords() {
@@ -11881,6 +13574,10 @@ function renderAllWords() {
       charSpan.textContent = ch;
       span.appendChild(charSpan);
     });
+    // Khôi phục màu từng chữ sau prune/render lại
+    if (resultList[idx] && typedResultList[idx] != null) {
+      applyWordCharResult(span, word, typedResultList[idx]);
+    }
     fragment.appendChild(span);
   });
   containerEl.appendChild(fragment);
@@ -11916,6 +13613,7 @@ function pruneOldWords() {
     const cutCount = currentWordIndex - KEEP_BEHIND;
     wordList = wordList.slice(cutCount);
     resultList = resultList.slice(cutCount);
+    typedResultList = typedResultList.slice(cutCount);
     currentWordIndex -= cutCount;
     renderAllWords();
     // Snap ngay (không animate) vì DOM đã dựng lại từ đầu
@@ -12643,13 +14341,17 @@ function netCharsForWord(target, typed) {
   typed = typed || '';
   if (!target) return 0;
   if (typed === target) return target.length + 1; // đủ từ + khoảng trắng
+  // Gõ THỪA ký tự (vd: "xong" → "xongh"): cả từ sai — không cộng prefix như gần đúng
+  if (typed.length > target.length) {
+    return -Math.max(target.length, typed.length - target.length);
+  }
   let correct = 0;
   const lim = Math.min(target.length, typed.length);
   for (let i = 0; i < lim; i++) {
     if (typed[i] === target[i]) correct++;
     else break;
   }
-  // Phần sai = max(phần target chưa đúng, phần gõ thừa/sai sau prefix)
+  // Phần sai = max(phần target chưa đúng, phần gõ sai sau prefix)
   const wrong = Math.max(target.length - correct, typed.length - correct);
   return correct - wrong;
 }
@@ -12878,15 +14580,26 @@ function submitWord(typedWord) {
   const currentSpan = document.getElementById('word-' + currentWordIndex);
 
   // 1) Cập nhật giao diện + hàng đợi từ NGAY LẬP TỨC (không chờ mạng) để gõ luôn mượt
+  // Kết quả cuối: từng ký tự đúng → xanh, sai/thiếu → đỏ (không full xanh/đỏ cả từ)
+  typedResultList[currentWordIndex] = typedWord;
+  if (currentSpan) {
+    applyWordCharResult(currentSpan, currentTarget, typedWord);
+  }
   if (typedWord === currentTarget) {
     resultList[currentWordIndex] = 'correct';
-    if (currentSpan) currentSpan.className = 'word correct';
+    if (currentSpan) {
+      currentSpan.classList.remove('current');
+      currentSpan.classList.add('correct');
+    }
     spawnSonicWave(myRole);
     setAvatarBarking('p1', true);
     feedbackWordHit(true, currentSpan || document.getElementById('typing-box'));
   } else {
     resultList[currentWordIndex] = 'wrong';
-    if (currentSpan) currentSpan.className = 'word wrong';
+    if (currentSpan) {
+      currentSpan.classList.remove('current');
+      currentSpan.classList.add('wrong');
+    }
     feedbackWordHit(false, currentSpan || document.getElementById('typing-box'));
   }
 
@@ -12900,6 +14613,7 @@ function submitWord(typedWord) {
     // Nếu practice vừa init với seed ngẫu nhiên, getWordBatch vẫn deterministic theo wordSeed
     wordList = wordList.concat(extraWords);
     resultList = resultList.concat(new Array(extraWords.length).fill(null));
+    typedResultList = typedResultList.concat(new Array(extraWords.length).fill(null));
     if (containerEl) {
       const fragment = document.createDocumentFragment();
       const base = wordList.length - extraWords.length;

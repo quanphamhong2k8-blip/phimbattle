@@ -956,6 +956,13 @@
     color: var(--success);
     background: rgba(123,196,127,0.08);
   }
+  /* Player bị cưỡng chế đổi tên: lớp mờ cực mạnh phủ lên chữ "Player" */
+  .online-user-name.is-name-masked {
+    filter: blur(6px);
+    opacity: 0.55;
+    user-select: none;
+    -webkit-user-select: none;
+  }
   .online-user-tag.admin {
     border-color: rgba(232,178,91,0.55);
     color: var(--accent);
@@ -5261,7 +5268,7 @@
       Sau khi lưu tên mới, bạn <strong>không thể đổi tên trong 2 ngày</strong> tiếp theo.
     </div>
     <div class="edit-name-warn edit-name-force-warn" id="edit-name-force-warn" style="display:none;border-color:rgba(232,91,91,0.4);background:rgba(232,91,91,0.1);">
-      <strong>Admin đã cưỡng chế đổi tên</strong> của bạn. Vui lòng đặt tên mới phù hợp (không dùng từ ngữ nhạy cảm).
+      <strong>Admin đã cưỡng chế đổi tên</strong> của bạn. Vui lòng đặt tên mới phù hợp (không dùng từ ngữ nhạy cảm). Bạn phải đổi tên mới để tiếp tục.
     </div>
     <div class="auth-field">
       <label for="edit-name-input">Tên hiển thị (tối đa 15 ký tự)</label>
@@ -5588,8 +5595,8 @@ function stripDiacriticsVi(s) {
   }
 }
 
-/** true nếu tên chứa từ nhạy cảm (kể cả viết lặp / né dấu) */
-function containsProfanityName(name) {
+/** true nếu tên chứa từ nhạy cảm (kể cả viết lặp / né dấu) — lớp kiểm tra cơ bản (giữ nguyên) */
+function containsProfanityNameBasic(name) {
   const n = normalizeNameForProfanity(name);
   if (!n) return false;
   const ns = stripDiacriticsVi(n);
@@ -5598,6 +5605,96 @@ function containsProfanityName(name) {
     if (!root) continue;
     const rs = stripDiacriticsVi(root);
     if (n.indexOf(root) !== -1 || ns.indexOf(rs) !== -1) return true;
+  }
+  return false;
+}
+
+/* ── Siết chặt từ nhạy cảm biến đổi: leet (l0n, c4c, d1t), ký tự giả (Cyrillic/Unicode),
+      che sao (l*n, f*ck), viết tắt (vcl, dcm, djt…) ── */
+const NAME_PROFANITY_EXTRA_ROOTS = [
+  'vcl', 'vkl', 'vlz', 'clgt', 'dcm', 'dkm', 'djt',
+  'fuk', 'fck', 'fuq', 'phuck', 'motherfuck', 'bitch', 'whore', 'porn',
+  'nigger', 'nigga', 'faggot'
+];
+/** Từ ngắn: chỉ chặn khi CẢ TÊN hoặc cả 1 từ trong tên trùng (tránh chặn nhầm tên thường) */
+const NAME_PROFANITY_EXACT_TOKENS = [
+  'dm', 'vl', 'cl', 'lz', 'loz', 'cak', 'cax', 'sex', 'sexy', 'cock', 'slut', 'dcm', 'dkm'
+];
+const NAME_PF_HOMOGLYPH = {
+  'а':'a','е':'e','о':'o','р':'p','с':'c','у':'y','х':'x','і':'i','ј':'j','к':'k','м':'m','т':'t',
+  'ο':'o','α':'a','ν':'v','ι':'i'
+};
+const NAME_PF_LEET = {
+  '0':'o','3':'e','4':'a','5':'s','7':'t','8':'b','9':'g',
+  '@':'a','$':'s','€':'e','¢':'c','|':'l','!':'i','+':'t','£':'l'
+};
+
+function _pfLetters(s) {
+  try { return s.replace(/[^\p{L}*]+/gu, ''); }
+  catch (e) { return s.replace(/[^a-zA-Z\u00C0-\u1EF9*]+/g, ''); }
+}
+function _pfCollapse(s) { return s.replace(/([^*])\1+/g, '$1'); }
+function _pfPlain(s) { return stripDiacriticsVi(s).replace(/đ/g, 'd'); }
+
+/** Các dạng chuẩn hoá của 1 chuỗi (số 1 → i hoặc l), đã bỏ dấu + gộp chữ lặp */
+function _pfForms(raw) {
+  let s = String(raw || '');
+  try { s = s.normalize('NFKC'); } catch (e) {}
+  s = s.toLowerCase().replace(/[\u00AD\u200B-\u200F\u202A-\u202E\u2060\uFEFF]/g, '');
+  s = s.replace(/[\u0370-\u03FF\u0400-\u04FF]/g, function(ch) { return NAME_PF_HOMOGLYPH[ch] || ch; });
+  const out = [];
+  ['i', 'l'].forEach(function(one) {
+    let t = '';
+    for (const ch of s) {
+      if (ch === '1') t += one;
+      else if (NAME_PF_LEET[ch]) t += NAME_PF_LEET[ch];
+      else if (ch === '#' || ch === '?' || ch === '%') t += '*';
+      else t += ch;
+    }
+    t = _pfCollapse(_pfPlain(_pfLetters(t)));
+    if (out.indexOf(t) === -1) out.push(t);
+  });
+  return out;
+}
+
+/** hay chứa root, cho phép '*' thay 1 chữ (l*n, f*ck); phải khớp thật ≥ 2 chữ và ≥ len-1 */
+function _pfHasRoot(hay, root) {
+  const n = root.length;
+  if (n < 3 || hay.length < n) return false;
+  for (let i = 0; i + n <= hay.length; i++) {
+    let real = 0, ok = true;
+    for (let j = 0; j < n; j++) {
+      const c = hay.charAt(i + j);
+      if (c === root.charAt(j)) real++;
+      else if (c !== '*') { ok = false; break; }
+    }
+    if (ok && real >= Math.max(2, n - 1)) return true;
+  }
+  return false;
+}
+
+/** true nếu tên chứa từ nhạy cảm (cơ bản + biến đổi) */
+function containsProfanityName(name) {
+  if (containsProfanityNameBasic(name)) return true;
+  const raw = String(name || '');
+  if (!raw.trim()) return false;
+  const forms = _pfForms(raw);
+  const roots = NAME_PROFANITY_ROOTS.concat(NAME_PROFANITY_EXTRA_ROOTS).map(function(r) {
+    return _pfCollapse(_pfPlain(String(r).toLowerCase()));
+  });
+  for (let i = 0; i < forms.length; i++) {
+    for (let j = 0; j < roots.length; j++) {
+      if (_pfHasRoot(forms[i], roots[j])) return true;
+    }
+  }
+  // Từ ngắn: so khớp cả tên / từng từ
+  const tokens = raw.split(/[\s._\-,;:\/\\]+/).filter(Boolean);
+  tokens.push(raw);
+  for (let k = 0; k < tokens.length; k++) {
+    const tf = _pfForms(tokens[k]);
+    for (let a = 0; a < tf.length; a++) {
+      if (NAME_PROFANITY_EXACT_TOKENS.indexOf(tf[a]) !== -1) return true;
+    }
   }
   return false;
 }
@@ -6234,6 +6331,7 @@ function saveSessionUser(user) {
     emailKey: user.emailKey,
     email: user.email || '',
     displayName: user.displayName,
+    forceRenameByAdmin: !!user.forceRenameByAdmin,
     avatar: user.avatar || null,
     uid: normalizeAccountUid(user.uid) || undefined,
     bestWpm: user.bestWpm || 0,
@@ -6257,7 +6355,10 @@ function renderAccountBadge() {
     badge.classList.add('logged-in');
     const logoWrap = badge.closest('.logo-wrap') || document.querySelector('.logo-wrap');
     if (logoWrap) logoWrap.classList.add('user-logged-in');
-    const shown = currentUser.displayName || defaultNameFromEmail(currentUser.email) || currentUser.emailKey;
+    // Bị admin cưỡng chế đổi tên → ẩn tên cũ cho tới khi đặt tên mới
+    const shown = isForcedRenameActive()
+      ? 'Player'
+      : (currentUser.displayName || defaultNameFromEmail(currentUser.email) || currentUser.emailKey);
     if (nameEl) nameEl.textContent = shown;
     // Admin cố định UID
     const isAdm = typeof ADMIN_KEYS !== 'undefined' && ADMIN_KEYS.indexOf(currentUser.emailKey) !== -1;
@@ -6426,6 +6527,33 @@ function canBypassNameChangeLock() {
   }
 }
 
+/** Player đang bị admin cưỡng chế đổi tên (Admin thì không) */
+function isForcedRenameActive() {
+  try {
+    return !!(currentUser && currentUser.forceRenameByAdmin && !canBypassNameChangeLock());
+  } catch (e) { return false; }
+}
+
+/** Đang bị cưỡng chế: không cho đóng form, mở khóa ô nhập, ẩn nút × */
+function applyEditNameForceUi() {
+  const ov = document.getElementById('edit-name-overlay');
+  if (!ov) return;
+  const forced = isForcedRenameActive();
+  const x = ov.querySelector('.auth-close');
+  if (x) x.style.display = forced ? 'none' : '';
+  const fw = document.getElementById('edit-name-force-warn');
+  if (fw) fw.style.display = forced ? 'block' : 'none';
+  if (forced) {
+    const w = document.getElementById('edit-name-warn');
+    if (w) w.style.display = 'none';
+    const inp = document.getElementById('edit-name-input');
+    const err = document.getElementById('edit-name-error');
+    if (inp) inp.disabled = false;
+    if (err && /Chỉ đổi tên được sau|khóa đổi tên/.test(err.textContent || '')) err.textContent = '';
+    syncEditNameSaveBtn();
+  }
+}
+
 async function getNameChangeLockInfo() {
   if (!currentUser || !currentUser.emailKey) return { locked: false, leftMs: 0, changedAt: 0 };
   // Admin: luôn được đổi tên, không áp dụng cooldown 2 ngày
@@ -6485,6 +6613,8 @@ window.openEditName = async function() {
   } catch (e) {}
 
   const isAdm = canBypassNameChangeLock();
+  // Bị cưỡng chế: không điền sẵn tên cũ vào ô nhập
+  if (inp && forced && !isAdm) inp.value = '';
   if (forceWarn) {
     forceWarn.style.display = (forced && !isAdm) ? 'block' : 'none';
   }
@@ -6510,6 +6640,7 @@ window.openEditName = async function() {
       if (btn) btn.disabled = true;
     }
   }
+  applyEditNameForceUi();
   if (ov) ov.classList.add('show');
   syncEditNameSaveBtn();
   setTimeout(function() {
@@ -6518,6 +6649,8 @@ window.openEditName = async function() {
   }, 50);
 };
 window.closeEditName = function() {
+  // Đang bị cưỡng chế → bắt buộc đổi tên mới được đóng (lưu thành công sẽ xóa cờ rồi mới gọi hàm này)
+  if (isForcedRenameActive()) return;
   const ov = document.getElementById('edit-name-overlay');
   if (ov) ov.classList.remove('show');
   const inp = document.getElementById('edit-name-input');
@@ -6717,11 +6850,16 @@ window.submitAuth = async function() {
         await ensurePowerFieldsMigratedToServer(d);
       }
       try { await ensureUserUid(currentUser, d); } catch (eUid) {}
+      currentUser.displayNameChangedAt = typeof d.displayNameChangedAt === 'number' ? d.displayNameChangedAt : 0;
+      currentUser.forceRenameByAdmin = !!d.forceRenameByAdmin;
+      currentUser.forceRenameAt = typeof d.forceRenameAt === 'number' ? d.forceRenameAt : 0;
+      currentUser.forceRenameFrom = d.forceRenameFrom || null;
       saveSessionUser(currentUser);
       renderAccountBadge();
       setAuthForgotMode(false);
       closeAuthModal();
-      showToast('Đã đặt lại mật khẩu — xin chào, ' + currentUser.displayName + '!');
+      showToast('Đã đặt lại mật khẩu — xin chào, ' + (isForcedRenameActive() ? 'Player' : currentUser.displayName) + '!');
+      try { if (typeof startForceRenameListener === 'function') startForceRenameListener(); } catch (eFr) {}
       try { if (typeof bindActivityTimerToAccount === 'function') bindActivityTimerToAccount(); } catch (eAt) {}
     } catch (e) {
       console.error(e);
@@ -6783,7 +6921,7 @@ window.submitAuth = async function() {
       saveSessionUser(currentUser);
       renderAccountBadge();
       closeAuthModal();
-      showToast('Xin chào, ' + currentUser.displayName + '!');
+      showToast('Xin chào, ' + (isForcedRenameActive() ? 'Player' : currentUser.displayName) + '!');
       ensureRecoveryPinSet();
       try { if (typeof startForceRenameListener === 'function') startForceRenameListener(); } catch (eFr) {}
       try { if (typeof bindActivityTimerToAccount === 'function') bindActivityTimerToAccount(); } catch (eAt) {}
@@ -7044,7 +7182,12 @@ window.openAdminForceRename = async function(emailKey, event) {
       forceRenameFrom: (p && p.name) || null,
       updatedAt: now
     });
-    showToast('Đã yêu cầu player đổi tên');
+    // Che tên ngay trong danh sách (không chờ tải lại)
+    try {
+      if (p) { p.forced = true; }
+      if (typeof renderPlayersList === 'function') renderPlayersList();
+    } catch (eMask) {}
+    showToast('Đã yêu cầu player đổi tên · tên tạm thời bị che');
   } catch (e) {
     console.error(e);
     alert('Lỗi cưỡng chế đổi tên (' + ((e && (e.code || e.message)) || 'không rõ') + '). Kiểm tra rules Firebase.');
@@ -7099,6 +7242,9 @@ function startForceRenameListener() {
     _forceRenameUnsub = onValue(r, (snap) => {
       const forced = !!snap.val();
       if (currentUser) currentUser.forceRenameByAdmin = forced;
+      try { renderAccountBadge(); } catch (eB0) {}
+      // Cập nhật tên đã che / hiện lại lên presence
+      try { if (typeof writePresenceNow === 'function') writePresenceNow(); } catch (eP0) {}
       if (!forced) {
         _forceRenamePrompted = false;
         return;
@@ -7108,6 +7254,8 @@ function startForceRenameListener() {
       const ov = document.getElementById('edit-name-overlay');
       if (ov && ov.classList.contains('show')) {
         _forceRenamePrompted = true;
+        try { applyEditNameForceUi(); } catch (eU) {}
+        try { renderAccountBadge(); } catch (eB) {}
         return;
       }
       _forceRenamePrompted = true;
@@ -7296,6 +7444,8 @@ async function maybeUpdateBestWpm(wpm) {
 
 function getMyDisplayName() {
   if (!currentUser) return 'Bạn';
+  // Bị admin cưỡng chế đổi tên → che tên cũ ở phòng / VS / in-game
+  if (typeof isForcedRenameActive === 'function' && isForcedRenameActive()) return 'Player';
   return currentUser.displayName || defaultNameFromEmail(currentUser.email) || 'Bạn';
 }
 
@@ -7562,7 +7712,9 @@ function presencePayload() {
     const key = String(currentUser.emailKey).trim();
     if (key) {
       payload.account = key;
-      payload.name = currentUser.displayName || defaultNameFromEmail(currentUser.email) || key;
+      payload.name = (typeof isForcedRenameActive === 'function' && isForcedRenameActive())
+        ? 'Player'
+        : (currentUser.displayName || defaultNameFromEmail(currentUser.email) || key);
       payload.wpm = (typeof getMyDisplayPower === 'function') ? getMyDisplayPower() : ((typeof currentUser.bestWpm === 'number') ? currentUser.bestWpm : 0);
     }
   } else {
@@ -8502,6 +8654,7 @@ function sanitizePlayer(key, d) {
     name: (d.displayName != null && String(d.displayName).trim()) ? String(d.displayName).trim() : String(key),
     avatar: av,
     uid: uid,
+    forced: !!d.forceRenameByAdmin,
     createdAt: num(d.createdAt),
     updatedAt: num(d.updatedAt),
     lastSeen: num(d.lastSeen),
@@ -8842,7 +8995,10 @@ function renderPlayersList() {
         : '')
       + metaUidLine;
     // Non-admin: không thấy tên tài khoản; nếu chưa đặt tên hiển thị (tên = key) thì che
-    const shownName = admin ? p.name : (p.name === p.key ? 'Người chơi' : p.name);
+    // Đang bị cưỡng chế đổi tên → che tên cũ với mọi người cho tới khi đặt tên mới
+    const shownName = p.forced
+      ? 'Player'
+      : (admin ? p.name : (p.name === p.key ? 'Người chơi' : p.name));
     const wpmLine = (label, n) => (n > 0)
       ? '<div class="ouw-line"><span class="ouw-lb">' + label + ':</span><b>' + escapeOnlineHtml(n) + '</b><span class="ouw-u">wpm</span></div>'
       : '<div class="ouw-line empty"><span class="ouw-lb">' + label + ':</span><b>_</b><span class="ouw-u">wpm</span></div>';
@@ -8868,7 +9024,7 @@ function renderPlayersList() {
       '<div class="online-user-info">' +
         '<div class="online-user-name-row">' +
           (online ? '<span class="online-user-dot"></span>' : '') +
-          '<div class="online-user-name' + (admin && !ADMIN_KEYS.includes(p.key) ? ' is-admin-force' : '') + '"' +
+          '<div class="online-user-name' + (admin && !ADMIN_KEYS.includes(p.key) ? ' is-admin-force' : '') + (p.forced ? ' is-name-masked' : '') + '"' +
             (admin && !ADMIN_KEYS.includes(p.key)
               ? ' data-force-key="' + escapeOnlineHtml(p.key) + '" title="Nhấp để cưỡng chế đổi tên" role="button" tabindex="0"'
               : '') +
@@ -9008,7 +9164,9 @@ function getChatIdentity() {
   if (typeof currentUser !== 'undefined' && currentUser && currentUser.emailKey) {
     return {
       uid: String(currentUser.emailKey),
-      name: currentUser.displayName || defaultNameFromEmail(currentUser.email) || currentUser.emailKey,
+      name: (typeof isForcedRenameActive === 'function' && isForcedRenameActive())
+        ? 'Player'
+        : (currentUser.displayName || defaultNameFromEmail(currentUser.email) || currentUser.emailKey),
       logged: true
     };
   }
@@ -12051,7 +12209,9 @@ function buildMyMatchProfile() {
   const pow = hasAccount && typeof getMyDisplayPower === 'function' ? getMyDisplayPower() : (hasAccount && typeof currentUser.bestWpm === 'number' ? currentUser.bestWpm : null);
   return {
     hasAccount,
-    displayName: hasAccount ? currentUser.displayName : null,
+    displayName: hasAccount
+      ? ((typeof isForcedRenameActive === 'function' && isForcedRenameActive()) ? 'Player' : currentUser.displayName)
+      : null,
     power: (pow != null && pow > 0) ? pow : (hasAccount ? (pow || 0) : null),
     avatar: hasAccount && currentUser.avatar ? currentUser.avatar : null,
     powerPlatform: (typeof getPowerPlatform === 'function') ? getPowerPlatform() : null

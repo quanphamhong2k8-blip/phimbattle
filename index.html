@@ -2412,6 +2412,28 @@
   body[data-theme="crimson"] .btn-green:not(:disabled):hover {
     animation-duration: 1.6s;
   }
+  /* Giao diện 3: nút ĐẤU VỚI BOT cũng có viền chạy đỏ↔xanh */
+  body[data-theme="crimson"] .btn-bot-run:not(:disabled) {
+    color: #F0E9E4;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--surface-2), var(--surface-2)) padding-box,
+      conic-gradient(from var(--beam),
+        rgba(224,82,82,0)    0%,
+        rgba(224,82,82,.95) 12%,
+        rgba(224,82,82,0)    26%,
+        rgba(74,108,255,0)   40%,
+        rgba(74,108,255,.95)52%,
+        rgba(74,108,255,0)   66%,
+        rgba(224,82,82,.45)  74%,
+        rgba(224,82,82,0)    80%,
+        rgba(74,108,255,.45) 88%,
+        rgba(74,108,255,0)  100%) border-box;
+    animation: beamDual 3.2s linear infinite;
+  }
+  body[data-theme="crimson"] .btn-bot-run:not(:disabled):hover {
+    animation-duration: 1.6s;
+  }
 
   .btn-blue {
     background: transparent;
@@ -5296,7 +5318,7 @@
       <h3>Luyện tập</h3>
       <p class="card-sub">Gõ một mình · Kiểm tra WPM · Đấu với bot</p>
       <button class="btn btn-green" onclick="startPractice()">BẮT ĐẦU LUYỆN TẬP</button>
-      <button class="btn btn-blue" onclick="openBotPicker()">⚔️ ĐẤU VỚI BOT</button>
+      <button class="btn btn-blue btn-bot-run" onclick="openBotPicker()">⚔️ ĐẤU VỚI BOT</button>
     </div>
     <!-- 4. Tham gia -->
     <div class="card card-compact">
@@ -8355,6 +8377,49 @@ function clearAccountOnlineSince() {
   window._presenceSinceMem = null;
 }
 
+/* ── Vị trí khách (gần đúng theo IP): chỉ "Thành phố, Quốc gia" — không lưu IP, không lưu tọa độ ── */
+const GEO_LS = 'wwb_guest_loc';
+const GEO_TTL = 24 * 3600 * 1000;
+let _myGeoLoc = null;
+let _myGeoPromise = null;
+
+function cleanGeoText(v) {
+  return String(v == null ? '' : v).replace(/[^\p{L}\p{N} .,'\-]/gu, '').trim().slice(0, 40);
+}
+function buildGeoLoc(city, region, country) {
+  const place = cleanGeoText(city) || cleanGeoText(region);
+  const ctry = cleanGeoText(country);
+  return [place, ctry].filter(Boolean).join(', ').slice(0, 60) || null;
+}
+function getMyGeoLoc() {
+  if (_myGeoLoc) return Promise.resolve(_myGeoLoc);
+  try {
+    const c = JSON.parse(localStorage.getItem(GEO_LS) || 'null');
+    if (c && c.loc && Date.now() - (c.ts || 0) < GEO_TTL) { _myGeoLoc = c.loc; return Promise.resolve(_myGeoLoc); }
+  } catch (e) {}
+  if (_myGeoPromise) return _myGeoPromise;
+  const tryFetch = async (url, pick) => {
+    const ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    const t = setTimeout(() => { try { ctl && ctl.abort(); } catch (e) {} }, 4000);
+    try {
+      const r = await fetch(url, ctl ? { signal: ctl.signal } : undefined);
+      if (!r.ok) return null;
+      return pick(await r.json());
+    } catch (e) { return null; } finally { clearTimeout(t); }
+  };
+  _myGeoPromise = (async () => {
+    let loc = await tryFetch('https://ipapi.co/json/', d => buildGeoLoc(d.city, d.region, d.country_name));
+    if (!loc) loc = await tryFetch('https://get.geojs.io/v1/ip/geo.json', d => buildGeoLoc(d.city, d.region, d.country));
+    if (loc) {
+      _myGeoLoc = loc;
+      try { localStorage.setItem(GEO_LS, JSON.stringify({ loc, ts: Date.now() })); } catch (e) {}
+    }
+    _myGeoPromise = null;
+    return loc;
+  })();
+  return _myGeoPromise;
+}
+
 function presencePayload() {
   const payload = {
     ts: Date.now(),
@@ -8379,6 +8444,7 @@ function presencePayload() {
     payload.guestKey = getGuestKey();
     payload.guestNum = (typeof _myGuestNum === 'number' && _myGuestNum >= 1) ? _myGuestNum : null;
     payload.name = (payload.guestNum ? ('Khách' + payload.guestNum) : 'Khách');
+    if (_myGeoLoc) payload.loc = _myGeoLoc;
   }
   return payload;
 }
@@ -8624,6 +8690,7 @@ async function startPresence() {
   try {
     if (!(currentUser && currentUser.emailKey)) {
       try { await ensureGuestNumAssigned(); } catch (e) {}
+      try { await Promise.race([getMyGeoLoc(), new Promise(res => setTimeout(res, 1500))]); } catch (e) {}
       // Dọn node guestKey-path cũ (nếu còn) để không treo “máy ma”
       if (typeof guestPresencePathKey === 'function') {
         const legacy = guestPresencePathKey(getGuestKey());
@@ -8852,6 +8919,7 @@ function parsePresenceSnapshot(val) {
           account: null,
           guestKey: gKey.startsWith('sid:') ? null : gKey,
           guestNum: gNum,
+          loc: (typeof row.loc === 'string' && row.loc) ? row.loc.slice(0, 60) : null,
           name: gNum ? ('Khách' + gNum) : 'Khách',
           wpm: null,
           isLogged: false,
@@ -8862,6 +8930,7 @@ function parsePresenceSnapshot(val) {
         prev.guestNum = gNum;
         prev.name = 'Khách' + gNum;
       }
+      if (prev && !prev.loc && typeof row.loc === 'string' && row.loc) prev.loc = row.loc.slice(0, 60);
     }
   }
   for (const [acc, r] of accountBest) {
@@ -9202,7 +9271,10 @@ function renderOnlineUsersList() {
       const name = 'Khách' + guestNum;
       const isMe = (!!myGuestKey && r.guestKey && r.guestKey === myGuestKey)
         || (!!mySid && r.sid && r.sid === mySid);
-      const meta = '1 thiết bị' + (r.devices > 1 ? (' · ' + r.devices + ' tab') : '');
+      // Admin: hiện vị trí thay cho "N thiết bị" (chưa có vị trí thì giữ dòng cũ); người khác không thấy vị trí
+      const meta = (r.loc && isAdmin())
+        ? escapeOnlineHtml(r.loc)
+        : ('1 thiết bị' + (r.devices > 1 ? (' · ' + r.devices + ' tab') : ''));
       const wpmHtml = '<div class="online-user-wpm empty">—</div>';
       const tag = isMe
         ? '<span class="online-user-tag logged">Bạn</span>'
@@ -13572,7 +13644,7 @@ const BOT_ICONS = [
   `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M12 6.2l4.6 1.8v3.9c0 3.1-2.1 5.1-4.6 6-2.5-.9-4.6-2.9-4.6-6V8z"/><polygon points="12,7.6 12.53,9.07 14.09,9.12 12.86,10.08 13.29,11.58 12,12 10.71,11.58 11.14,10.08 9.91,9.12 11.47,9.07"/><path d="M9.4 13.9l2.6 2 2.6-2"/></svg>`,
   `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M12 6.2l4.6 1.8v3.9c0 3.1-2.1 5.1-4.6 6-2.5-.9-4.6-2.9-4.6-6V8z"/><polygon points="12,7.9 12.55,9.44 14.19,9.49 12.89,10.49 13.35,12.06 12,12.5 10.65,12.06 11.11,10.49 9.81,9.49 11.45,9.44"/><g stroke-width="1.21"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/><g transform="translate(24 0) scale(-1 1)"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/></g></g></svg>`,
   `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M12 6.2l4.6 1.8v3.9c0 3.1-2.1 5.1-4.6 6-2.5-.9-4.6-2.9-4.6-6V8z"/><polygon points="12,7.9 12.55,9.44 14.19,9.49 12.89,10.49 13.35,12.06 12,12.5 10.65,12.06 11.11,10.49 9.81,9.49 11.45,9.44"/><g stroke-width="1.21"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/><g transform="translate(24 0) scale(-1 1)"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/></g></g><polygon points="2.8,2.05 3.2,3 4.15,3.4 3.2,3.8 2.8,4.75 2.4,3.8 1.45,3.4 2.4,3"/><polygon points="21.2,2.05 22.6,3 22.55,3.4 22.6,3.8 21.2,4.75 19.8,3.8 19.85,3.4 19.8,3"/></svg>`,
-  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><g transform="translate(0 1.15)"><g transform="translate(1.68 1.68) scale(0.86)" stroke-width="1.22"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M12 6.2l4.6 1.8v3.9c0 3.1-2.1 5.1-4.6 6-2.5-.9-4.6-2.9-4.6-6V8z"/><path d="M8.7 12.4V8.8l2.2 1.6L12 7.4l1.1 3 2.2-1.6v3.6z"/><path d="M8.9 13.4h6.2"/></g></g><g stroke-width="1.21"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/><g transform="translate(24 0) scale(-1 1)"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/></g></g><polygon points="2.8,2.05 3.2,3 4.15,3.4 3.2,3.8 2.8,4.75 2.4,3.8 1.45,3.4 2.4,3"/><polygon points="21.2,2.05 22.6,3 22.55,3.4 22.6,3.8 21.2,4.75 19.8,3.8 19.85,3.4 19.8,3"/><polygon points="12,0.2 12.59,1.71 14.1,2.3 12.59,2.89 12,4.4 11.41,2.89 9.9,2.3 11.41,1.71"/></svg>`,
+  `<svg viewBox="0 0 24 24" overflow="visible" fill="none" stroke="#a7aecb" stroke-width="0.903" stroke-linecap="butt" stroke-linejoin="miter"><g transform="translate(12 2.2) scale(1.1628) translate(-12 -2.2)"><g transform="translate(0 1.15)"><g transform="translate(1.68 1.68) scale(0.86)" stroke-width="1.05"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M12 6.2l4.6 1.8v3.9c0 3.1-2.1 5.1-4.6 6-2.5-.9-4.6-2.9-4.6-6V8z"/><path d="M8.7 12.4V8.8l2.2 1.6L12 7.4l1.1 3 2.2-1.6v3.6z"/><path d="M8.9 13.4h6.2"/></g></g><g stroke-width="1.04"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/><g transform="translate(24 0) scale(-1 1)"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/></g></g><polygon points="2.8,2.05 3.2,3 4.15,3.4 3.2,3.8 2.8,4.75 2.4,3.8 1.45,3.4 2.4,3"/><polygon points="21.2,2.05 22.6,3 22.55,3.4 22.6,3.8 21.2,4.75 19.8,3.8 19.85,3.4 19.8,3"/><polygon points="12,0.2 12.59,1.71 14.1,2.3 12.59,2.89 12,4.4 11.41,2.89 9.9,2.3 11.41,1.71"/></g></svg>`,
   `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><path d="M3.5 16.5L2.5 7l5.5 4.2L12 4l4 7.2L21.5 7l-1 9.5z"/><path d="M4.5 20h15"/><circle cx="2.5" cy="6.2" r="0.7"/><circle cx="12" cy="3.1" r="0.75"/><circle cx="21.5" cy="6.2" r="0.7"/><polygon points="12,10.4 12.42,11.62 13.71,11.64 12.68,12.42 13.06,13.66 12,14 10.94,13.66 11.32,12.42 10.29,11.64 11.58,11.62"/><circle cx="6.5" cy="18.2" r="0.5"/><circle cx="17.5" cy="18.2" r="0.5"/></svg>`
 ];
 const BOT_TIERS = [
@@ -13744,12 +13816,15 @@ function botInitState(tier) {
     idx: 0, net: 0, right: 0, wrong: 0, nextAt: 0
   };
   // Độ trễ phản xạ lúc bắt đầu + thời gian gõ từ đầu tiên
-  botState.nextAt = Date.now() + 600 + Math.random() * 500 + botWordDuration(botWordAt(0).length);
+  botState.chars = 0; botState.typeMs = 0; // chỉ tính thời gian THỰC SỰ gõ (không tính độ trễ phản xạ) để hiển thị WPM đúng mức bot
+  botState.curDur = botWordDuration(botWordAt(0).length);
+  botState.nextAt = Date.now() + 600 + Math.random() * 500 + botState.curDur;
 }
 
 function botCompleteWord() {
   const w = botWordAt(botState.idx);
   botState.idx++;
+  botState.typeMs += botState.curDur; botState.chars += w.length + 1;
   let typed = w;
   if (Math.random() < botState.errP) {
     const p = Math.floor(Math.random() * w.length);
@@ -13760,7 +13835,8 @@ function botCompleteWord() {
   botState.net += netCharsForWord(w, typed);
   botState.right += right;
   botState.wrong += wrong;
-  botState.nextAt += botWordDuration(botWordAt(botState.idx).length);
+  botState.curDur = botWordDuration(botWordAt(botState.idx).length);
+  botState.nextAt += botState.curDur;
 
   if (netDmg > 0.001) {
     setAvatarBarking('p2', true);
@@ -13810,7 +13886,7 @@ function endBotMatch() {
 
   const elapsedMin = Math.max(5000, Math.min(GAME_DURATION * 1000, Date.now() - gameStartTs)) / 60000;
   const meWpm = Math.max(0, Math.round((matchTotalChars / 5) / elapsedMin));
-  const botWpm = botState ? Math.max(0, Math.round((botState.net / 5) / elapsedMin)) : 0;
+  const botWpm = (botState && botState.typeMs > 0) ? Math.max(0, Math.round((botState.chars / 5) / (botState.typeMs / 60000))) : 0;
 
   let outcome;
   if (ballPos <= 0) outcome = 'win';

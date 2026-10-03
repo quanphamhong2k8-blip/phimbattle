@@ -230,6 +230,44 @@
   .typing-mode-title { font-weight:800; font-size:.86rem; line-height:1.25; }
   .typing-mode-desc { margin-top:.15rem; color:var(--dim); font-size:.72rem; line-height:1.3; }
   .typing-settings-section + .typing-settings-section { margin-top:1.05rem; }
+  .settings-toggle-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem;
+  }
+  .settings-toggle-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 0;
+    padding: 0.7rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface-2);
+  }
+  .settings-toggle-row .ios-toggle {
+    flex-shrink: 0;
+    align-self: center;
+  }
+  .settings-toggle-text { min-width: 0; flex: 1; }
+  .settings-toggle-title {
+    font-weight: 800;
+    font-size: 0.86rem;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .settings-toggle-desc {
+    margin-top: 0.12rem;
+    font-size: 0.65rem;
+    color: var(--dim);
+    line-height: 1.25;
+  }
+  @media (max-width: 380px) {
+    .settings-toggle-list { grid-template-columns: 1fr; }
+  }
+
   .typing-theme-swatch {
     width:22px; height:22px; flex:0 0 22px; margin-top:.05rem;
     border-radius:5px; border:1px solid var(--line-strong);
@@ -240,6 +278,9 @@
   }
   .typing-mode-option[data-theme="mono"] .typing-theme-swatch {
     --swatch-a: #F2F2F2; --swatch-b: #15151A;
+  }
+  .typing-mode-option[data-theme="crimson"] .typing-theme-swatch {
+    --swatch-a: #E05252; --swatch-b: #0A0E24;
   }
   @media (max-width: 380px) {
     .typing-mode-options { grid-template-columns: 1fr; }
@@ -1618,6 +1659,26 @@
   #edit-name-overlay {
     z-index: 480;
   }
+  /* Cưỡng chế đổi tên: khóa toàn bộ UI phía dưới — chỉ tương tác được form sửa tên */
+  body.force-rename-lock {
+    overflow: hidden !important;
+  }
+  body.force-rename-lock > *:not(#edit-name-overlay) {
+    pointer-events: none !important;
+    user-select: none !important;
+  }
+  body.force-rename-lock #edit-name-overlay {
+    pointer-events: auto !important;
+    z-index: 9999 !important;
+  }
+  body.force-rename-lock #edit-name-overlay,
+  body.force-rename-lock #edit-name-overlay * {
+    pointer-events: auto !important;
+    user-select: auto !important;
+  }
+  body.force-rename-lock #edit-name-overlay {
+    background: rgba(14,14,17,0.92) !important;
+  }
   .auth-panel {
     width: 100%;
     max-width: 360px;
@@ -2061,6 +2122,15 @@
     }
   }
   /* Riêng trên PC (không phải tablet cảm ứng): đẩy cụm luyện tập xuống thêm một chút */
+
+  #game-screen.practice-active .battle-hud { display: none !important; }
+
+  #game-header-row[aria-hidden="true"],
+  #avatars-row-el[aria-hidden="true"] {
+    display: none !important;
+  }
+
+
   body.device-pc #game-screen.active.practice-active {
     padding-top: max(4.5rem, calc(env(safe-area-inset-top) + 4rem));
   }
@@ -2239,6 +2309,109 @@
     box-shadow: none;
   }
   .btn-orange:hover { background: var(--accent-hover); }
+
+  /* ═══ TOKEN / NÚT BEAM — Giao diện Crimson × Navy ═══ */
+  @property --beam {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @keyframes beamDual { to { --beam: 360deg; } }
+  .btn-beam-live {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: .05em;
+    color: #F0E9E4;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    height: 56px;
+    padding: 0 30px;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    background:
+      linear-gradient(#16204A, #16204A) padding-box,
+      conic-gradient(from var(--beam),
+        rgba(224,82,82,0)    0%,
+        rgba(224,82,82,.95) 12%,
+        rgba(224,82,82,0)    26%,
+        rgba(74,108,255,0)   40%,
+        rgba(74,108,255,.95)52%,
+        rgba(74,108,255,0)   66%,
+        rgba(224,82,82,.45)  74%,
+        rgba(224,82,82,0)    80%,
+        rgba(74,108,255,.45) 88%,
+        rgba(74,108,255,0)  100%) border-box;
+    animation: beamDual 3.2s linear infinite;
+  }
+  .btn-beam-live:hover { animation-duration: 1.6s; }
+  .btn-beam-live:active { transform: translateY(1px); }
+  .btn-beam-live .c1 { color: #EA6E6E; }
+  .btn-beam-live .c2 { color: #6D87FF; }
+
+  /* Theme crimson: nút CTA chính dùng viền beam đỏ↔xanh */
+  body[data-theme="crimson"] .btn-orange:not(:disabled) {
+    color: #F0E9E4;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--surface-2), var(--surface-2)) padding-box,
+      conic-gradient(from var(--beam),
+        rgba(224,82,82,0)    0%,
+        rgba(224,82,82,.95) 12%,
+        rgba(224,82,82,0)    26%,
+        rgba(74,108,255,0)   40%,
+        rgba(74,108,255,.95)52%,
+        rgba(74,108,255,0)   66%,
+        rgba(224,82,82,.45)  74%,
+        rgba(224,82,82,0)    80%,
+        rgba(74,108,255,.45) 88%,
+        rgba(74,108,255,0)  100%) border-box;
+    animation: beamDual 3.2s linear infinite;
+  }
+  body[data-theme="crimson"] .btn-orange:not(:disabled):hover {
+    animation-duration: 1.6s;
+    background:
+      linear-gradient(#1a2758, #1a2758) padding-box,
+      conic-gradient(from var(--beam),
+        rgba(224,82,82,0)    0%,
+        rgba(224,82,82,.95) 12%,
+        rgba(224,82,82,0)    26%,
+        rgba(74,108,255,0)   40%,
+        rgba(74,108,255,.95)52%,
+        rgba(74,108,255,0)   66%,
+        rgba(224,82,82,.45)  74%,
+        rgba(224,82,82,0)    80%,
+        rgba(74,108,255,.45) 88%,
+        rgba(74,108,255,0)  100%) border-box;
+  }
+  body[data-theme="crimson"] .btn-orange:disabled {
+    animation: none;
+  }
+  body[data-theme="crimson"] .btn-green:not(:disabled) {
+    color: #F0E9E4;
+    border: 1px solid transparent;
+    background:
+      linear-gradient(var(--surface-2), var(--surface-2)) padding-box,
+      conic-gradient(from var(--beam),
+        rgba(224,82,82,0)    0%,
+        rgba(224,82,82,.95) 12%,
+        rgba(224,82,82,0)    26%,
+        rgba(74,108,255,0)   40%,
+        rgba(74,108,255,.95)52%,
+        rgba(74,108,255,0)   66%,
+        rgba(224,82,82,.45)  74%,
+        rgba(224,82,82,0)    80%,
+        rgba(74,108,255,.45) 88%,
+        rgba(74,108,255,0)  100%) border-box;
+    animation: beamDual 3.2s linear infinite;
+  }
+  body[data-theme="crimson"] .btn-green:not(:disabled):hover {
+    animation-duration: 1.6s;
+  }
 
   .btn-blue {
     background: transparent;
@@ -2502,6 +2675,196 @@
     text-shadow: none;
     justify-self: center;
     padding: 0 0.6rem;
+  }
+
+  /* ── Battle HUD: AVT | tên trên thanh máu (nối sát AVT) ── */
+  .battle-hud {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: end;
+    gap: 0; /* thanh máu chạm AVT */
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0.5rem 1rem 0.35rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .battle-mid {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.2rem;
+    min-width: 0;
+    width: 100%;
+    padding-bottom: 0;
+    /* Căn thanh máu với giữa chiều cao AVT */
+    justify-content: flex-end;
+  }
+  .battle-names-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 0.35rem;
+    width: 100%;
+    padding: 0 0.15rem;
+    box-sizing: border-box;
+  }
+  .battle-names-row .pname {
+    font-size: 0.92rem;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.15;
+  }
+  .battle-names-row .pname.p1 {
+    justify-self: start;
+    text-align: left;
+  }
+  .battle-names-row .pname.p2 {
+    justify-self: end;
+    text-align: right;
+  }
+  .battle-names-row .game-timer {
+    font-size: 1.05rem;
+    padding: 0;
+    line-height: 1;
+    justify-self: center;
+  }
+  .battle-mid .bar-wrap {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    z-index: 5;
+    padding: 0 !important;
+    width: 100%;
+    margin: 0;
+  }
+  .battle-mid .bar-track {
+    /* Nối sát mép AVT: bo góc nhẹ, không gap */
+    border-radius: 6px;
+  }
+  .battle-hud > .avatar-card {
+    padding: 0;
+    gap: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    z-index: 6;
+  }
+  .battle-hud > .avatar-card::before { display: none; }
+  .battle-hud .avatar-img-wrap {
+    width: 56px;
+    max-width: 56px;
+    border-radius: 10px;
+    border: 2px solid var(--line-strong);
+  }
+  .battle-hud .avatar-card.p1 .avatar-img-wrap { border-color: rgba(232,178,91,0.45); }
+  .battle-hud .avatar-card.p2 .avatar-img-wrap { border-color: rgba(163,158,148,0.45); }
+  body[data-theme="crimson"] .battle-hud .avatar-card.p1 .avatar-img-wrap { border-color: rgba(224,82,82,0.5); }
+  body[data-theme="crimson"] .battle-hud .avatar-card.p2 .avatar-img-wrap { border-color: rgba(74,108,255,0.5); }
+  .battle-hud .bark-label { display: none; }
+  .battle-hud .bark-effect { font-size: 0.85rem; top: -6px; }
+
+  /* PC: bar = đúng chiều ngang ô từ; AVT ngoài 2 đầu; vùng gõ kéo lên xí */
+  @media (min-width: 721px) {
+    body.device-pc #game-screen.active:not(.practice-active) {
+      --battle-type-w: 960px; /* = chiều ngang ô từ / word-pool */
+      --battle-avt: 76px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      min-height: 100dvh;
+      min-height: 100vh;
+      box-sizing: border-box;
+      /* Chừa 2 bên đúng chỗ cho AVT đứng ngoài ô từ */
+      max-width: none;
+      padding-left: calc(var(--battle-avt) + 1rem);
+      padding-right: calc(var(--battle-avt) + 1rem);
+      padding-top: max(3.2rem, calc(env(safe-area-inset-top) + 2.8rem));
+      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+    }
+    /* Thanh máu = đúng bằng ô từ (2 mép bar chạm 2 mép ô từ); AVT đẩy ra NGOÀI */
+    body.device-pc #game-screen.active:not(.practice-active) .battle-hud {
+      width: 100%;
+      max-width: var(--battle-type-w);
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+      padding: 0;
+      gap: 0;
+      /* 2 cột AVT rộng 0, AVT tràn ra ngoài mép bar */
+      grid-template-columns: 0 minmax(0, 1fr) 0;
+    }
+    body.device-pc #game-screen.active:not(.practice-active) .battle-hud > .avatar-card {
+      width: var(--battle-avt);
+    }
+    body.device-pc #game-screen.active:not(.practice-active) .battle-hud > .avatar-card.p1 { justify-self: end; }
+    body.device-pc #game-screen.active:not(.practice-active) .battle-hud > .avatar-card.p2 { justify-self: start; }
+    body.device-pc #game-screen.active:not(.practice-active) .battle-hud .avatar-img-wrap {
+      width: var(--battle-avt);
+      max-width: var(--battle-avt);
+      border-radius: 12px;
+    }
+    body.device-pc #game-screen.active:not(.practice-active) .battle-names-row {
+      padding: 0 0.2rem 0.08rem;
+    }
+    body.device-pc #game-screen.active:not(.practice-active) .battle-names-row .pname {
+      font-size: 1.08rem;
+    }
+    body.device-pc #game-screen.active:not(.practice-active) .battle-names-row .game-timer {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    body.device-pc #game-screen.active:not(.practice-active) .battle-mid .bar-track {
+      height: 28px;
+      border-radius: 0;
+      border-width: 2px;
+    }
+    body.device-pc #game-screen.active:not(.practice-active) .battle-mid {
+      padding-bottom: 24px;
+    }
+    /* Vùng gõ: cùng max-width ô từ, bỏ padding ngang để khớp bar; kéo lên xí */
+    body.device-pc #game-screen.active:not(.practice-active) .typing-section {
+      width: 100%;
+      max-width: var(--battle-type-w);
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 2.15rem;
+      padding-left: 0;
+      padding-right: 0;
+      box-sizing: border-box;
+    }
+    body.device-pc #game-screen.active:not(.practice-active) #practice-keyboard-viz {
+      display: flex;
+      margin-top: 1.25rem;
+      max-width: var(--battle-type-w);
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .battle-hud {
+      padding: 0.25rem 0.35rem 0.2rem;
+      gap: 0;
+    }
+    .battle-hud .avatar-img-wrap {
+      width: 42px;
+      max-width: 42px;
+      border-radius: 8px;
+    }
+    .battle-names-row .pname {
+      font-size: 0.78rem;
+    }
+    .battle-names-row .game-timer { font-size: 0.9rem; }
+    .battle-mid .bar-track { height: 14px; border-radius: 0; }
+    .battle-mid { padding-bottom: 14px; }
+  }
+  @media (max-width: 380px) {
+    .battle-names-row .pname { font-size: 0.7rem; }
   }
 
   .bar-wrap {
@@ -2825,9 +3188,17 @@
   /* Kết quả cuối: không tô full từ — màu theo từng ký tự (đúng xanh / sai đỏ) */
   .word.correct,
   .word.wrong {
+    color: inherit;
+    background: transparent !important;
+    box-shadow: none !important;
     text-shadow: none;
     text-decoration: none;
     opacity: 1;
+  }
+  .word.correct .typing-char,
+  .word.wrong .typing-char {
+    /* mặc định mờ nếu chưa gán class — tránh inherit màu full-từ */
+    color: rgba(236,231,221,0.28);
   }
   .word.correct .typing-char.typing-correct,
   .word.wrong .typing-char.typing-correct,
@@ -3758,6 +4129,112 @@
     font-size: 0.92rem;
   }
 
+  /* ── Đấu với bot (Luyện tập) ── */
+  .bot-pick-card { position: relative; max-width: 420px; max-height: 92vh; overflow-y: auto; }
+  .bot-pick-close {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.7rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+    color: var(--dim);
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .bot-pick-close:hover, .bot-pick-close:focus-visible { color: var(--accent); outline: none; }
+  .bot-tier-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem;
+    margin-bottom: 0.2rem;
+    max-height: 14.5rem;           /* ~2,5 hàng → lộ hàng kế tiếp để biết còn kéo xuống được */
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    /* chừa lề 3px để viền ô (nhất là khi hover đổi màu) không bị khung cuộn cắt mất mép */
+    padding: 3px 0.5rem 3px 3px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+  .bot-tier-grid::-webkit-scrollbar { width: 6px; }
+  .bot-tier-grid::-webkit-scrollbar-track { background: transparent; }
+  .bot-tier-grid::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 3px; }
+  .bot-tier-grid::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  .bot-tier {
+    box-sizing: border-box;
+    min-width: 0;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    padding: 0.65rem 0.4rem;
+    color: var(--ink);
+    cursor: pointer;
+    text-align: center;
+    font-family: inherit;
+    transition: border-color 0.08s ease, color 0.08s ease;
+  }
+  /* Ô cuối đứng lẻ một mình ở hàng cuối → giãn ra chiếm trọn 2 ô */
+  .bot-tier:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .bot-tier:hover, .bot-tier:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+  .bot-tier .ic { display: block; font-size: 1.35rem; line-height: 1.2; }
+  .bot-tier .ic svg { display: block; width: 36px; height: 36px; margin: 0 auto; }
+  .bot-tier .nm { display: block; font-size: 0.78rem; font-weight: 600; margin-top: 0.1rem; color: var(--dim); }
+  .bot-tier .wp {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-top: 0.1rem;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Số nằm chính giữa ô; chữ "wpm" treo sang bên phải số, không làm lệch số */
+  .bot-tier .wpn { position: relative; display: inline-block; }
+  .bot-tier .wp small {
+    position: absolute;
+    left: 100%;
+    bottom: 0.18em;
+    margin-left: 0.25rem;
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--dim);
+    text-transform: lowercase;
+    white-space: nowrap;
+  }
+  .bot-exit-btn {
+    display: none;
+    position: fixed;
+    top: max(0.45rem, env(safe-area-inset-top));
+    left: 0.6rem;
+    z-index: 95;
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-btn);
+    color: var(--dim);
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0.3rem 0.65rem;
+    cursor: pointer;
+  }
+  .bot-exit-btn.show { display: block; }
+  .bot-exit-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .practice-result-card h2.bot-win { color: var(--success); }
+  .practice-result-card h2.bot-lose { color: var(--danger); }
+  .bot-result-sub {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--dim);
+    letter-spacing: var(--ls-fine);
+    margin: -0.55rem 0 1rem;
+  }
+
   html, body {
     overscroll-behavior: none;
     -webkit-text-size-adjust: 100%;
@@ -3926,6 +4403,15 @@
     box-shadow: 0 0 6px currentColor;
   }
   .hit-particle.hit-ok { background: var(--success); }
+  /* Tắt hiệu ứng: ẩn meow / particle nếu còn sót DOM */
+  body.fx-off .meow-hit-fx,
+  body.fx-off .hit-particle,
+  body.fx-off .hit-ring,
+  body.fx-off .sonic-wave {
+    display: none !important;
+    animation: none !important;
+  }
+
   .hit-particle.hit-bad { background: var(--danger); }
   .hit-ring {
     position: absolute;
@@ -4726,7 +5212,27 @@
       </div>
       <div class="typing-settings-body">
         <div class="typing-settings-section">
-          <span class="typing-setting-label">Kiểu hiển thị gõ</span>
+          <span class="typing-setting-label">Giao diện</span>
+          <div class="typing-mode-options">
+            <button type="button" class="typing-mode-option" data-theme="default" onclick="setAppTheme('default')">
+              <span class="typing-mode-radio"></span>
+              <span class="typing-theme-swatch" aria-hidden="true"></span>
+              <span><div class="typing-mode-title">Giao diện 1</div></span>
+            </button>
+            <button type="button" class="typing-mode-option" data-theme="mono" onclick="setAppTheme('mono')">
+              <span class="typing-mode-radio"></span>
+              <span class="typing-theme-swatch" aria-hidden="true"></span>
+              <span><div class="typing-mode-title">Giao diện 2</div></span>
+            </button>
+            <button type="button" class="typing-mode-option" data-theme="crimson" onclick="setAppTheme('crimson')">
+              <span class="typing-mode-radio"></span>
+              <span class="typing-theme-swatch" aria-hidden="true"></span>
+              <span><div class="typing-mode-title">Giao diện 3</div></span>
+            </button>
+          </div>
+        </div>
+        <div class="typing-settings-section">
+          <span class="typing-setting-label">Kiểu gõ</span>
           <div class="typing-mode-options">
             <button type="button" class="typing-mode-option" data-typing-mode="word" onclick="setTypingDisplayMode('word')">
               <span class="typing-mode-radio"></span>
@@ -4739,18 +5245,22 @@
           </div>
         </div>
         <div class="typing-settings-section">
-          <span class="typing-setting-label">Giao diện</span>
-          <div class="typing-mode-options">
-            <button type="button" class="typing-mode-option" data-theme="default" onclick="setAppTheme('default')">
-              <span class="typing-mode-radio"></span>
-              <span class="typing-theme-swatch" aria-hidden="true"></span>
-              <span><div class="typing-mode-title">Giao diện 1</div><div class="typing-mode-desc">Mặc định hệ thống.</div></span>
-            </button>
-            <button type="button" class="typing-mode-option" data-theme="mono" onclick="setAppTheme('mono')">
-              <span class="typing-mode-radio"></span>
-              <span class="typing-theme-swatch" aria-hidden="true"></span>
-              <span><div class="typing-mode-title">Giao diện 2</div><div class="typing-mode-desc">Nút vàng → trắng.</div></span>
-            </button>
+          <span class="typing-setting-label">Hiệu ứng</span>
+          <div class="settings-toggle-list">
+            <div class="settings-toggle-row">
+              <div class="settings-toggle-text">
+                <div class="settings-toggle-title">Animation</div>
+                <div class="settings-toggle-desc">Icon mèo, particle, sóng hit</div>
+              </div>
+              <div class="ios-toggle on" id="fx-anim-toggle" onclick="toggleBattleAnimFx()" role="switch" aria-checked="true" aria-label="Bật tắt animation"></div>
+            </div>
+            <div class="settings-toggle-row">
+              <div class="settings-toggle-text">
+                <div class="settings-toggle-title">Rung</div>
+                <div class="settings-toggle-desc">Rung màn từ sóng khi gõ đúng</div>
+              </div>
+              <div class="ios-toggle on" id="fx-vibrate-toggle" onclick="toggleBattleVibrateFx()" role="switch" aria-checked="true" aria-label="Bật tắt rung"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -4784,8 +5294,9 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
       </button>
       <h3>Luyện tập</h3>
-      <p class="card-sub">Gõ một mình · Kiểm tra WPM</p>
+      <p class="card-sub">Gõ một mình · Kiểm tra WPM · Đấu với bot</p>
       <button class="btn btn-green" onclick="startPractice()">BẮT ĐẦU LUYỆN TẬP</button>
+      <button class="btn btn-blue" onclick="openBotPicker()">⚔️ ĐẤU VỚI BOT</button>
     </div>
     <!-- 4. Tham gia -->
     <div class="card card-compact">
@@ -4833,27 +5344,29 @@
 </div>
 
 <div id="game-screen" class="screen">
-  <!-- Mobile: bar nằm trong luồng, sát trên tên+đồng hồ. Desktop: vẫn fixed top. -->
-  <div class="bar-wrap" id="bar-wrap-el">
-    <div class="bar-track">
-      <div class="bar-fill-p1" id="bar-p1" style="width:50%;"></div>
-      <div class="bar-fill-p1-img" id="bar-p1-img" style="width:50%;"></div>
-      <div class="bar-fill-p2" id="bar-p2" style="width:50%;"></div>
-      <div class="bar-fill-p2-img" id="bar-p2-img" style="width:50%;"></div>
-      <div class="bar-center-marker"></div>
-      <div class="bar-ball" id="bar-ball" style="left:50%;"></div>
-    </div>
-  </div>
-  <div class="game-header" id="game-header-row">
-    <div class="pname p1" id="pname-me">Bạn</div>
-    <div class="game-timer" id="game-timer">⚡</div>
-    <div class="pname p2" id="pname-opp">Đối thủ</div>
-  </div>
-  <div class="avatars-row" id="avatars-row-el">
+  <!-- HUD chiến đấu: PC = AVT|Tên—thanh máu—Tên|AVT; Mobile xếp gọn -->
+  <div class="battle-hud" id="battle-hud">
     <div class="avatar-card p1" id="av-p1">
       <div class="bark-effect" id="bark-fx-p1">CRITICAL! 💥</div>
       <div class="avatar-img-wrap"><img id="av-img-p1" src="" alt="P1"></div>
       <div class="bark-label p1">⌨️ BẠN</div>
+    </div>
+    <div class="battle-mid">
+      <div class="battle-names-row">
+        <div class="pname p1" id="pname-me">Bạn</div>
+        <div class="game-timer" id="game-timer">⚡</div>
+        <div class="pname p2" id="pname-opp">Đối thủ</div>
+      </div>
+      <div class="bar-wrap" id="bar-wrap-el">
+        <div class="bar-track">
+          <div class="bar-fill-p1" id="bar-p1" style="width:50%;"></div>
+          <div class="bar-fill-p1-img" id="bar-p1-img" style="width:50%;"></div>
+          <div class="bar-fill-p2" id="bar-p2" style="width:50%;"></div>
+          <div class="bar-fill-p2-img" id="bar-p2-img" style="width:50%;"></div>
+          <div class="bar-center-marker"></div>
+          <div class="bar-ball" id="bar-ball" style="left:50%;"></div>
+        </div>
+      </div>
     </div>
     <div class="avatar-card p2" id="av-p2">
       <div class="bark-effect" id="bark-fx-p2">CRITICAL! 💥</div>
@@ -4861,6 +5374,9 @@
       <div class="bark-label p2">⌨️ ĐỐI THỦ</div>
     </div>
   </div>
+  <!-- Giữ id cũ để JS cũ không gãy (ẩn trên PC battle) -->
+  <div class="game-header" id="game-header-row" style="display:none;" aria-hidden="true"></div>
+  <div class="avatars-row" id="avatars-row-el" style="display:none;" aria-hidden="true"></div>
 
   <div id="practice-info" class="practice-hud" style="display:none;">
     <div class="practice-title">
@@ -5006,13 +5522,13 @@
     <div class="result-stats" id="result-stats">
       <div class="result-stat-card me">
         <div class="result-stat-label">🎮 BẠN</div>
-        <div class="result-stat-row result-stat-ok"><span>Đúng</span><span id="res-me-correct">0</span></div>
-        <div class="result-stat-row result-stat-bad"><span>Sai</span><span id="res-me-wrong">0</span></div>
+        <div class="result-stat-row result-stat-ok"><span>Ký tự đúng</span><span id="res-me-correct">0</span></div>
+        <div class="result-stat-row result-stat-bad"><span>Ký tự sai</span><span id="res-me-wrong">0</span></div>
       </div>
       <div class="result-stat-card opp">
         <div class="result-stat-label">👾 ĐỐI THỦ</div>
-        <div class="result-stat-row result-stat-ok"><span>Đúng</span><span id="res-opp-correct">0</span></div>
-        <div class="result-stat-row result-stat-bad"><span>Sai</span><span id="res-opp-wrong">0</span></div>
+        <div class="result-stat-row result-stat-ok"><span>Ký tự đúng</span><span id="res-opp-correct">0</span></div>
+        <div class="result-stat-row result-stat-bad"><span>Ký tự sai</span><span id="res-opp-wrong">0</span></div>
       </div>
     </div>
     <button class="btn btn-orange" onclick="requestPlayAgain()" id="play-again-btn">CHƠI LẠI</button>
@@ -5025,6 +5541,47 @@
   <div class="countdown-label">SẴN SÀNG NÀO!</div>
   <div class="countdown-num" id="countdown-num"></div>
 </div>
+
+<!-- Đấu với bot: chọn mốc WPM -->
+<div id="bot-pick-overlay" class="practice-result-overlay" onclick="if(event.target===this)closeBotPicker()">
+  <div class="practice-result-card bot-pick-card">
+    <button type="button" class="bot-pick-close" onclick="closeBotPicker()" aria-label="Đóng">✕</button>
+    <h2>Chọn bot</h2>
+    <div class="bot-tier-grid" id="bot-tier-grid"></div>
+  </div>
+</div>
+
+<!-- Đấu với bot: kết quả -->
+<div id="bot-result-overlay" class="practice-result-overlay">
+  <div class="practice-result-card">
+    <h2 id="bot-result-title">Kết quả</h2>
+    <div class="bot-result-sub" id="bot-result-sub"></div>
+    <div class="practice-result-grid">
+      <div class="practice-result-item">
+        <div class="v" id="br-me-wpm">0</div>
+        <div class="l">WPM của bạn</div>
+      </div>
+      <div class="practice-result-item">
+        <div class="v" id="br-bot-wpm">0</div>
+        <div class="l">WPM của bot</div>
+      </div>
+      <div class="practice-result-item ok">
+        <div class="v" id="br-correct">0</div>
+        <div class="l">Ký tự đúng</div>
+      </div>
+      <div class="practice-result-item bad">
+        <div class="v" id="br-wrong">0</div>
+        <div class="l">Ký tự sai</div>
+      </div>
+    </div>
+    <div class="practice-result-actions">
+      <button class="btn practice-wpm-btn" id="bot-rematch-btn" type="button" onclick="botRematch()">↺ Đấu lại</button>
+      <button class="btn btn-gray" id="bot-change-btn" type="button" onclick="botChangeTier()">Đổi bot</button>
+      <button class="btn btn-gray" id="bot-leave-btn" type="button" onclick="exitBotMode()">Thoát</button>
+    </div>
+  </div>
+</div>
+<button type="button" class="bot-exit-btn" id="bot-exit-btn" onclick="exitBotMode()" aria-label="Thoát đấu bot" title="Thoát">←</button>
 
 <div class="toast" id="toast"></div>
 <div class="battle-sync-banner" id="battle-sync-banner" aria-live="polite"></div>
@@ -6036,11 +6593,16 @@ function saveActivityTotal() {
   } catch (e) {}
 }
 
+let _activityDisplayFloorMs = 0; // sàn hiển thị trong phiên — chống nhảy về 0 khi chuyển tab
 function getActivityElapsedMs() {
   let ms = _activityTotalMs;
   // Chỉ cộng đoạn local khi ĐANG là owner (tránh đếm trùng 2 máy)
   if (_activityIsOwner && _activitySegStart) ms += Math.max(0, Date.now() - _activitySegStart);
-  return Math.max(0, ms);
+  ms = Math.max(0, ms);
+  // Không bao giờ giảm số đã hiện trong phiên (trừ khi logout)
+  if (ms < _activityDisplayFloorMs) ms = _activityDisplayFloorMs;
+  else _activityDisplayFloorMs = ms;
+  return ms;
 }
 
 function formatActivityHMS(ms) {
@@ -6271,12 +6833,30 @@ function startActivityTimer() {
   }, 1000);
   try {
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
+      if (document.hidden) {
+        // Tab ẩn → chốt đoạn đang đếm vào tổng, DỪNG đếm (không reset tổng)
+        // Soft-pause: giữ quyền owner, không nhả khóa (tránh mất quyền khi chuyển tab nhanh)
+        if (_activityIsOwner && _activitySegStart) {
+          _activityTotalMs += Math.max(0, Date.now() - _activitySegStart);
+          _activitySegStart = 0;
+          saveActivityTotal();
+          try { pushActivityTotalToServer(true); } catch (e2) {}
+        }
         updateActivityTimerDisplay();
-        // Hiện lại tab: thử giành khóa / đồng bộ
-        try { resumeActivityTimer(); } catch (e) {}
-      } else if (_activityIsOwner) {
-        try { pushActivityTotalToServer(true); } catch (e2) {}
+      } else {
+        // Tab hiện lại → tiếp tục từ tổng đã chốt (không reset về 00:00:00)
+        updateActivityTimerDisplay();
+        try {
+          if (currentUser && currentUser.emailKey) {
+            // Nếu vẫn là owner và chưa có đoạn → mở đoạn mới
+            if (_activityIsOwner) {
+              if (!_activitySegStart) _activitySegStart = Date.now();
+              updateActivityTimerDisplay();
+            } else {
+              resumeActivityTimer();
+            }
+          }
+        } catch (e) {}
       }
     });
   } catch (e) {}
@@ -6288,6 +6868,7 @@ async function bindActivityTimerToAccount() {
     pauseActivityTimer();
     stopActivityFollowerPoll();
     _activityTotalMs = 0;
+    _activityDisplayFloorMs = 0;
     _activityIsOwner = false;
     updateActivityTimerDisplay();
     return;
@@ -6534,13 +7115,38 @@ function isForcedRenameActive() {
   } catch (e) { return false; }
 }
 
-/** Đang bị cưỡng chế: không cho đóng form, mở khóa ô nhập, ẩn nút × */
+/** Bật/tắt khóa toàn app khi đang bị cưỡng chế đổi tên */
+function setForceRenameAppLock(on) {
+  try {
+    document.body.classList.toggle('force-rename-lock', !!on);
+  } catch (e) {}
+}
+
+/** Đang bị cưỡng chế: không cho đóng form, khóa UI nền, ẩn nút × */
 function applyEditNameForceUi() {
   const ov = document.getElementById('edit-name-overlay');
   if (!ov) return;
   const forced = isForcedRenameActive();
+  setForceRenameAppLock(forced);
   const x = ov.querySelector('.auth-close');
-  if (x) x.style.display = forced ? 'none' : '';
+  if (x) {
+    x.style.display = forced ? 'none' : '';
+    x.disabled = !!forced;
+    x.setAttribute('aria-hidden', forced ? 'true' : 'false');
+  }
+  // Không cho đóng bằng click nền khi bị cưỡng chế
+  if (forced) {
+    ov.onclick = function(e) {
+      if (e.target === ov) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+  } else {
+    ov.onclick = function(e) {
+      if (e.target === ov) closeEditName();
+    };
+  }
   const fw = document.getElementById('edit-name-force-warn');
   if (fw) fw.style.display = forced ? 'block' : 'none';
   if (forced) {
@@ -6550,7 +7156,11 @@ function applyEditNameForceUi() {
     const err = document.getElementById('edit-name-error');
     if (inp) inp.disabled = false;
     if (err && /Chỉ đổi tên được sau|khóa đổi tên/.test(err.textContent || '')) err.textContent = '';
+    // Đảm bảo overlay đang hiện
+    if (!ov.classList.contains('show')) ov.classList.add('show');
     syncEditNameSaveBtn();
+  } else {
+    setForceRenameAppLock(false);
   }
 }
 
@@ -6650,9 +7260,13 @@ window.openEditName = async function() {
 };
 window.closeEditName = function() {
   // Đang bị cưỡng chế → bắt buộc đổi tên mới được đóng (lưu thành công sẽ xóa cờ rồi mới gọi hàm này)
-  if (isForcedRenameActive()) return;
+  if (isForcedRenameActive()) {
+    try { applyEditNameForceUi(); } catch (e) {}
+    return;
+  }
   const ov = document.getElementById('edit-name-overlay');
   if (ov) ov.classList.remove('show');
+  try { setForceRenameAppLock(false); } catch (e2) {}
   const inp = document.getElementById('edit-name-input');
   if (inp) inp.disabled = false;
   const btn = document.getElementById('edit-name-save');
@@ -7104,6 +7718,8 @@ window.submitEditName = async function() {
     currentUser.displayName = newName;
     currentUser.displayNameChangedAt = now;
     currentUser.forceRenameByAdmin = false;
+    try { stopForceRenameWatch(); } catch (eW) {}
+    try { setForceRenameAppLock(false); } catch (eL) {}
     if (typeof normalizeUserPowerFields === 'function') normalizeUserPowerFields(currentUser);
     saveSessionUser(currentUser);
     renderAccountBadge();
@@ -7230,39 +7846,79 @@ function stopForceRenameListener() {
     _forceRenameUnsub = null;
   }
   _forceRenamePrompted = false;
+  try { stopForceRenameWatch(); } catch (e2) {}
+  try { setForceRenameAppLock(false); } catch (e3) {}
 }
+let _forceRenameWatchId = null;
+function stopForceRenameWatch() {
+  if (_forceRenameWatchId) {
+    try { clearInterval(_forceRenameWatchId); } catch (e) {}
+    _forceRenameWatchId = null;
+  }
+}
+/** Đảm bảo form cưỡng chế luôn hiện + khóa app cho tới khi đổi tên xong */
+function enforceForceRenameGate() {
+  if (!isForcedRenameActive()) {
+    stopForceRenameWatch();
+    try { setForceRenameAppLock(false); } catch (e) {}
+    return;
+  }
+  const ov = document.getElementById('edit-name-overlay');
+  if (!ov || !ov.classList.contains('show')) {
+    try { if (typeof openEditName === 'function') openEditName(); } catch (eO) {}
+  } else {
+    try { applyEditNameForceUi(); } catch (eU) {}
+  }
+  try { setForceRenameAppLock(true); } catch (e2) {}
+}
+function startForceRenameWatch() {
+  stopForceRenameWatch();
+  if (!isForcedRenameActive()) return;
+  _forceRenameWatchId = setInterval(enforceForceRenameGate, 800);
+  enforceForceRenameGate();
+}
+
 function startForceRenameListener() {
   stopForceRenameListener();
+  stopForceRenameWatch();
   if (!currentUser || !currentUser.emailKey) return;
   // Admin không bị cưỡng chế
   if (typeof isAdmin === 'function' && isAdmin()) return;
   const key = currentUser.emailKey;
+  // Nếu session đã có cờ → khóa ngay
+  if (isForcedRenameActive()) {
+    _forceRenamePrompted = true;
+    setTimeout(function() {
+      try { openEditName(); } catch (e) {}
+      startForceRenameWatch();
+    }, 200);
+  }
   try {
     const r = ref(db, 'users/' + key + '/forceRenameByAdmin');
     _forceRenameUnsub = onValue(r, (snap) => {
       const forced = !!snap.val();
       if (currentUser) currentUser.forceRenameByAdmin = forced;
       try { renderAccountBadge(); } catch (eB0) {}
-      // Cập nhật tên đã che / hiện lại lên presence
       try { if (typeof writePresenceNow === 'function') writePresenceNow(); } catch (eP0) {}
       if (!forced) {
         _forceRenamePrompted = false;
+        stopForceRenameWatch();
+        try { setForceRenameAppLock(false); } catch (eL) {}
+        // Cho phép đóng form nếu đang mở vì cờ đã tắt
         return;
       }
-      // Đã hiện form rồi thì không spam
-      if (_forceRenamePrompted) return;
+      // Bắt buộc hiện form + khóa app
+      _forceRenamePrompted = true;
       const ov = document.getElementById('edit-name-overlay');
       if (ov && ov.classList.contains('show')) {
-        _forceRenamePrompted = true;
         try { applyEditNameForceUi(); } catch (eU) {}
-        try { renderAccountBadge(); } catch (eB) {}
-        return;
+      } else {
+        try { showToast('Admin yêu cầu bạn đổi tên hiển thị'); } catch (eT) {}
+        setTimeout(function() {
+          try { if (typeof openEditName === 'function') openEditName(); } catch (eO) {}
+        }, 200);
       }
-      _forceRenamePrompted = true;
-      try { showToast('Admin yêu cầu bạn đổi tên hiển thị'); } catch (eT) {}
-      setTimeout(function() {
-        try { if (typeof openEditName === 'function') openEditName(); } catch (eO) {}
-      }, 300);
+      startForceRenameWatch();
     }, () => {});
   } catch (e) {}
 }
@@ -7284,6 +7940,7 @@ window.logoutAccount = function() {
   // Guest: không đếm / về 0 trên UI
   try {
     _activityTotalMs = 0;
+    _activityDisplayFloorMs = 0;
     _activitySegStart = 0;
     _activityIsOwner = false;
     if (typeof updateActivityTimerDisplay === 'function') updateActivityTimerDisplay();
@@ -10354,7 +11011,6 @@ const SINGLE_WORDS = [
   "vắt",
   "dệt",
   "lông",
-  "ngực",
   "thận",
   "nhả",
   "máu",
@@ -10546,10 +11202,9 @@ function getMasterGain(ctx) {
 }
 
 // ── UI SFX: tiếng click cho nút/hệ thống (không phải tiếng gõ chữ) ──
-// Dùng chung AudioContext + soundEnabled + masterGain đã có sẵn của game —
-// không tạo AudioContext riêng để tránh tốn tài nguyên trên di động.
+// Luôn phát — KHÔNG phụ thuộc soundEnabled (bật/tắt âm chỉ ảnh hưởng tiếng gõ + hit SFX).
+// Dùng chung AudioContext + masterGain của game — không tạo context riêng.
 function uiTone(freq, dur, type, vol, freqEnd) {
-  if (!soundEnabled) return;
   try {
     const ctx = audioCtx || getAudioCtx();
     if (!ctx) return;
@@ -10569,7 +11224,6 @@ function uiTone(freq, dur, type, vol, freqEnd) {
 }
 
 function uiKnock(vol, dur, freq) {
-  if (!soundEnabled) return;
   try {
     const ctx = audioCtx || getAudioCtx();
     if (!ctx) return;
@@ -10613,7 +11267,8 @@ const uiSfx = {
 document.addEventListener("pointerdown", e => {
   const btn = e.target.closest(
     ".btn, .sound-fab, .practice-timer-reveal, .prep-back-btn, .prep-sound-btn, " +
-    ".sound-option, .ios-toggle, .sys-alert-btn"
+    ".sound-option, .ios-toggle, .sys-alert-btn, " +
+    ".account-badge, .typing-settings-btn"
   );
   if (!btn) return;
   if (typeof unlockAudio === "function" && !soundUnlocked) unlockAudio();
@@ -11037,6 +11692,7 @@ const MM_OPPONENT_NOSHOW_MS = 12000;
 
 // ── Chế độ luyện tập (không mất máu, không giới hạn thời gian, chơi 1 mình) ──
 let isPracticeMode = false;
+let isBotMode = false; // Luyện tập › Đấu với bot (local, không Firebase)
 let practiceElapsed = 0, practiceTimerInterval = null;
 let practiceCorrect = 0, practiceWrong = 0;
 let practiceCorrectChars = 0;
@@ -11047,6 +11703,10 @@ let practiceTimerStarted = false;    // chỉ true sau lần gõ đầu
 let practiceResultUnlockAt = 0;      // mốc thời gian cho phép rời bảng kết quả WPM (chống bấm nhầm)
 let practiceStartTs = 0;
 let practiceFinished = false;
+/** Tạm dừng đếm giờ luyện tập khi tab ẩn — không reset, chỉ dừng */
+let practiceHiddenAt = 0;   // Date.now() lúc chuyển tab ẩn (0 = đang hiện)
+let practicePausedMs = 0;   // tổng ms đã tạm dừng (cộng dồn mỗi lần ẩn)
+let practiceCommittedSec = 0; // số giây đã chốt (đếm không reset trong phiên luyện tập)
 const PRACTICE_WPM_DURATION_KEY = 'wwb_practice_wpm_sec';
 const PRACTICE_WPM_DURATION_OPTIONS = [15, 30, 60];
 function loadPracticeWpmSeconds() {
@@ -11134,7 +11794,7 @@ try {
     if (!timeEl.contains(e.target)) closePracticeWpmDurationMenu();
   });
 } catch (e) {}
-let matchCorrect = 0, matchWrong = 0;  // thống kê multiplayer (đồng bộ Firebase)
+let matchCorrect = 0, matchWrong = 0;  // thống kê multiplayer: số KÝ TỰ đúng/sai (đồng bộ Firebase)
 let matchTotalChars = 0; // tổng ký tự (chữ + space) — tính WPM cuối trận
 let lastMatchResult = null; // { winner, meCorrect, meWrong, oppCorrect, oppWrong } — hiện lại trên prep khi chơi lại
 let resultShown = false;
@@ -11724,6 +12384,11 @@ window.cancelCreateRoom = async function() {
 };
 
 window.createRoom = async function() {
+  if (typeof isForcedRenameActive === 'function' && isForcedRenameActive()) {
+    try { enforceForceRenameGate(); } catch (e) {}
+    return;
+  }
+
   if (roomId && myRole === 'p1') {
     // Đang chờ trong phòng → coi như bấm lại = hủy
     await cancelCreateRoom();
@@ -11768,6 +12433,11 @@ window.createRoom = async function() {
 
 // ── Join room ──
 window.joinRoom = async function() {
+  if (typeof isForcedRenameActive === 'function' && isForcedRenameActive()) {
+    try { enforceForceRenameGate(); } catch (e) {}
+    return;
+  }
+
   const code = document.getElementById('join-input').value.trim();
   if (!code || code.length !== 4) { showToast('Nhập mã 4 chữ số!'); return; }
   if (typeof isMatchmaking !== 'undefined' && isMatchmaking && typeof cancelMatchmaking === 'function') await cancelMatchmaking();
@@ -12136,6 +12806,10 @@ async function attemptMatchPairing(retriesLeft) {
 }
 
 async function startMatchmaking() {
+  if (typeof isForcedRenameActive === 'function' && isForcedRenameActive()) {
+    try { enforceForceRenameGate(); } catch (e) {}
+    return;
+  }
   if (isMatchmaking || roomId) {
     showToast(roomId ? 'Bạn đang trong phòng!' : 'Đang tìm rồi…');
     return;
@@ -12389,14 +13063,16 @@ async function enterMatchedRoom(matchedRoomId, role) {
     stopPracticeTimer();
     const overlay = document.getElementById('practice-result-overlay');
     if (overlay) overlay.classList.remove('show');
+    const hud = document.getElementById('battle-hud');
     const bar = document.getElementById('bar-wrap-el');
     const av = document.getElementById('avatars-row-el');
     const hd = document.getElementById('game-header-row');
     const pi = document.getElementById('practice-info');
     const gs = document.getElementById('game-screen');
+    if (hud) hud.style.display = '';
     if (bar) bar.style.display = '';
-    if (av) av.style.display = '';
-    if (hd) hd.style.display = '';
+    if (av) av.style.display = 'none';
+    if (hd) hd.style.display = 'none';
     if (pi) pi.style.display = 'none';
     if (gs) gs.classList.remove('practice-active');
   }
@@ -12465,6 +13141,9 @@ function resetPracticeStatsUI() {
   practiceTimerStarted = false;
   practiceStartTs = 0;
   practiceFinished = false;
+  practiceHiddenAt = 0;
+  practicePausedMs = 0;
+  practiceCommittedSec = 0;
   practiceShowTimer = true;
   if (typeof updatePracticeTimerToggleBtn === 'function') {
     // deferred: function defined later at runtime OK once loaded
@@ -12516,7 +13195,16 @@ function stopPracticeTimer() {
 function computePracticeWpm() {
   // WPM chuẩn: (Tổng số ký tự ÷ 5) ÷ thời gian (phút)
   // 1 từ chuẩn = 5 ký tự (chữ cái, dấu câu, khoảng trắng)
-  const elapsedMs = practiceStartTs ? Math.max(1, Date.now() - practiceStartTs) : 1;
+  // WPM test (timed): luôn theo wall-clock — không bị ảnh hưởng khi chuyển tab
+  // Luyện tập thường (free): trừ thời gian tab ẩn (đồng hồ dừng, không reset)
+  let elapsedMs;
+  if (practiceTimedMode) {
+    elapsedMs = practiceStartTs ? Math.max(1, Date.now() - practiceStartTs) : 1;
+  } else {
+    elapsedMs = practiceStartTs
+      ? Math.max(1, Date.now() - practiceStartTs - practicePausedMs)
+      : 1;
+  }
   const minutes = elapsedMs / 60000;
   return Math.max(0, Math.round((practiceTotalChars / 5) / minutes));
 }
@@ -12575,6 +13263,7 @@ function tickPracticeTimer() {
   if (!isPracticeMode || !practiceTimerStarted || practiceFinished) return;
 
   if (practiceTimedMode) {
+    // WPM test: đếm theo wall-clock — chuyển tab không làm dừng / không reset
     const left = Math.max(0, PRACTICE_WPM_SECONDS - Math.floor((Date.now() - practiceStartTs) / 1000));
     practiceElapsed = PRACTICE_WPM_SECONDS - left;
     const t = _dom.practiceTimer || document.getElementById('practice-timer');
@@ -12597,8 +13286,17 @@ function tickPracticeTimer() {
       finishPracticeWpm();
     }
   } else {
-    practiceElapsed = Math.floor((Date.now() - practiceStartTs) / 1000);
-    if (_dom.practiceTimer) _dom.practiceTimer.textContent = practiceElapsed;
+    // Đếm thường — bộ đếm không reset trong phiên:
+    // practiceCommittedSec = sàn; chỉ tăng, chỉ về 0 khi bắt đầu phiên mới
+    if (practiceHiddenAt) {
+      if (_dom.practiceTimer) _dom.practiceTimer.textContent = String(practiceCommittedSec);
+      return;
+    }
+    const effectiveMs = Math.max(0, Date.now() - practiceStartTs - practicePausedMs);
+    const sec = Math.floor(effectiveMs / 1000);
+    if (sec > practiceCommittedSec) practiceCommittedSec = sec;
+    practiceElapsed = practiceCommittedSec;
+    if (_dom.practiceTimer) _dom.practiceTimer.textContent = String(practiceCommittedSec);
     updateLivePracticeWpm();
   }
 }
@@ -12608,6 +13306,10 @@ function ensurePracticeTimerStarted() {
   if (!isPracticeMode || practiceTimerStarted || practiceFinished) return;
   practiceTimerStarted = true;
   practiceStartTs = Date.now();
+  practiceHiddenAt = 0;
+  practicePausedMs = 0;
+  practiceCommittedSec = 0;
+  practiceElapsed = 0;
   stopPracticeTimer();
   practiceTimerInterval = setInterval(tickPracticeTimer, 200);
   tickPracticeTimer();
@@ -12616,7 +13318,51 @@ function ensurePracticeTimerStarted() {
   try { if (typeof closePracticeWpmDurationMenu === 'function') closePracticeWpmDurationMenu(); } catch (e2) {}
 }
 
+// ── Luyện tập (đếm thường): tạm dừng đồng hồ khi chuyển tab — không reset, chỉ dừng.
+//    WPM test: KHÔNG ảnh hưởng — interval vẫn chạy / khi về tab tính lại theo wall-clock.
+document.addEventListener('visibilitychange', () => {
+  if (!isPracticeMode || !practiceTimerStarted || practiceFinished) return;
+
+  // WPM test: chỉ refresh hiển thị khi quay lại (wall-clock tự đúng)
+  if (practiceTimedMode) {
+    if (!document.hidden) tickPracticeTimer();
+    return;
+  }
+
+  // Free practice: dừng khi ẩn, tiếp tục từ practiceCommittedSec khi hiện lại (không reset)
+  if (document.hidden) {
+    if (!practiceHiddenAt) {
+      const effectiveMs = Math.max(0, Date.now() - practiceStartTs - practicePausedMs);
+      const sec = Math.floor(effectiveMs / 1000);
+      if (sec > practiceCommittedSec) practiceCommittedSec = sec;
+      practiceElapsed = practiceCommittedSec;
+      practiceHiddenAt = Date.now();
+      stopPracticeTimer();
+      const tEl = _dom.practiceTimer || document.getElementById('practice-timer');
+      if (tEl) tEl.textContent = String(practiceCommittedSec);
+    }
+  } else {
+    if (practiceHiddenAt) {
+      practiceHiddenAt = 0;
+      // Tiếp tục từ số đã chốt — không bao giờ về 0 giữa phiên
+      practiceStartTs = Date.now() - practiceCommittedSec * 1000;
+      practicePausedMs = 0;
+      practiceElapsed = practiceCommittedSec;
+    }
+    stopPracticeTimer();
+    practiceTimerInterval = setInterval(tickPracticeTimer, 200);
+    tickPracticeTimer();
+    const tEl = _dom.practiceTimer || document.getElementById('practice-timer');
+    if (tEl) tEl.textContent = String(practiceCommittedSec);
+  }
+});
+
 window.startPractice = function() {
+  if (typeof isForcedRenameActive === 'function' && isForcedRenameActive()) {
+    try { enforceForceRenameGate(); } catch (e) {}
+    return;
+  }
+
   isPracticeMode = true;
   practiceTimedMode = false;
   gameActive = true; gameStarted = true;
@@ -12625,9 +13371,14 @@ window.startPractice = function() {
     myRole = 'p1';
   }
 
-  document.getElementById('bar-wrap-el').style.display = 'none';
-  document.getElementById('avatars-row-el').style.display = 'none';
-  document.getElementById('game-header-row').style.display = 'none';
+  const battleHud = document.getElementById('battle-hud');
+  if (battleHud) battleHud.style.display = 'none';
+  const barEl = document.getElementById('bar-wrap-el');
+  if (barEl) barEl.style.display = 'none';
+  const avEl = document.getElementById('avatars-row-el');
+  if (avEl) avEl.style.display = 'none';
+  const hdEl = document.getElementById('game-header-row');
+  if (hdEl) hdEl.style.display = 'none';
   document.getElementById('practice-info').style.display = 'block';
   const gameScreen = document.getElementById('game-screen');
   if (gameScreen) gameScreen.classList.add('practice-active');
@@ -12648,6 +13399,11 @@ window.startPractice = function() {
 
 /** Bắt đầu / thử lại thử thách 30 giây WPM */
 window.startPracticeWpm = function() {
+  if (typeof isForcedRenameActive === 'function' && isForcedRenameActive()) {
+    try { enforceForceRenameGate(); } catch (e) {}
+    return;
+  }
+
   // Nếu chưa ở practice: vào practice trước
   if (!isPracticeMode) {
     startPractice();
@@ -12685,9 +13441,11 @@ window.startPracticeWpm = function() {
 };
 
 function finishPracticeWpm() {
+  // WPM test không phụ thuộc pause tab — chỉ dừng interval
+  practiceHiddenAt = 0;
+  stopPracticeTimer();
   if (practiceFinished) return;
   practiceFinished = true;
-  stopPracticeTimer();
   const revDone = document.getElementById('practice-timer-reveal');
   if (revDone) revDone.style.display = 'none';
   practiceElapsed = PRACTICE_WPM_SECONDS;
@@ -12751,6 +13509,9 @@ window.closePracticeResult = function() {
   practiceFinished = false;
   practiceTimerStarted = false;
   practiceStartTs = 0;
+  practiceHiddenAt = 0;
+  practicePausedMs = 0;
+  practiceCommittedSec = 0;
   const inputEl = document.getElementById('game-hidden-input');
   if (inputEl) {
     inputEl.disabled = false;
@@ -12778,12 +13539,333 @@ window.exitPractice = function() {
   if (overlay) overlay.classList.remove('show');
   const inputEl = document.getElementById('game-hidden-input');
   if (inputEl) inputEl.disabled = false;
-  document.getElementById('bar-wrap-el').style.display = '';
-  document.getElementById('avatars-row-el').style.display = '';
-  document.getElementById('game-header-row').style.display = '';
+  const battleHud2 = document.getElementById('battle-hud');
+  if (battleHud2) battleHud2.style.display = '';
+  const barEl2 = document.getElementById('bar-wrap-el');
+  if (barEl2) barEl2.style.display = '';
+  const avEl2 = document.getElementById('avatars-row-el');
+  if (avEl2) avEl2.style.display = 'none';
+  const hdEl2 = document.getElementById('game-header-row');
+  if (hdEl2) hdEl2.style.display = 'none';
   document.getElementById('practice-info').style.display = 'none';
   const gameScreen = document.getElementById('game-screen');
   if (gameScreen) gameScreen.classList.remove('practice-active');
+  showScreen('lobby-screen');
+  if (typeof refreshMmFloatingVisibility === 'function') refreshMmFloatingVisibility();
+  if (typeof setMmUI === 'function') setMmUI(isMatchmaking);
+};
+
+// ══════════════════════════════════════════════════════════════
+// LUYỆN TẬP › ĐẤU VỚI BOT — chạy hoàn toàn local (không Firebase, không phòng)
+// Dùng lại thanh kéo co + dame theo ký tự của trận thật; bot "gõ" theo mốc WPM đã chọn.
+// ══════════════════════════════════════════════════════════════
+// Huy hiệu SVG cho 13 mốc (mức 1 → 13), nét #a7aecb
+const BOT_ICONS = [
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.81" stroke-linecap="butt" stroke-linejoin="miter"><g transform="translate(5.04 5.04) scale(0.58)"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/></g></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.64" stroke-linecap="butt" stroke-linejoin="miter"><g transform="translate(4.32 4.32) scale(0.64)"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M8.9 11.4h6.2"/></g></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.5" stroke-linecap="butt" stroke-linejoin="miter"><g transform="translate(3.6 3.6) scale(0.7)"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M9 10.4l3 2.4 3-2.4"/></g></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.38" stroke-linecap="butt" stroke-linejoin="miter"><g transform="translate(2.88 2.88) scale(0.76)"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M9 10.4l3 2.4 3-2.4"/><path d="M9 14l3 2.4 3-2.4"/></g></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.28" stroke-linecap="butt" stroke-linejoin="miter"><g transform="translate(2.16 2.16) scale(0.82)"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><polygon points="12,8.7 12.68,10.66 14.76,10.7 13.1,11.96 13.7,13.95 12,12.76 10.3,13.95 10.9,11.96 9.24,10.7 11.32,10.66"/></g></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.21" stroke-linecap="butt" stroke-linejoin="miter"><g transform="translate(1.56 1.56) scale(0.87)"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><polygon points="9.6,10.35 10.09,11.72 11.55,11.77 10.4,12.66 10.8,14.06 9.6,13.24 8.4,14.06 8.8,12.66 7.65,11.77 9.11,11.72"/><polygon points="14.4,10.35 14.89,11.72 16.35,11.77 15.2,12.66 15.6,14.06 14.4,13.24 13.2,14.06 13.6,12.66 12.45,11.77 13.91,11.72"/></g></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.14" stroke-linecap="butt" stroke-linejoin="miter"><g transform="translate(0.96 0.96) scale(0.92)"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><polygon points="12,7.35 12.45,8.59 13.76,8.63 12.72,9.43 13.09,10.7 12,11.05 10.91,10.7 11.28,9.43 10.24,8.63 11.55,8.59"/><polygon points="9.3,11.55 9.75,12.79 11.06,12.83 10.02,13.63 10.39,14.9 9.3,15.25 8.21,14.9 8.58,13.63 7.54,12.83 8.85,12.79"/><polygon points="14.7,11.55 15.15,12.79 16.46,12.83 15.42,13.63 15.79,14.9 14.7,15.25 13.61,14.9 13.98,13.63 12.94,12.83 14.25,12.79"/></g></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M12 6.2l4.6 1.8v3.9c0 3.1-2.1 5.1-4.6 6-2.5-.9-4.6-2.9-4.6-6V8z"/><polygon points="12,8.5 12.55,10.04 14.19,10.09 12.89,11.09 13.35,12.66 12,13.1 10.65,12.66 11.11,11.09 9.81,10.09 11.45,10.04"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M12 6.2l4.6 1.8v3.9c0 3.1-2.1 5.1-4.6 6-2.5-.9-4.6-2.9-4.6-6V8z"/><polygon points="12,7.6 12.53,9.07 14.09,9.12 12.86,10.08 13.29,11.58 12,12 10.71,11.58 11.14,10.08 9.91,9.12 11.47,9.07"/><path d="M9.4 13.9l2.6 2 2.6-2"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M12 6.2l4.6 1.8v3.9c0 3.1-2.1 5.1-4.6 6-2.5-.9-4.6-2.9-4.6-6V8z"/><polygon points="12,7.9 12.55,9.44 14.19,9.49 12.89,10.49 13.35,12.06 12,12.5 10.65,12.06 11.11,10.49 9.81,9.49 11.45,9.44"/><g stroke-width="1.21"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/><g transform="translate(24 0) scale(-1 1)"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/></g></g></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M12 6.2l4.6 1.8v3.9c0 3.1-2.1 5.1-4.6 6-2.5-.9-4.6-2.9-4.6-6V8z"/><polygon points="12,7.9 12.55,9.44 14.19,9.49 12.89,10.49 13.35,12.06 12,12.5 10.65,12.06 11.11,10.49 9.81,9.49 11.45,9.44"/><g stroke-width="1.21"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/><g transform="translate(24 0) scale(-1 1)"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/></g></g><polygon points="2.8,2.05 3.2,3 4.15,3.4 3.2,3.8 2.8,4.75 2.4,3.8 1.45,3.4 2.4,3"/><polygon points="21.2,2.05 22.6,3 22.55,3.4 22.6,3.8 21.2,4.75 19.8,3.8 19.85,3.4 19.8,3"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><g transform="translate(0 1.15)"><g transform="translate(1.68 1.68) scale(0.86)" stroke-width="1.22"><path d="M12 2.8l7.3 2.8v6.2c0 4.9-3.3 8.1-7.3 9.6-4-1.5-7.3-4.7-7.3-9.6V5.6z"/><path d="M12 6.2l4.6 1.8v3.9c0 3.1-2.1 5.1-4.6 6-2.5-.9-4.6-2.9-4.6-6V8z"/><path d="M8.7 12.4V8.8l2.2 1.6L12 7.4l1.1 3 2.2-1.6v3.6z"/><path d="M8.9 13.4h6.2"/></g></g><g stroke-width="1.21"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/><g transform="translate(24 0) scale(-1 1)"><path d="M5.2 8.4C3.3 7.9 1.9 6.7 1 4.8"/><path d="M5 10.9C2.9 10.8 1.5 9.9 .6 8.4"/><path d="M5.3 13.2C3.4 13.4 1.8 12.8 .7 11.6"/><path d="M6.1 15.5C4.4 16.1 2.7 15.9 1.4 15"/></g></g><polygon points="2.8,2.05 3.2,3 4.15,3.4 3.2,3.8 2.8,4.75 2.4,3.8 1.45,3.4 2.4,3"/><polygon points="21.2,2.05 22.6,3 22.55,3.4 22.6,3.8 21.2,4.75 19.8,3.8 19.85,3.4 19.8,3"/><polygon points="12,0.2 12.59,1.71 14.1,2.3 12.59,2.89 12,4.4 11.41,2.89 9.9,2.3 11.41,1.71"/></svg>`,
+  `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><path d="M3.5 16.5L2.5 7l5.5 4.2L12 4l4 7.2L21.5 7l-1 9.5z"/><path d="M4.5 20h15"/><circle cx="2.5" cy="6.2" r="0.7"/><circle cx="12" cy="3.1" r="0.75"/><circle cx="21.5" cy="6.2" r="0.7"/><polygon points="12,10.4 12.42,11.62 13.71,11.64 12.68,12.42 13.06,13.66 12,14 10.94,13.66 11.32,12.42 10.29,11.64 11.58,11.62"/><circle cx="6.5" cy="18.2" r="0.5"/><circle cx="17.5" cy="18.2" r="0.5"/></svg>`
+];
+const BOT_TIERS = [
+  { icon: BOT_ICONS[0], name: 'Tập sự', min: 20, max: 30 },
+  { icon: BOT_ICONS[1], name: 'Dễ', min: 30, max: 40 },
+  { icon: BOT_ICONS[2], name: 'Vừa', min: 40, max: 50 },
+  { icon: BOT_ICONS[3], name: 'Khá', min: 50, max: 60 },
+  { icon: BOT_ICONS[4], name: 'Giỏi', min: 60, max: 70 },
+  { icon: BOT_ICONS[5], name: 'Cao thủ', min: 70, max: 80 },
+  { icon: BOT_ICONS[6], name: 'Siêu tốc', min: 80, max: 100 },
+  { icon: BOT_ICONS[7], name: 'Thần tốc', min: 100, max: 120 },
+  { icon: BOT_ICONS[8], name: 'Quái vật', min: 120, max: 140 },
+  { icon: BOT_ICONS[9], name: 'Siêu phàm', min: 140, max: 160 },
+  { icon: BOT_ICONS[10], name: 'Huyền thoại', min: 160, max: 180 },
+  { icon: BOT_ICONS[11], name: 'Ác mộng', min: 180, max: 200 },
+  { icon: BOT_ICONS[12], name: 'Vô đối', min: 200, max: 230, label: '>200' }
+];
+function botTierLabel(t) { return t.label || (t.min + '–' + t.max); }
+const BOT_AVATAR = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23111'/><text x='50' y='68' text-anchor='middle' font-size='55'>🤖</text></svg>`;
+
+let botTier = null;
+let botState = null;          // { cps, errP, idx, nextAt, net, right, wrong }
+let botTickTimer = null, botClockTimer = null;
+let botRunToken = 0;          // đổi mỗi lần bắt đầu/thoát → hủy các async cũ
+let botMatchOver = true;
+
+function stopBotTimers() {
+  if (botTickTimer) { clearInterval(botTickTimer); botTickTimer = null; }
+  if (botClockTimer) { clearInterval(botClockTimer); botClockTimer = null; }
+}
+
+function renderBotTiers() {
+  const grid = document.getElementById('bot-tier-grid');
+  if (!grid || grid.dataset.ready) return;
+  grid.dataset.ready = '1';
+  BOT_TIERS.forEach(t => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'bot-tier';
+    b.innerHTML = `<span class="ic">${t.icon}</span><span class="nm">${t.name}</span><span class="wp"><span class="wpn">${botTierLabel(t)}<small>wpm</small></span></span>`;
+    b.addEventListener('click', () => {
+      const ov = document.getElementById('bot-pick-overlay');
+      if (ov) ov.classList.remove('show');
+      startBotMatch(t);
+    });
+    grid.appendChild(b);
+  });
+}
+
+window.openBotPicker = function() {
+  if (typeof isForcedRenameActive === 'function' && isForcedRenameActive()) {
+    try { enforceForceRenameGate(); } catch (e) {}
+    return;
+  }
+  if (isMatchmaking) {
+    showToast('Đang ghép trận — hủy ghép trận trước khi đấu bot');
+    return;
+  }
+  renderBotTiers();
+  const ov = document.getElementById('bot-pick-overlay');
+  if (ov) ov.classList.add('show');
+  if (typeof unlockAudio === 'function') unlockAudio();
+};
+
+window.closeBotPicker = function() {
+  const ov = document.getElementById('bot-pick-overlay');
+  if (ov) ov.classList.remove('show');
+  // Mở từ bảng kết quả (Đổi bot) rồi hủy → quay lại bảng kết quả
+  if (isBotMode && botMatchOver) {
+    const r = document.getElementById('bot-result-overlay');
+    if (r) r.classList.add('show');
+  }
+};
+
+async function runBotCountdown(token) {
+  const overlay = document.getElementById('countdown-overlay');
+  const num = document.getElementById('countdown-num');
+  if (!overlay || !num) return;
+  const label = overlay.querySelector('.countdown-label');
+  const oldLabel = label ? label.textContent : '';
+  if (label && botTier) label.textContent = `BOT ${botTierLabel(botTier)} WPM · SẴN SÀNG!`;
+  num.textContent = '';
+  overlay.style.display = 'flex';
+  for (const step of ['3', '2', '1', '🚀']) {
+    if (token !== botRunToken) break;
+    num.textContent = step;
+    num.style.animation = 'none'; void num.offsetWidth;
+    num.style.animation = 'popIn 0.5s ease';
+    await sleep(step === '🚀' ? 500 : 900);
+  }
+  overlay.style.display = 'none';
+  if (label) label.textContent = oldLabel;
+}
+
+async function startBotMatch(tier) {
+  const token = ++botRunToken;
+  stopBotTimers();
+  stopPracticeTimer();
+  isBotMode = true;
+  isPracticeMode = false; practiceTimedMode = false; practiceFinished = false;
+  botTier = tier;
+  botMatchOver = false;
+  roomId = null; myRole = 'p1';
+  gameActive = false; gameStarted = false; resultShown = false;
+  isSubmitting = false;
+  matchCorrect = 0; matchWrong = 0; matchTotalChars = 0;
+  pendingBallDelta = 0; _damageTxInFlight = 0;
+  serverBallPos = 50; ballPos = 50; _lastBallPos = -1;
+  timeLeft = GAME_DURATION;
+  botState = null;
+
+  cacheDom();
+  const $ = id => document.getElementById(id);
+  const hud = $('battle-hud'); if (hud) hud.style.display = '';
+  const bar = $('bar-wrap-el'); if (bar) bar.style.display = '';
+  const pi = $('practice-info'); if (pi) pi.style.display = 'none';
+  const gs = $('game-screen'); if (gs) gs.classList.remove('practice-active');
+  ['practice-result-overlay', 'bot-result-overlay'].forEach(id => { const el = $(id); if (el) el.classList.remove('show'); });
+
+  const meName = $('pname-me'); if (meName) meName.textContent = (typeof getMyDisplayName === 'function' ? getMyDisplayName() : 'Bạn');
+  const oppName = $('pname-opp'); if (oppName) oppName.textContent = `🤖 Bot ${botTierLabel(tier)}`;
+  const myAv = $('av-img-p1'); if (myAv) myAv.src = myImgs.default || getDefaultSvg();
+  const botAv = $('av-img-p2'); if (botAv) botAv.src = BOT_AVATAR;
+  const b1 = $('bar-p1-img'); if (b1) b1.style.backgroundImage = myImgs.default ? `url("${myImgs.default}")` : '';
+  const b2 = $('bar-p2-img'); if (b2) b2.style.backgroundImage = '';
+  setAvatarBarking('p1', false);
+  setAvatarBarking('p2', false);
+
+  const inputEl = $('game-hidden-input');
+  if (inputEl) { inputEl.disabled = false; inputEl.value = ''; inputEl.className = 'word-type-input'; }
+  updateBar(50);
+  if (_dom.timer) _dom.timer.textContent = String(GAME_DURATION);
+  const ex = $('bot-exit-btn'); if (ex) ex.classList.add('show');
+
+  showScreen('game-screen');
+  if (typeof refreshMmFloatingVisibility === 'function') refreshMmFloatingVisibility();
+
+  await runBotCountdown(token);
+  if (token !== botRunToken || !isBotMode) return;
+
+  wordSeed = Math.floor(Math.random() * 2147483647);
+  await setupTypingEngine();
+  if (token !== botRunToken || !isBotMode) return;
+
+  botInitState(tier);
+  gameStartTs = Date.now();
+  timeLeft = GAME_DURATION;
+  gameActive = true; gameStarted = true;
+  botTickTimer = setInterval(botTick, 80);
+  botClockTimer = setInterval(botClockTick, 200);
+  botClockTick();
+  if (typeof window.focusInput === 'function') window.focusInput();
+}
+
+function botWordAt(i) {
+  const n = wordList && wordList.length ? wordList.length : 0;
+  return n ? (wordList[i % n] || 'abcd') : 'abcd';
+}
+function botWordDuration(len) {
+  // (len + 1 khoảng trắng) ký tự / tốc độ ký tự mỗi giây, rung ±25% cho giống người gõ
+  return ((len + 1) / botState.cps) * 1000 * (0.75 + Math.random() * 0.5);
+}
+
+function botInitState(tier) {
+  const wpm = tier.min + Math.random() * (tier.max - tier.min);
+  botState = {
+    cps: (wpm * 5) / 60,
+    errP: Math.min(0.08, Math.max(0.02, 0.085 - wpm * 0.0006)), // bot chậm sai nhiều hơn
+    idx: 0, net: 0, right: 0, wrong: 0, nextAt: 0
+  };
+  // Độ trễ phản xạ lúc bắt đầu + thời gian gõ từ đầu tiên
+  botState.nextAt = Date.now() + 600 + Math.random() * 500 + botWordDuration(botWordAt(0).length);
+}
+
+function botCompleteWord() {
+  const w = botWordAt(botState.idx);
+  botState.idx++;
+  let typed = w;
+  if (Math.random() < botState.errP) {
+    const p = Math.floor(Math.random() * w.length);
+    typed = w.slice(0, p) + '~' + w.slice(p + 1); // gõ nhầm 1 ký tự
+  }
+  const { right, wrong } = countCharHits(w, typed);
+  const netDmg = right * DMG_PER_CHAR - wrong * SELF_DMG_PER_CHAR;
+  botState.net += netCharsForWord(w, typed);
+  botState.right += right;
+  botState.wrong += wrong;
+  botState.nextAt += botWordDuration(botWordAt(botState.idx).length);
+
+  if (netDmg > 0.001) {
+    setAvatarBarking('p2', true);
+    setTimeout(() => setAvatarBarking('p2', false), 350);
+  }
+  // Bot là p2: ballPos tăng = bot đẩy bạn lùi; netDmg âm (gõ sai) = bot tự lùi
+  botMoveBall(netDmg, false);
+}
+
+function botTick() {
+  if (!isBotMode || !gameActive || botMatchOver || !botState) return;
+  const now = Date.now();
+  let guard = 0;
+  // Bắt kịp theo đồng hồ thật (tab ẩn / timer bị throttle vẫn đúng tốc độ)
+  while (botState.nextAt <= now && gameActive && !botMatchOver && guard++ < 400) botCompleteWord();
+}
+
+function botClockTick() {
+  if (!isBotMode || !gameActive || botMatchOver) return;
+  const left = Math.max(0, GAME_DURATION - Math.floor((Date.now() - gameStartTs) / 1000));
+  timeLeft = left;
+  if (_dom.timer) _dom.timer.textContent = String(left);
+  if (left <= 0) endBotMatch();
+}
+
+/** Người chơi nộp 1 từ → áp dame lên thanh (gọi từ submitWord) */
+function botOnPlayerHit(netDmg) {
+  botMoveBall(-netDmg, true, netDmg);
+}
+
+function botMoveBall(delta, fromPlayer, netDmg) {
+  if (!isBotMode || botMatchOver) return;
+  const next = Math.max(0, Math.min(100, ballPos + delta));
+  ballPos = next; serverBallPos = next;
+  if (fromPlayer) updateBar(next, { forceRipple: true, pushRight: netDmg > 0 });
+  else updateBar(next);
+  if (next <= 0 || next >= 100) endBotMatch();
+}
+
+function endBotMatch() {
+  if (!isBotMode || botMatchOver) return;
+  botMatchOver = true;
+  gameActive = false;
+  resultShown = true;
+  stopBotTimers();
+  clearTypingInput();
+
+  const elapsedMin = Math.max(5000, Math.min(GAME_DURATION * 1000, Date.now() - gameStartTs)) / 60000;
+  const meWpm = Math.max(0, Math.round((matchTotalChars / 5) / elapsedMin));
+  const botWpm = botState ? Math.max(0, Math.round((botState.net / 5) / elapsedMin)) : 0;
+
+  let outcome;
+  if (ballPos <= 0) outcome = 'win';
+  else if (ballPos >= 100) outcome = 'lose';
+  else outcome = ballPos < 50 ? 'win' : (ballPos > 50 ? 'lose' : 'draw');
+
+  const $ = id => document.getElementById(id);
+  const title = $('bot-result-title');
+  if (title) {
+    title.textContent = outcome === 'win' ? '🏆 BẠN THẮNG!' : (outcome === 'lose' ? '💀 BOT THẮNG' : '🤝 HÒA');
+    title.className = outcome === 'win' ? 'bot-win' : (outcome === 'lose' ? 'bot-lose' : '');
+  }
+  const sub = $('bot-result-sub');
+  if (sub && botTier) sub.textContent = `Bot mức ${botTierLabel(botTier)} WPM`;
+  if ($('br-me-wpm')) $('br-me-wpm').textContent = String(meWpm);
+  if ($('br-bot-wpm')) $('br-bot-wpm').textContent = String(botWpm);
+  if ($('br-correct')) $('br-correct').textContent = String(matchCorrect);
+  if ($('br-wrong')) $('br-wrong').textContent = String(matchWrong);
+
+  const ov = $('bot-result-overlay');
+  if (ov) ov.classList.add('show');
+  // Khựng 1s tránh bấm nhầm ngay khi vừa hết trận
+  lockButtonsTemporarily(['bot-rematch-btn', 'bot-change-btn', 'bot-leave-btn'], 1000);
+}
+
+window.botRematch = function() {
+  if (!botTier) return;
+  startBotMatch(botTier);
+};
+
+window.botChangeTier = function() {
+  const r = document.getElementById('bot-result-overlay');
+  if (r) r.classList.remove('show');
+  renderBotTiers();
+  const ov = document.getElementById('bot-pick-overlay');
+  if (ov) ov.classList.add('show');
+};
+
+window.exitBotMode = function() {
+  botRunToken++;
+  stopBotTimers();
+  isBotMode = false;
+  botMatchOver = true;
+  botState = null;
+  gameActive = false; gameStarted = false; resultShown = false;
+  isSubmitting = false;
+  const $ = id => document.getElementById(id);
+  ['bot-pick-overlay', 'bot-result-overlay'].forEach(id => { const el = $(id); if (el) el.classList.remove('show'); });
+  const cd = $('countdown-overlay'); if (cd) cd.style.display = 'none';
+  const ex = $('bot-exit-btn'); if (ex) ex.classList.remove('show');
+  const inputEl = $('game-hidden-input');
+  if (inputEl) { inputEl.disabled = false; inputEl.value = ''; inputEl.className = 'word-type-input'; try { inputEl.blur(); } catch (e) {} }
+  setAvatarBarking('p1', false);
+  setAvatarBarking('p2', false);
+  if (_dom.timer) _dom.timer.textContent = '⚡';
   showScreen('lobby-screen');
   if (typeof refreshMmFloatingVisibility === 'function') refreshMmFloatingVisibility();
   if (typeof setMmUI === 'function') setMmUI(isMatchmaking);
@@ -12902,6 +13984,17 @@ async function handleCountdown(d) {
 // ── Game initialization ──
 function startGameUI(d) {
   if (gameStarted) return;
+  try {
+    const hud = document.getElementById('battle-hud');
+    if (hud) hud.style.display = '';
+    const bar = document.getElementById('bar-wrap-el');
+    if (bar) bar.style.display = '';
+    const pi = document.getElementById('practice-info');
+    if (pi) pi.style.display = 'none';
+    const gs = document.getElementById('game-screen');
+    if (gs) gs.classList.remove('practice-active');
+  } catch (eHud) {}
+
   // Ẩn countdown nếu còn (máy chậm / phase playing tới sớm)
   const cdOv = document.getElementById('countdown-overlay');
   if (cdOv) cdOv.style.display = 'none';
@@ -13080,7 +14173,7 @@ function startGameTimer() {
 
 // Khi quay lại tab / mạng trở lại: refresh timer + ballPos từ server
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden || !gameActive || isPracticeMode) return;
+  if (document.hidden || !gameActive || isPracticeMode || isBotMode) return;
   const left = computeTimeLeft();
   timeLeft = left;
   if (_dom.timer) _dom.timer.textContent = left;
@@ -13088,7 +14181,7 @@ document.addEventListener('visibilitychange', () => {
 });
 // Mất mạng: phản ứng NGAY (không chờ vòng poll checkBattleIntegrity kế tiếp)
 window.addEventListener('offline', () => {
-  if (!gameActive || isPracticeMode || resultShown) return;
+  if (!gameActive || isPracticeMode || isBotMode || resultShown) return;
   _wasOffline = true;
   _pauseRecoverStableSince = 0;
   pauseBattleForSync('Bạn đang mất kết nối — đang chờ mạng ổn định…');
@@ -13096,7 +14189,7 @@ window.addEventListener('offline', () => {
 });
 // Online lại sau khi mất mạng tạm
 window.addEventListener('online', () => {
-  if (!gameActive || isPracticeMode) return;
+  if (!gameActive || isPracticeMode || isBotMode) return;
   if (typeof resyncRoomStateFromServer === 'function') resyncRoomStateFromServer();
 });
 
@@ -13240,6 +14333,29 @@ const APP_THEMES = {
     '--p1': '#F2F2F2',
     '--p2': '#A39E94',
     '--green': '#7BC47F'
+  },
+  crimson: {
+    // Giao diện 3 — Crimson × Navy
+    '--bg': '#0A0E24',
+    '--surface': '#101638',
+    '--surface-2': '#16204A',
+    '--line': '#1E2A5A',
+    '--line-strong': '#32427E',
+    '--ink': '#F0E9E4',
+    '--dim': '#7D84AD',
+    '--accent': '#E05252',
+    '--accent-hover': '#EA6E6E',
+    '--on-accent': '#F0E9E4',
+    '--danger': '#E05252',
+    '--danger-line': '#5A2A2A',
+    '--success': '#6D87FF',
+    '--p1': '#E05252',
+    '--p2': '#4A6CFF',
+    '--green': '#6D87FF',
+    '--crimson': '#E05252',
+    '--crimson-soft': '#EA6E6E',
+    '--navy-blue': '#4A6CFF',
+    '--navy-soft': '#6D87FF'
   }
 };
 let appTheme = localStorage.getItem(APP_THEME_KEY) || 'default';
@@ -13261,10 +14377,60 @@ function applyAppTheme() {
 }
 
 window.setAppTheme = function setAppTheme(theme) {
-  appTheme = (theme === 'mono') ? 'mono' : 'default';
+  if (theme === 'mono' || theme === 'crimson') appTheme = theme;
+  else appTheme = 'default';
   localStorage.setItem(APP_THEME_KEY, appTheme);
   applyAppTheme();
 }
+
+// ── Hiệu ứng trận: Animation (mèo/particle/sóng) + Rung — tách riêng, thanh gạt ──
+const BATTLE_FX_ANIM_KEY = 'typingBattleFxAnim';
+const BATTLE_FX_VIBRATE_KEY = 'typingBattleFxVibrate';
+// Tương thích key cũ typingBattleFx: nếu từng tắt chung → cả hai mặc định theo đó
+(function migrateBattleFxKeys() {
+  try {
+    const legacy = localStorage.getItem('typingBattleFx');
+    if (legacy === '0') {
+      if (localStorage.getItem(BATTLE_FX_ANIM_KEY) == null) localStorage.setItem(BATTLE_FX_ANIM_KEY, '0');
+      if (localStorage.getItem(BATTLE_FX_VIBRATE_KEY) == null) localStorage.setItem(BATTLE_FX_VIBRATE_KEY, '0');
+    }
+  } catch (e) {}
+})();
+let battleFxEnabled = localStorage.getItem(BATTLE_FX_ANIM_KEY) !== '0'; // animation
+let battleVibrateEnabled = localStorage.getItem(BATTLE_FX_VIBRATE_KEY) !== '0';
+
+function applyBattleFxUi() {
+  const animTog = document.getElementById('fx-anim-toggle');
+  const vibTog = document.getElementById('fx-vibrate-toggle');
+  if (animTog) {
+    animTog.classList.toggle('on', battleFxEnabled);
+    animTog.setAttribute('aria-checked', battleFxEnabled ? 'true' : 'false');
+  }
+  if (vibTog) {
+    vibTog.classList.toggle('on', battleVibrateEnabled);
+    vibTog.setAttribute('aria-checked', battleVibrateEnabled ? 'true' : 'false');
+  }
+  try {
+    document.body.classList.toggle('fx-off', !battleFxEnabled);
+  } catch (e) {}
+}
+
+window.setBattleFxEnabled = function setBattleFxEnabled(on) {
+  battleFxEnabled = !!on;
+  localStorage.setItem(BATTLE_FX_ANIM_KEY, battleFxEnabled ? '1' : '0');
+  applyBattleFxUi();
+};
+window.setBattleVibrateEnabled = function setBattleVibrateEnabled(on) {
+  battleVibrateEnabled = !!on;
+  localStorage.setItem(BATTLE_FX_VIBRATE_KEY, battleVibrateEnabled ? '1' : '0');
+  applyBattleFxUi();
+};
+window.toggleBattleAnimFx = function toggleBattleAnimFx() {
+  setBattleFxEnabled(!battleFxEnabled);
+};
+window.toggleBattleVibrateFx = function toggleBattleVibrateFx() {
+  setBattleVibrateEnabled(!battleVibrateEnabled);
+};
 
 window.toggleTypingSettings = function toggleTypingSettings(event) {
   if (event) event.stopPropagation();
@@ -13277,6 +14443,7 @@ window.toggleTypingSettings = function toggleTypingSettings(event) {
   if (open) {
     applyTypingDisplayMode();
     applyAppTheme();
+    applyBattleFxUi();
   }
 }
 
@@ -13295,14 +14462,20 @@ function updateTypingCharacterFeedback(inputEl, target) {
   const chars = currentSpan.querySelectorAll('.typing-char');
   const compareLength = Math.min(typed.length, targetChars.length);
 
-  // Gõ dư ký tự phía sau (vd: "nguồnh" cho từ "nguồn") → cả từ sai, bôi đỏ toàn bộ từ.
-  // Ký tự dư vẫn không được render thêm lên word display, chỉ đổi màu các ký tự của từ mục tiêu.
-  const hasExtra = typed.length > targetChars.length;
-
-  for (let i = 0; i < compareLength; i++) {
-    const ok = !hasExtra && typed[i] === targetChars[i];
-    chars[i].classList.add(ok ? 'typing-correct' : 'typing-wrong');
+  // So sánh từng vị trí:
+  //  - đã gõ và khớp  → xanh
+  //  - đã gõ nhưng sai → đỏ
+  //  - chưa gõ / vừa xóa lùi lại → không gán class (giữ màu trắng mặc định của từ hiện tại)
+  for (let i = 0; i < chars.length; i++) {
+    if (i >= typed.length) continue;
+    if (typed[i] === targetChars[i]) {
+      chars[i].classList.add('typing-correct');
+    } else {
+      chars[i].classList.add('typing-wrong');
+    }
   }
+  // Nếu gõ thừa: các ký tự target sau phần khớp vẫn giữ đúng/sai theo vị trí ở trên.
+  // (Không tô đỏ cả từ chỉ vì thừa 1 ký tự cuối.)
 }
 
 function updateTypingCursor() {
@@ -13328,12 +14501,20 @@ function updateTypingCursor() {
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
+    // Đang cưỡng chế đổi tên → không cho Escape đóng form / thoát khóa
+    if (typeof isForcedRenameActive === 'function' && isForcedRenameActive()) {
+      e.preventDefault();
+      e.stopPropagation();
+      try { enforceForceRenameGate(); } catch (err) {}
+      return;
+    }
     const overlay = document.getElementById('typing-settings-overlay');
     if (overlay?.classList.contains('open')) toggleTypingSettings();
   }
-});
+}, true);
 applyTypingDisplayMode();
 applyAppTheme();
+try { applyBattleFxUi(); } catch (e) {}
 
 // ── Typing Engine Logic ──
 window.focusInput = function() {
@@ -13700,21 +14881,20 @@ function initWordGame() {
   updateCurrentWordHighlight();
 }
 
-/** Kết quả cuối theo từng ký tự: đúng → xanh, sai/thiếu → đỏ.
- *  Gõ THỪA ký tự (vd: "xongh" cho "xong") → cả từ đỏ (không tô xanh prefix). */
+/** Kết quả cuối theo từng ký tự: đúng → xanh, sai/thiếu/thừa → đỏ.
+ *  So sánh từng vị trí — prefix đúng vẫn xanh kể cả khi gõ thừa phía sau. */
 function applyWordCharResult(span, target, typed) {
   if (!span) return;
   const chars = span.querySelectorAll('.typing-char');
   const tChars = Array.from(target || '');
   const typedChars = Array.from(typed || '');
-  const hasExtra = typedChars.length > tChars.length;
   for (let i = 0; i < chars.length; i++) {
     const el = chars[i];
     el.classList.remove('typing-correct', 'typing-wrong', 'typing-extra', 'cursor-before', 'typing-cursor-end');
-    // Thừa ký tự = sai cả từ; thiếu/sai vị trí = đỏ từng chữ
-    if (!hasExtra && i < typedChars.length && typedChars[i] === tChars[i]) {
+    if (i < typedChars.length && typedChars[i] === tChars[i]) {
       el.classList.add('typing-correct');
     } else {
+      // Sai vị trí, thiếu, hoặc gõ thừa (vượt độ dài target) → đỏ
       el.classList.add('typing-wrong');
     }
   }
@@ -14485,7 +15665,7 @@ async function checkBattleIntegrity() {
 }
 
 
-// Nộp 1 từ đã gõ xong (đúng -> gây 5 dame; sai -> tự nhận 2.5 dame = 50% hit đối thủ).
+// Nộp 1 từ đã gõ xong: dame tính theo từng chữ (chữ đúng gây dame, chữ sai tự trừ máu — xem DMG_PER_CHAR).
 // Dùng chung cho cả bàn phím vật lý (qua sự kiện input khi gõ dấu cách) và phím Enter.
 /** Tính ký tự "net" của 1 từ đã gõ, dùng để tính WPM cuối trận đấu.
  *  Gõ đúng hết → +độ dài từ + 1 (khoảng trắng).
@@ -14517,16 +15697,46 @@ function netCharsForWord(target, typed) {
 }
 
 /** Rung nhẹ + particle + tone khi nộp từ đúng/sai */
+function canVibrateDevice() {
+  try {
+    return typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
+  } catch (e) { return false; }
+}
+
+/** Rung nhẹ khi nộp từ — đúng: rất nhẹ; sai: 2 nhịp ngắn.
+ *  Mỗi 5 từ đúng liên tiếp: thêm 1 nhịp nhẹ để cảm nhận rõ hơn một chút. */
 function vibrateHit(ok) {
   try {
-    if (!navigator.vibrate) return;
-    // Chỉ rung trên thiết bị cảm ứng — tránh desktop giả lập
-    if (window.matchMedia && window.matchMedia('(pointer: fine)').matches && !window.matchMedia('(pointer: coarse)').matches) return;
-    navigator.vibrate(ok ? 12 : [18, 30, 18]);
+    if (typeof battleVibrateEnabled !== 'undefined' && !battleVibrateEnabled) return;
+    if (!canVibrateDevice()) return;
+    if (ok) {
+      window._fxVibrateOkStreak = (window._fxVibrateOkStreak || 0) + 1;
+      // Rung nhẹ mỗi từ đúng; cứ 5 từ đúng → nhịp hơi rõ hơn
+      if (window._fxVibrateOkStreak % 5 === 0) {
+        navigator.vibrate([18, 28, 22]);
+      } else {
+        navigator.vibrate(14);
+      }
+    } else {
+      window._fxVibrateOkStreak = 0;
+      navigator.vibrate([20, 32, 20]);
+    }
   } catch (e) {}
 }
 
+/** Rung thử khi bật công tắc (cùng mức nhẹ như khi gõ đúng) */
+function vibratePreview() {
+  try {
+    if (!canVibrateDevice()) return false;
+    // Gọi API thật — nếu trình duyệt chặn sẽ throw / no-op
+    const r = navigator.vibrate(18);
+    // Một số trình duyệt trả false khi không hỗ trợ
+    return r !== false;
+  } catch (e) { return false; }
+}
+
 function spawnHitParticles(ok, anchorEl) {
+  if (typeof battleFxEnabled !== 'undefined' && !battleFxEnabled) return;
   try {
     const fx = (typeof DeviceFX !== 'undefined') ? DeviceFX.current() : null;
     const n = fx ? fx.particles : (IS_NARROW_PHONE ? 7 : (IS_MOBILE_UI ? 10 : 14));
@@ -14632,6 +15842,7 @@ function preloadMeowHitImages() {
 }
 
 function spawnMeowHitFx(ok, anchorEl) {
+  if (typeof battleFxEnabled !== 'undefined' && !battleFxEnabled) return;
   try {
     if (_meowHitActive >= MEOW_HIT_MAX) return;
     preloadMeowHitImages();
@@ -14716,11 +15927,12 @@ function spawnHitRingOnly(ok, anchorEl) {
 }
 
 function feedbackWordHit(ok, anchorEl) {
-  vibrateHit(ok);
-  // Particle đầy đủ cho mọi kiểu âm; ảnh meo/sad hiện ở TẤT CẢ kiểu âm thanh
-  // (kể cả khi đã tắt âm thanh) — không còn phụ thuộc soundType/soundEnabled.
-  spawnHitParticles(ok, anchorEl);
-  spawnMeowHitFx(ok, anchorEl);
+  // Animation: mèo + particle; Rung màn xử lý trong spawnSonicWave (mỗi 5 từ đúng)
+  // Âm hit theo soundEnabled
+  if (typeof battleFxEnabled === 'undefined' || battleFxEnabled) {
+    spawnHitParticles(ok, anchorEl);
+    spawnMeowHitFx(ok, anchorEl);
+  }
   playHitSfx(ok);
 }
 
@@ -14752,6 +15964,7 @@ function submitWord(typedWord) {
       currentSpan.classList.add('correct');
     }
     spawnSonicWave(myRole);
+    triggerHitScreenShake();
     setAvatarBarking('p1', true);
     feedbackWordHit(true, currentSpan || document.getElementById('typing-box'));
   } else {
@@ -14820,17 +16033,47 @@ function submitWord(typedWord) {
   // Ký tự net cho WPM cuối trận: prefix đúng cộng, phần sai trừ (xem netCharsForWord)
   matchTotalChars += netCharsForWord(currentTarget, typedWord);
 
-  if (typedWord === currentTarget) {
-    matchCorrect++;
-    dealDamageAsync();
+  // Dame + thống kê theo TỪNG KÝ TỰ (đúng/sai vị trí, thiếu, thừa)
+  const { right: rightChars, wrong: wrongChars } = countCharHits(currentTarget, typedWord);
+  const netDmg = rightChars * DMG_PER_CHAR - wrongChars * SELF_DMG_PER_CHAR;
+
+  // Bảng kết quả cuối: đếm ký tự đúng / ký tự sai (không còn đếm theo từ)
+  matchCorrect += rightChars;
+  matchWrong += wrongChars;
+  // Đấu với bot: dame áp local lên thanh, không gửi Firebase
+  if (isBotMode) {
+    botOnPlayerHit(netDmg);
+    isSubmitting = false;
+    return;
+  }
+  if (netDmg > 0.001) {
+    dealDamageAsync(netDmg);
     queuePlayerStats({ correct: matchCorrect, wrong: matchWrong, chars: matchTotalChars, bark: true });
+  } else if (netDmg < -0.001) {
+    dealDamageAsync(-netDmg, true);
+    queuePlayerStats({ bark: false, correct: matchCorrect, wrong: matchWrong, chars: matchTotalChars });
   } else {
-    matchWrong++;
-    // Gõ sai → tự nhận 50% sát thương của 1 hit đối thủ (2.5)
-    dealDamageAsync(2.5, true);
     queuePlayerStats({ bark: false, correct: matchCorrect, wrong: matchWrong, chars: matchTotalChars });
   }
   isSubmitting = false;
+}
+
+// ── Cấu hình dame theo chữ (chỉnh số ở đây để cân bằng) ──
+// Dame gốc: từ đúng = 5, từ sai = tự nhận 2.5. Từ ~4 chữ → 1.25/chữ ≈ 5/từ; mỗi chữ sai tự trừ 1.
+const DMG_PER_CHAR = 1.25;       // mỗi chữ đúng → gây cho đối thủ
+const SELF_DMG_PER_CHAR = 1;     // mỗi chữ sai/thiếu/thừa → tự mất 1
+
+/** Đếm số chữ đúng (cùng vị trí) và số chữ sai (lệch + thiếu + thừa) của từ đã nộp */
+function countCharHits(target, typed) {
+  target = target || '';
+  typed = typed || '';
+  const lim = Math.min(target.length, typed.length);
+  let right = 0;
+  for (let i = 0; i < lim; i++) {
+    if (typed[i] === target[i]) right++;
+  }
+  const wrong = Math.max(target.length, typed.length) - right;
+  return { right, wrong };
 }
 
 // Phím Enter cũng nộp được từ — hữu ích khi bàn phím ảo trên điện thoại hiện nút
@@ -14872,7 +16115,9 @@ window.addEventListener('resize', () => {
   wordResizeTimer = setTimeout(recalcScrollOffset, 150);
 });
 
+/** Sóng hit — CHỈ animation hình ảnh, không lắc màn */
 function spawnSonicWave(role) {
+  if (typeof battleFxEnabled !== 'undefined' && !battleFxEnabled) return;
   const fx = (typeof DeviceFX !== 'undefined') ? DeviceFX.current() : { sonic: !IS_NARROW_PHONE, sonicMax: 2, sonicScale: 1, sonicLife: 280 };
   if (!fx.sonic) return;
   if (document.querySelectorAll('.sonic-wave').length >= (fx.sonicMax || 2)) return;
@@ -14888,19 +16133,17 @@ function spawnSonicWave(role) {
   w.style.cssText = `width:${size}px;height:${size}px;left:${cx}px;top:${cy}px;color:${role === 'p2' ? 'var(--p2)' : 'var(--p1)'};`;
   document.body.appendChild(w);
   setTimeout(() => w.remove(), fx.sonicLife || 280);
+}
 
-  // PC/tablet: rung nhẹ toàn màn thưa hơn (mỗi ~5 hit đúng) — tránh chóng mặt
-  if (fx.shake && role === myRole) {
-    try {
-      window._fxShakeHits = (window._fxShakeHits || 0) + 1;
-      if (window._fxShakeHits % 5 === 0) {
-        document.body.classList.remove('shake');
-        void document.body.offsetWidth;
-        document.body.classList.add('shake');
-        setTimeout(() => document.body.classList.remove('shake'), 220);
-      }
-    } catch (e) {}
-  }
+/** Rung màn — chỉ khi bật công tắc Rung; mỗi 1 từ đúng */
+function triggerHitScreenShake() {
+  if (typeof battleVibrateEnabled !== 'undefined' && !battleVibrateEnabled) return;
+  try {
+    document.body.classList.remove('shake');
+    void document.body.offsetWidth;
+    document.body.classList.add('shake');
+    setTimeout(() => document.body.classList.remove('shake'), 220);
+  } catch (e) {}
 }
 
 const _barkState = { p1: false, p2: false };
@@ -15085,13 +16328,13 @@ function renderPrepLastResult() {
       <div class="prep-last-result-grid">
         <div class="prep-last-result-side me">
           <div class="prep-last-result-side-label">Bạn</div>
-          <div class="prep-last-result-line ok"><span>Đúng</span><span>${r.meCorrect}</span></div>
-          <div class="prep-last-result-line bad"><span>Sai</span><span>${r.meWrong}</span></div>
+          <div class="prep-last-result-line ok"><span>KT đúng</span><span>${r.meCorrect}</span></div>
+          <div class="prep-last-result-line bad"><span>KT sai</span><span>${r.meWrong}</span></div>
         </div>
         <div class="prep-last-result-side opp">
           <div class="prep-last-result-side-label">Đối thủ</div>
-          <div class="prep-last-result-line ok"><span>Đúng</span><span>${r.oppCorrect}</span></div>
-          <div class="prep-last-result-line bad"><span>Sai</span><span>${r.oppWrong}</span></div>
+          <div class="prep-last-result-line ok"><span>KT đúng</span><span>${r.oppCorrect}</span></div>
+          <div class="prep-last-result-line bad"><span>KT sai</span><span>${r.oppWrong}</span></div>
         </div>
       </div>
     </div>`;

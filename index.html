@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, interactive-widget=overlays-content">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0E0E11">
-<title>Typing Battle</title>
+<title>Typing Battle · fix-prefix-v5</title>
 <style>
   /* ============================================================
      ARENA THEME — Typing Battle
@@ -163,6 +163,16 @@
     box-shadow: 2px 2px 0 rgba(0,0,0,.35) !important;
   }
 
+  .admin-anim-btn { right: 50px; }
+  @media (max-width:720px) { .admin-anim-btn { right: 46px; } }
+  .anim-prev-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; }
+  .anim-prev-cell {
+    background: transparent; border: 1px solid var(--line); border-radius: 6px;
+    padding: .5rem .3rem; cursor: pointer; color: var(--dim); text-align: center;
+  }
+  .anim-prev-cell:hover { border-color: var(--accent); }
+  .anim-prev-cell .brs-badge { width: 72px; height: 72px; margin: 0 auto; }
+  .anim-prev-cell .nm { display: block; margin-top: .25rem; font-size: .78rem; font-weight: 600; }
   .typing-settings-overlay {
     position: fixed;
     inset: 0;
@@ -1582,6 +1592,10 @@
     color: var(--accent);
     font-weight: 600;
   }
+  .account-menu-head { display: flex; align-items: center; gap: 0.7rem; }
+  .account-menu-info { flex: 1; min-width: 0; }
+  .account-menu-badge { flex: 0 0 auto; width: 44px; height: 44px; }
+  .account-menu-badge svg { display: block; width: 100%; height: 100%; }
   .account-menu-head {
     padding: 0.55rem 0.85rem 0.45rem;
     border-bottom: 1px solid var(--line);
@@ -2859,6 +2873,16 @@
       padding-right: 0;
       box-sizing: border-box;
     }
+    /* Luyện tập (PC): ô từ + ô gõ cùng chiều ngang với đấu bot / chiến đấu (960px) */
+    body.device-pc #game-screen.active.practice-active .typing-section {
+      width: 100%;
+      max-width: 960px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 0;
+      padding-right: 0;
+      box-sizing: border-box;
+    }
     body.device-pc #game-screen.active:not(.practice-active) #practice-keyboard-viz {
       display: flex;
       margin-top: 1.25rem;
@@ -3113,6 +3137,7 @@
   }
 
   .typing-section {
+    position: relative;
     max-width: 920px;
     margin: 0.85rem auto 0;
     padding: 0 1rem;
@@ -4152,7 +4177,101 @@
   }
 
   /* ── Đấu với bot (Luyện tập) ── */
-  .bot-pick-card { position: relative; max-width: 420px; max-height: 92vh; overflow-y: auto; }
+  .bot-pick-card {
+    position: relative;
+    max-width: 370px;
+    width: min(370px, calc(100vw - 1.5rem));
+    max-height: 94vh;
+    overflow-y: auto;
+    padding: 1.35rem 1.15rem 1.15rem;
+  }
+  .bot-pick-card h2 { margin-bottom: 1.7rem; font-size: 1.2rem; } /* kéo lưới mức độ xa nhãn */
+  /* Ô nhập WPM cố định — giống ô gõ trong game */
+  .bot-custom-wpm {
+    margin: 0;
+    text-align: center;
+  }
+  /* Giống ô nhập mã tham gia: nền trong suốt + gạch dưới chân — vùng ngắn gọn */
+  .bot-custom-input {
+    display: block;
+    width: 100%;
+    max-width: 6.5rem;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    padding: 0.28rem 0 0.2rem;
+    border: none;
+    border-bottom: 1px solid var(--line-strong);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: 0.1em;
+    font-variant-numeric: tabular-nums;
+    outline: none;
+    box-shadow: none;
+    caret-color: var(--accent);
+    transition: border-color 0.2s;
+  }
+  .bot-custom-input::placeholder {
+    color: transparent;
+  }
+  .bot-custom-input:focus {
+    border-color: var(--accent);
+    background: transparent;
+    box-shadow: none;
+  }
+  .bot-custom-input.is-invalid {
+    border-bottom-color: var(--danger);
+    animation: bot-wpm-shake 0.28s ease;
+  }
+  @keyframes bot-wpm-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+  .bot-custom-hint {
+    margin-top: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--dim);
+    letter-spacing: 0.03em;
+    line-height: 1.35;
+  }
+  .bot-custom-hint kbd {
+    display: inline-block;
+    padding: 0.05rem 0.35rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background: var(--surface);
+    color: var(--accent);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .bot-custom-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0.45rem 0 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .bot-custom-divider::before,
+  .bot-custom-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
   .bot-pick-close {
     position: absolute;
     top: 0.55rem;
@@ -4173,9 +4292,9 @@
   .bot-tier-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.55rem;
-    margin-bottom: 0.2rem;
-    max-height: 14.5rem;           /* ~2,5 hàng → lộ hàng kế tiếp để biết còn kéo xuống được */
+    gap: 0.45rem;
+    margin-bottom: 0.15rem;
+    max-height: min(52vh, 22rem);  /* dài hơn — nhiều mức nhìn thấy / cuộn */
     overflow-y: auto;
     overflow-x: hidden;
     overscroll-behavior: contain;
@@ -4195,7 +4314,7 @@
     background: var(--surface-2);
     border: 1px solid var(--line);
     border-radius: var(--radius-panel);
-    padding: 0.65rem 0.4rem;
+    padding: 0.55rem 0.3rem;
     color: var(--ink);
     cursor: pointer;
     text-align: center;
@@ -4249,6 +4368,25 @@
   .bot-exit-btn:hover { border-color: var(--accent); color: var(--accent); }
   .practice-result-card h2.bot-win { color: var(--success); }
   .practice-result-card h2.bot-lose { color: var(--danger); }
+  /* ± WPM: nhỏ + mờ hơn số chính */
+  .wpm-delta {
+    font-size: 0.55em;
+    font-weight: 600;
+    color: var(--dim);
+    opacity: 0.75;
+    margin-left: 0.12em;
+    letter-spacing: 0.02em;
+  }
+  .bot-result-sub .wpm-delta {
+    font-size: 0.85em;
+    opacity: 0.7;
+  }
+  .pname .wpm-delta,
+  #pname-opp .wpm-delta {
+    font-size: 0.72em;
+    opacity: 0.7;
+    font-weight: 600;
+  }
   .bot-result-sub {
     font-family: var(--font-mono);
     font-size: 0.78rem;
@@ -4256,6 +4394,16 @@
     letter-spacing: var(--ls-fine);
     margin: -0.55rem 0 1rem;
   }
+  /* Huy hiệu mốc ở bảng kết quả đấu bot: zoom to + vẽ nét viền 1 lần */
+  .brs-badge { width: 104px; height: 104px; margin: 0.4rem auto 0; }
+  .brs-badge svg { display: block; width: 100%; height: 100%; }
+  .brs-badge svg path, .brs-badge svg polygon, .brs-badge svg circle {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: brsDraw 1.4s ease-out forwards;
+  }
+  @keyframes brsDraw { to { stroke-dashoffset: 0; } }
+  .brs-name { margin-top: 0.45rem; font-size: 1rem; font-weight: 700; color: var(--dim); letter-spacing: 0.04em; }
 
   html, body {
     overscroll-behavior: none;
@@ -5099,6 +5247,28 @@
 }
 </style>
 
+<style id="input-extra-overlay-style">
+  /* Ký tự dư trong ô gõ → chữ đỏ (overlay chồng lên input) */
+  .word-type-input.has-extra-overlay {
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    caret-color: var(--ink);
+  }
+  #game-input-overlay {
+    position: absolute;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: pre;
+    overflow: hidden;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    color: var(--ink);
+    z-index: 2;
+  }
+  #game-input-overlay .x { color: var(--danger); }
+</style>
 <style id="split-keyboard-viz-style">
   /* ============================================================
      Split Keyboard Visualizer — chỉ hiện trên PC, trong Luyện tập
@@ -5184,6 +5354,20 @@
 </style>
 </head>
 <body>
+<!-- TB_FIX_BUILD: prefix-excess-v5-twoflow-autoVE -->
+<script>window.TB_FIX_BUILD = "prefix-excess-v5-twoflow-autoVE"; console.log("[TypingBattle] build:", window.TB_FIX_BUILD);</script>
+<style>
+#tb-fix-build-badge {
+  display: none !important; /* ẩn badge debug fix v5 · Unikey */
+  position: fixed; bottom: 8px; left: 8px; z-index: 99999;
+  font: 600 11px/1.2 ui-monospace, monospace;
+  color: #0E0E11; background: #E8B25B; padding: 4px 8px;
+  border-radius: 6px; opacity: 0.92; pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,.35);
+}
+</style>
+<div id="tb-fix-build-badge">fix v5 · auto V/E</div>
+
 
 <div id="lobby-screen" class="screen active">
   <div class="logo-wrap">
@@ -5206,6 +5390,9 @@
     </div>
     <div class="logo-title-row">
       <h1 class="logo-title"><span class="logo-word">TYPING</span><span class="logo-war">BATTLE</span></h1>
+      <button type="button" class="typing-settings-btn admin-anim-btn" id="admin-anim-btn" style="display:none;" onclick="toggleAnimPreview(event)" title="Xem animation huy hiệu (admin)" aria-label="Xem animation huy hiệu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5.5 3.5-5.5 3.5z"/></svg>
+      </button>
       <button type="button" class="typing-settings-btn" id="typing-settings-btn" onclick="toggleTypingSettings(event)" title="Cài đặt hiển thị gõ" aria-label="Cài đặt hiển thị gõ" aria-expanded="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a7.66 7.66 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.213-1.28Z"></path>
@@ -5224,6 +5411,18 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span class="chat-unread" id="lobby-chat-unread">0</span>
       </button>
+    </div>
+  </div>
+  <div class="typing-settings-overlay" id="anim-preview-overlay" onclick="if(event.target===this) toggleAnimPreview()">
+    <div class="typing-settings-panel" role="dialog" aria-modal="true" aria-labelledby="anim-preview-title">
+      <div class="typing-settings-head">
+        <h2 id="anim-preview-title">ANIMATION HUY HIỆU</h2>
+        <button type="button" class="typing-settings-close" onclick="toggleAnimPreview()" aria-label="Đóng">×</button>
+      </div>
+      <div class="typing-settings-body">
+        <button type="button" class="btn btn-gray" onclick="replayAllBadgeAnims()" style="width:100%;margin-bottom:.8rem;">↺ Phát lại tất cả</button>
+        <div class="anim-prev-grid" id="anim-prev-grid"></div>
+      </div>
     </div>
   </div>
   <div class="typing-settings-overlay" id="typing-settings-overlay" onclick="if(event.target===this) toggleTypingSettings()">
@@ -5568,8 +5767,14 @@
 <div id="bot-pick-overlay" class="practice-result-overlay" onclick="if(event.target===this)closeBotPicker()">
   <div class="practice-result-card bot-pick-card">
     <button type="button" class="bot-pick-close" onclick="closeBotPicker()" aria-label="Đóng">✕</button>
-    <h2>Chọn bot</h2>
+    <h2>Chọn mức độ</h2>
     <div class="bot-tier-grid" id="bot-tier-grid"></div>
+    <div class="bot-custom-divider">WPM cố định</div>
+    <div class="bot-custom-wpm">
+      <input type="text" inputmode="numeric" pattern="[0-9]*" id="bot-custom-wpm-input"
+        class="bot-custom-input" placeholder="" maxlength="3" autocomplete="off"
+        aria-label="Nhập WPM cố định" enterkeyhint="go" />
+    </div>
   </div>
 </div>
 
@@ -5598,7 +5803,7 @@
     </div>
     <div class="practice-result-actions">
       <button class="btn practice-wpm-btn" id="bot-rematch-btn" type="button" onclick="botRematch()">↺ Đấu lại</button>
-      <button class="btn btn-gray" id="bot-change-btn" type="button" onclick="botChangeTier()">Đổi bot</button>
+      <button class="btn btn-gray" id="bot-change-btn" type="button" onclick="botChangeTier()">Đổi mức độ</button>
       <button class="btn btn-gray" id="bot-leave-btn" type="button" onclick="exitBotMode()">Thoát</button>
     </div>
   </div>
@@ -5826,9 +6031,12 @@
 <div class="account-menu-overlay" id="account-menu-overlay" onclick="if(event.target===this)closeAccountMenu()">
   <div class="account-menu" onclick="event.stopPropagation()">
     <div class="account-menu-head">
-      <div class="account-menu-name" id="account-menu-name">—</div>
-      <div class="account-menu-acc" id="account-menu-acc" style="display:none;"></div>
-      <div class="account-menu-uid" id="account-menu-uid">uid:————</div>
+      <div class="account-menu-info">
+        <div class="account-menu-name" id="account-menu-name">—</div>
+        <div class="account-menu-acc" id="account-menu-acc" style="display:none;"></div>
+        <div class="account-menu-uid" id="account-menu-uid">uid:————</div>
+      </div>
+      <div class="account-menu-badge" id="account-menu-badge" style="display:none;"></div>
     </div>
     <button type="button" onclick="openAuthAvatarOnly()">Đổi avatar</button>
     <button type="button" onclick="openEditName(); closeAccountMenu();">Sửa tên</button>
@@ -7099,9 +7307,48 @@ window.closeAuthModal = function() {
   try { if (typeof setAuthEmailFieldError === 'function') setAuthEmailFieldError(''); } catch (e) {}
 };
 
+// ── Thành tích đấu bot: mốc cao nhất đã thắng (chỉ số 0..12 trong BOT_TIERS) ──
+function botBestLocalKey() { return 'botBestTier:' + (currentUser && currentUser.emailKey ? currentUser.emailKey : ''); }
+function botBestRead() {
+  let v = (currentUser && typeof currentUser.botBestTier === 'number') ? currentUser.botBestTier : -1;
+  try { const l = parseInt(localStorage.getItem(botBestLocalKey()), 10); if (Number.isFinite(l) && l > v) v = l; } catch (e) {}
+  return v;
+}
+function renderMenuBotBadge() {
+  const box = document.getElementById('account-menu-badge');
+  if (!box) return;
+  const i = botBestRead();
+  const t = (typeof BOT_TIERS !== 'undefined') ? BOT_TIERS[i] : null;
+  if (!t) { box.style.display = 'none'; box.innerHTML = ''; box.removeAttribute('title'); return; }
+  box.innerHTML = t.icon; // không animation — icon hiện sẵn
+  box.title = 'Thành tích đấu bot cao nhất: ' + t.name;
+  box.style.display = '';
+}
+function botRecordWin(tier) {
+  if (!currentUser || !currentUser.emailKey || typeof BOT_TIERS === 'undefined') return;
+  const i = BOT_TIERS.indexOf(tier);
+  if (i < 0 || i <= botBestRead()) return;
+  currentUser.botBestTier = i;
+  try { localStorage.setItem(botBestLocalKey(), String(i)); } catch (e) {}
+  try { update(ref(db, 'users/' + currentUser.emailKey), { botBestTier: i }); } catch (e) {}
+}
 window.openAccountMenu = function() {
   const ov = document.getElementById('account-menu-overlay');
+  renderMenuBotBadge();
   if (ov) ov.classList.add('show');
+  // Lấy thành tích từ server 1 lần / phiên (đăng nhập máy khác vẫn thấy)
+  if (currentUser && currentUser.emailKey && !currentUser._botBestFetched) {
+    currentUser._botBestFetched = true;
+    const key = currentUser.emailKey;
+    get(ref(db, 'users/' + key + '/botBestTier')).then(snap => {
+      const v = snap.val();
+      if (currentUser && currentUser.emailKey === key && typeof v === 'number' && v > botBestRead()) {
+        currentUser.botBestTier = v;
+        try { localStorage.setItem(botBestLocalKey(), String(v)); } catch (e) {}
+      }
+      renderMenuBotBadge();
+    }).catch(() => {});
+  }
 };
 window.closeAccountMenu = function() {
   const ov = document.getElementById('account-menu-overlay');
@@ -8827,6 +9074,12 @@ try {
 } catch (e) {}
 
 function updateAdminOnlineUI() {
+  const animBtn = document.getElementById('admin-anim-btn');
+  if (animBtn) {
+    const adm = isAdmin();
+    animBtn.style.display = adm ? 'inline-flex' : 'none';
+    if (!adm) { const o = document.getElementById('anim-preview-overlay'); if (o) o.classList.remove('open'); }
+  }
   const el = document.getElementById('admin-online-badge');
   if (!el) return;
   // Mọi người đều thấy số online + mở được danh sách
@@ -11156,10 +11409,9 @@ async function ensureQuotesLoaded() { /* no-op: từ đơn đã nhúng */ }
  * - Seed + batchIndex → 2 máy online cùng chuỗi
  */
 function expandWordEntry(entry) {
-  const s = String(entry == null ? '' : entry).trim();
+  const s = String(entry == null ? '' : entry).trim().normalize('NFC');
   if (!s) return [];
-  // Tách theo khoảng trắng → các từ đơn; cụm vẫn xuất hiện liền nhau
-  return s.split(/\s+/).filter(Boolean);
+  return s.split(/\s+/).filter(Boolean).map(function (w) { return w.normalize('NFC'); });
 }
 
 function getWordBatch(batchIndex) {
@@ -11707,9 +11959,8 @@ window.closeSoundSheet = closeSoundSheet;
 // Cập nhật icon FAB khi load
 document.addEventListener("DOMContentLoaded", function() {
   updateSoundFabIcon();
-  // Preload sau khi toàn bộ script đã parse (preloadMeowHitImages nằm phía dưới)
-  // — ảnh meo/sad giờ hiện ở mọi kiểu âm nên luôn preload, không cần chờ soundType === 3
-  if (typeof preloadMeowHitImages === 'function') {
+  // Preload ảnh mèo khi đang chọn kiểu âm Meow (hoặc sẽ chọn sau trong selectSoundType)
+  if (typeof soundType !== 'undefined' && soundType === 3 && typeof preloadMeowHitImages === 'function') {
     try { preloadMeowHitImages(); } catch (e) {}
   }
 });
@@ -13648,24 +13899,34 @@ const BOT_ICONS = [
   `<svg viewBox="0 0 24 24" fill="none" stroke="#a7aecb" stroke-width="1.05" stroke-linecap="butt" stroke-linejoin="miter"><path d="M3.5 16.5L2.5 7l5.5 4.2L12 4l4 7.2L21.5 7l-1 9.5z"/><path d="M4.5 20h15"/><circle cx="2.5" cy="6.2" r="0.7"/><circle cx="12" cy="3.1" r="0.75"/><circle cx="21.5" cy="6.2" r="0.7"/><polygon points="12,10.4 12.42,11.62 13.71,11.64 12.68,12.42 13.06,13.66 12,14 10.94,13.66 11.32,12.42 10.29,11.64 11.58,11.62"/><circle cx="6.5" cy="18.2" r="0.5"/><circle cx="17.5" cy="18.2" r="0.5"/></svg>`
 ];
 const BOT_TIERS = [
-  { icon: BOT_ICONS[0], name: 'Tập sự', min: 20, max: 30 },
-  { icon: BOT_ICONS[1], name: 'Dễ', min: 30, max: 40 },
-  { icon: BOT_ICONS[2], name: 'Vừa', min: 40, max: 50 },
-  { icon: BOT_ICONS[3], name: 'Khá', min: 50, max: 60 },
-  { icon: BOT_ICONS[4], name: 'Giỏi', min: 60, max: 70 },
-  { icon: BOT_ICONS[5], name: 'Cao thủ', min: 70, max: 80 },
-  { icon: BOT_ICONS[6], name: 'Siêu tốc', min: 80, max: 100 },
-  { icon: BOT_ICONS[7], name: 'Thần tốc', min: 100, max: 120 },
-  { icon: BOT_ICONS[8], name: 'Quái vật', min: 120, max: 140 },
-  { icon: BOT_ICONS[9], name: 'Siêu phàm', min: 140, max: 160 },
-  { icon: BOT_ICONS[10], name: 'Huyền thoại', min: 160, max: 180 },
-  { icon: BOT_ICONS[11], name: 'Ác mộng', min: 180, max: 200 },
-  { icon: BOT_ICONS[12], name: 'Vô đối', min: 200, max: 230, label: '>200' }
+  // Khoảng WPM tối ưu theo mức gõ tiếng Việt thực tế (mỗi mức rõ ràng, không chồng sát)
+  { icon: BOT_ICONS[0], name: 'Tập sự', min: 15, max: 25 },
+  { icon: BOT_ICONS[1], name: 'Dễ', min: 25, max: 40 },
+  { icon: BOT_ICONS[2], name: 'Vừa', min: 40, max: 55 },
+  { icon: BOT_ICONS[3], name: 'Khá', min: 55, max: 70 },
+  { icon: BOT_ICONS[4], name: 'Giỏi', min: 70, max: 85 },
+  { icon: BOT_ICONS[5], name: 'Cao thủ', min: 85, max: 100 },
+  { icon: BOT_ICONS[6], name: 'Siêu tốc', min: 100, max: 120 },
+  { icon: BOT_ICONS[7], name: 'Thần tốc', min: 120, max: 140 },
+  { icon: BOT_ICONS[8], name: 'Quái vật', min: 140, max: 160 },
+  { icon: BOT_ICONS[9], name: 'Siêu phàm', min: 160, max: 180 },
+  { icon: BOT_ICONS[10], name: 'Huyền thoại', min: 180, max: 200 },
+  { icon: BOT_ICONS[11], name: 'Ác mộng', min: 200, max: 220 },
+  { icon: BOT_ICONS[12], name: 'Vô đối', min: 220, max: 250 }
 ];
-function botTierLabel(t) { return t.label || (t.min + '–' + t.max); }
+function botTierLabel(t) {
+  if (!t) return '';
+  if (t.label) return t.label;
+  // Hiển thị: Tập sự <25 · Dễ 25–40 · các mức sau >min
+  const i = typeof BOT_TIERS !== 'undefined' ? BOT_TIERS.indexOf(t) : -1;
+  if (i === 0 || t.name === 'Tập sự') return '<' + t.max;
+  if (i === 1 || t.name === 'Dễ') return t.min + '–' + t.max;
+  return '>' + t.min;
+}
 const BOT_AVATAR = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23111'/><text x='50' y='68' text-anchor='middle' font-size='55'>🤖</text></svg>`;
 
 let botTier = null;
+let botRefWpm = null; // số WPM người chơi nhập (null = bấm ô mức)
 let botState = null;          // { cps, errP, idx, nextAt, net, right, wrong }
 let botTickTimer = null, botClockTimer = null;
 let botRunToken = 0;          // đổi mỗi lần bắt đầu/thoát → hủy các async cũ
@@ -13688,9 +13949,72 @@ function renderBotTiers() {
     b.addEventListener('click', () => {
       const ov = document.getElementById('bot-pick-overlay');
       if (ov) ov.classList.remove('show');
+      botRefWpm = null;
       startBotMatch(t);
     });
     grid.appendChild(b);
+  });
+}
+
+const BOT_CUSTOM_WPM_MIN = 10;
+const BOT_CUSTOM_WPM_MAX = 250;
+
+/** Gắn WPM nhập tay vào đúng khoảng tier.
+ *  Biên trùng (vd. 120 = max 100–120 và min 120–140) → ưu tiên mức THẤP hơn. */
+function findBotTierForWpm(n) {
+  const tiers = BOT_TIERS;
+  if (!tiers || !tiers.length) return null;
+  if (n < tiers[0].min) return tiers[0];
+  if (n > tiers[tiers.length - 1].max) return tiers[tiers.length - 1];
+  for (let i = 0; i < tiers.length; i++) {
+    const t = tiers[i];
+    const next = tiers[i + 1];
+    // Biên chung với mức sau → giữ mức hiện tại (thấp hơn)
+    if (next && n === t.max && n === next.min) return t;
+    if (n >= t.min && n <= t.max) return t;
+  }
+  return tiers[tiers.length - 1];
+}
+
+function submitCustomBotWpm() {
+  const inp = document.getElementById('bot-custom-wpm-input');
+  if (!inp) return;
+  const raw = String(inp.value || '').replace(/\D/g, '');
+  const n = parseInt(raw, 10);
+  if (!raw || !Number.isFinite(n) || n < BOT_CUSTOM_WPM_MIN || n > BOT_CUSTOM_WPM_MAX) {
+    inp.classList.remove('is-invalid');
+    void inp.offsetWidth;
+    inp.classList.add('is-invalid');
+    if (typeof showToast === 'function') {
+      showToast('Nhập WPM từ ' + BOT_CUSTOM_WPM_MIN + '–' + BOT_CUSTOM_WPM_MAX);
+    }
+    setTimeout(() => { try { inp.classList.remove('is-invalid'); } catch (e) {} }, 400);
+    return;
+  }
+  const tier = findBotTierForWpm(n);
+  if (!tier) return;
+  const ov = document.getElementById('bot-pick-overlay');
+  if (ov) ov.classList.remove('show');
+  botRefWpm = n; // số vừa nhập — dùng để hiện ± nếu bot random lệch
+  startBotMatch(tier);
+}
+
+function bindBotCustomWpmInput() {
+  const inp = document.getElementById('bot-custom-wpm-input');
+  if (!inp || inp.dataset.bound) return;
+  inp.dataset.bound = '1';
+  // Chỉ cho số
+  inp.addEventListener('input', () => {
+    const cleaned = String(inp.value || '').replace(/\D/g, '').slice(0, 3);
+    if (inp.value !== cleaned) inp.value = cleaned;
+  });
+  // Space / Enter = xác nhận vào mức độ (giống nộp từ trong game)
+  inp.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.code === 'Space' || e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      submitCustomBotWpm();
+    }
   });
 }
 
@@ -13704,15 +14028,28 @@ window.openBotPicker = function() {
     return;
   }
   renderBotTiers();
+  bindBotCustomWpmInput();
   const ov = document.getElementById('bot-pick-overlay');
   if (ov) ov.classList.add('show');
+  const inp = document.getElementById('bot-custom-wpm-input');
+  if (inp) {
+    inp.value = '';
+    inp.classList.remove('is-invalid');
+    setTimeout(() => { try { inp.focus(); } catch (e) {} }, 40);
+  }
   if (typeof unlockAudio === 'function') unlockAudio();
 };
 
 window.closeBotPicker = function() {
   const ov = document.getElementById('bot-pick-overlay');
   if (ov) ov.classList.remove('show');
-  // Mở từ bảng kết quả (Đổi bot) rồi hủy → quay lại bảng kết quả
+  const inp = document.getElementById('bot-custom-wpm-input');
+  if (inp) {
+    try { inp.blur(); } catch (e) {}
+    inp.value = '';
+    inp.classList.remove('is-invalid');
+  }
+  // Mở từ bảng kết quả (Đổi mức độ) rồi hủy → quay lại bảng kết quả
   if (isBotMode && botMatchOver) {
     const r = document.getElementById('bot-result-overlay');
     if (r) r.classList.add('show');
@@ -13765,7 +14102,7 @@ async function startBotMatch(tier) {
   ['practice-result-overlay', 'bot-result-overlay'].forEach(id => { const el = $(id); if (el) el.classList.remove('show'); });
 
   const meName = $('pname-me'); if (meName) meName.textContent = (typeof getMyDisplayName === 'function' ? getMyDisplayName() : 'Bạn');
-  const oppName = $('pname-opp'); if (oppName) oppName.textContent = `🤖 Bot ${botTierLabel(tier)}`;
+  const oppName = $('pname-opp'); if (oppName) oppName.textContent = `🤖 Bot ${botTierLabel(tier)}`; // cập nhật WPM sau botInitState
   const myAv = $('av-img-p1'); if (myAv) myAv.src = myImgs.default || getDefaultSvg();
   const botAv = $('av-img-p2'); if (botAv) botAv.src = BOT_AVATAR;
   const b1 = $('bar-p1-img'); if (b1) b1.style.backgroundImage = myImgs.default ? `url("${myImgs.default}")` : '';
@@ -13790,6 +14127,7 @@ async function startBotMatch(tier) {
   if (token !== botRunToken || !isBotMode) return;
 
   botInitState(tier);
+  updateBotOppLabel();
   gameStartTs = Date.now();
   timeLeft = GAME_DURATION;
   gameActive = true; gameStarted = true;
@@ -13804,21 +14142,53 @@ function botWordAt(i) {
   return n ? (wordList[i % n] || 'abcd') : 'abcd';
 }
 function botWordDuration(len) {
-  // (len + 1 khoảng trắng) ký tự / tốc độ ký tự mỗi giây, rung ±25% cho giống người gõ
-  return ((len + 1) / botState.cps) * 1000 * (0.75 + Math.random() * 0.5);
+  // (len + 1 khoảng trắng) ký tự / cps; rung ±15% để WPM thực tế sát mức đã chọn
+  return ((len + 1) / botState.cps) * 1000 * (0.85 + Math.random() * 0.3);
 }
 
 function botInitState(tier) {
   const wpm = tier.min + Math.random() * (tier.max - tier.min);
   botState = {
+    wpm: wpm, // WPM mục tiêu bot (random trong khoảng mức)
     cps: (wpm * 5) / 60,
-    errP: Math.min(0.08, Math.max(0.02, 0.085 - wpm * 0.0006)), // bot chậm sai nhiều hơn
+    errP: Math.min(0.12, Math.max(0.015, 0.11 - wpm * 0.00045)), // chậm sai nhiều; cao vẫn có sai nhẹ
     idx: 0, net: 0, right: 0, wrong: 0, nextAt: 0
   };
   // Độ trễ phản xạ lúc bắt đầu + thời gian gõ từ đầu tiên
   botState.chars = 0; botState.typeMs = 0; // chỉ tính thời gian THỰC SỰ gõ (không tính độ trễ phản xạ) để hiển thị WPM đúng mức bot
   botState.curDur = botWordDuration(botWordAt(0).length);
   botState.nextAt = Date.now() + 600 + Math.random() * 500 + botState.curDur;
+}
+
+/** Luôn dùng ký hiệu ±, bất kể lệch lên hay xuống */
+function formatWpmDelta(d) {
+  const n = Math.abs(Math.round(Number(d) || 0));
+  return '(±' + n + ')';
+}
+
+/** Mốc so sánh ±: ưu tiên số nhập tay, không thì WPM mục tiêu bot đã random */
+function botWpmBaseline() {
+  if (botRefWpm != null && Number.isFinite(botRefWpm)) return Math.round(botRefWpm);
+  if (botState && typeof botState.wpm === 'number') return Math.round(botState.wpm);
+  return null;
+}
+
+/** Nhãn đối thủ: WPM mục tiêu; ± chỉ khi nhập WPM cụ thể */
+function updateBotOppLabel() {
+  const oppName = document.getElementById('pname-opp');
+  if (!oppName) return;
+  if (!botState || typeof botState.wpm !== 'number') {
+    oppName.textContent = botTier ? ('🤖 Bot ' + botTierLabel(botTier)) : '🤖 Bot';
+    return;
+  }
+  const rolled = Math.round(botState.wpm);
+  // Chỉ hiện ± khi người chơi nhập số cụ thể (botRefWpm)
+  if (botRefWpm != null && Number.isFinite(botRefWpm)) {
+    const d = rolled - Math.round(botRefWpm);
+    oppName.innerHTML = '🤖 ' + rolled + '<span class="wpm-delta"> ' + formatWpmDelta(d) + '</span>';
+  } else {
+    oppName.textContent = '🤖 ' + rolled;
+  }
 }
 
 function botCompleteWord() {
@@ -13892,6 +14262,7 @@ function endBotMatch() {
   if (ballPos <= 0) outcome = 'win';
   else if (ballPos >= 100) outcome = 'lose';
   else outcome = ballPos < 50 ? 'win' : (ballPos > 50 ? 'lose' : 'draw');
+  if (outcome === 'win') botRecordWin(botTier); // lưu mốc cao nhất đã thắng (hiện ở menu tài khoản)
 
   const $ = id => document.getElementById(id);
   const title = $('bot-result-title');
@@ -13900,10 +14271,30 @@ function endBotMatch() {
     title.className = outcome === 'win' ? 'bot-win' : (outcome === 'lose' ? 'bot-lose' : '');
   }
   const sub = $('bot-result-sub');
-  if (sub && botTier) sub.textContent = `Bot mức ${botTierLabel(botTier)} WPM`;
+  if (sub && !(botTier && outcome === 'win')) {
+    // Chỉ thắng mới hiện huy hiệu — thua/hòa ẩn hẳn dòng này
+    sub.innerHTML = '';
+    sub.style.display = 'none';
+  } else if (sub && botTier) {
+    sub.style.display = '';
+    // Huy hiệu mốc (zoom to) + animation vẽ nét viền, bên dưới là tên mốc
+    sub.innerHTML = '<div class="brs-badge">' + botTier.icon + '</div><div class="brs-name">' + botTier.name + '</div>';
+    sub.querySelectorAll('.brs-badge svg path, .brs-badge svg polygon, .brs-badge svg circle').forEach((el, i) => {
+      el.setAttribute('pathLength', '1');
+      el.style.animationDelay = (i * 0.12) + 's';
+    });
+  }
   if ($('br-me-wpm')) $('br-me-wpm').textContent = String(meWpm);
-  if ($('br-bot-wpm')) $('br-bot-wpm').textContent = String(botWpm);
-  if ($('br-correct')) $('br-correct').textContent = String(matchCorrect);
+  if ($('br-bot-wpm')) {
+    // Ô WPM bot: tốc độ thực tế; ± chỉ khi nhập số cụ thể (luôn hiện dấu +/−)
+    if (botRefWpm != null && Number.isFinite(botRefWpm)) {
+      const d = botWpm - Math.round(botRefWpm);
+      $('br-bot-wpm').innerHTML = botWpm + '<span class="wpm-delta"> ' + formatWpmDelta(d) + '</span>';
+    } else {
+      $('br-bot-wpm').textContent = String(botWpm);
+    }
+  }
+  if ($('br-correct')) $('br-correct').textContent = String(Math.ceil(Number(matchCorrect || 0) - 1e-9));
   if ($('br-wrong')) $('br-wrong').textContent = String(matchWrong);
 
   const ov = $('bot-result-overlay');
@@ -14523,6 +14914,44 @@ window.toggleTypingSettings = function toggleTypingSettings(event) {
   }
 }
 
+// ── Admin: xem animation vẽ viền của 13 huy hiệu mốc ──
+function playBadgeDraw(holder, icon) {
+  holder.innerHTML = icon;
+  holder.querySelectorAll('svg path, svg polygon, svg circle').forEach((el, i) => {
+    el.setAttribute('pathLength', '1');
+    el.style.animationDelay = (i * 0.12) + 's';
+  });
+}
+window.replayAllBadgeAnims = function replayAllBadgeAnims() {
+  const grid = document.getElementById('anim-prev-grid');
+  if (!grid) return;
+  grid.querySelectorAll('.anim-prev-cell').forEach(c => {
+    playBadgeDraw(c.querySelector('.brs-badge'), BOT_TIERS[+c.dataset.i].icon);
+  });
+};
+window.toggleAnimPreview = function toggleAnimPreview(event) {
+  if (event) event.stopPropagation();
+  const overlay = document.getElementById('anim-preview-overlay');
+  if (!overlay || !isAdmin()) return;
+  const open = !overlay.classList.contains('open');
+  overlay.classList.toggle('open', open);
+  if (!open) return;
+  const grid = document.getElementById('anim-prev-grid');
+  if (grid && !grid.dataset.ready) {
+    grid.dataset.ready = '1';
+    BOT_TIERS.forEach((t, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'anim-prev-cell';
+      b.dataset.i = String(i);
+      b.innerHTML = '<div class="brs-badge"></div><span class="nm">' + t.name + '</span>';
+      b.addEventListener('click', () => playBadgeDraw(b.querySelector('.brs-badge'), t.icon));
+      grid.appendChild(b);
+    });
+  }
+  replayAllBadgeAnims();
+};
+
 function updateTypingCharacterFeedback(inputEl, target) {
   if (typingDisplayMode !== 'cursor') return;
   const currentSpan = document.getElementById('word-' + currentWordIndex);
@@ -14533,25 +14962,22 @@ function updateTypingCharacterFeedback(inputEl, target) {
     el.classList.remove('typing-correct', 'typing-wrong', 'typing-extra');
   });
 
-  const typed = Array.from((inputEl && inputEl.value) || '');
-  const targetChars = Array.from(target || '');
+  // Chỉ chấm prefix (= độ dài từ đích); dư không làm lệch màu dấu
+  updateTypedFreeze(target, (inputEl && inputEl.value) || '');
+  const parts = splitPrefixExcess(target, (inputEl && inputEl.value) || '');
   const chars = currentSpan.querySelectorAll('.typing-char');
-  const compareLength = Math.min(typed.length, targetChars.length);
 
-  // So sánh từng vị trí:
-  //  - đã gõ và khớp  → xanh
-  //  - đã gõ nhưng sai → đỏ
-  //  - chưa gõ / vừa xóa lùi lại → không gán class (giữ màu trắng mặc định của từ hiện tại)
   for (let i = 0; i < chars.length; i++) {
-    if (i >= typed.length) continue;
-    if (typed[i] === targetChars[i]) {
+    if (i >= parts.prefixChars.length) continue; // chưa gõ tới / chỉ là dư — không đụng
+    const expected = (i < parts.tChars.length)
+      ? parts.tChars[i]
+      : normalizeVi(chars[i].textContent || '');
+    if (parts.prefixChars[i] === expected) {
       chars[i].classList.add('typing-correct');
     } else {
       chars[i].classList.add('typing-wrong');
     }
   }
-  // Nếu gõ thừa: các ký tự target sau phần khớp vẫn giữ đúng/sai theo vị trí ở trên.
-  // (Không tô đỏ cả từ chỉ vì thừa 1 ký tự cuối.)
 }
 
 function updateTypingCursor() {
@@ -14565,7 +14991,10 @@ function updateTypingCursor() {
   const currentSpan = document.getElementById('word-' + currentWordIndex);
   if (!currentSpan) return;
   const inputEl = document.getElementById('game-hidden-input');
-  const typedLength = inputEl ? Array.from(inputEl.value || '').length : 0;
+  const _tgCur = (typeof wordList !== 'undefined' && wordList[currentWordIndex]) || '';
+  const typedLength = inputEl
+    ? (_tgCur ? viChars(effectiveTyped(_tgCur, inputEl.value || '')).length : Array.from(inputEl.value || '').length)
+    : 0;
   const chars = currentSpan.querySelectorAll('.typing-char');
   if (typedLength < chars.length) {
     chars[typedLength].classList.add('cursor-before');
@@ -14624,7 +15053,7 @@ async function setupTypingEngine() {
     const inputEl = document.getElementById('game-hidden-input');
     inputEl.addEventListener('input', handleWordInputChange);
     // keydown: predictive sound + Enter submit — capture sớm hơn input
-    inputEl.addEventListener('keydown', handleWordKeydown, { passive: false });
+    inputEl.addEventListener('keydown', handleWordKeydown, { passive: false, capture: true });
   }
 
   // Unlock audio khi bắt đầu gõ (gesture đã có từ nút / focus)
@@ -14957,23 +15386,357 @@ function initWordGame() {
   updateCurrentWordHighlight();
 }
 
-/** Kết quả cuối theo từng ký tự: đúng → xanh, sai/thiếu/thừa → đỏ.
- *  So sánh từng vị trí — prefix đúng vẫn xanh kể cả khi gõ thừa phía sau. */
+/** Chuẩn hóa tiếng Việt — Unikey V hay để dấu tổ hợp / zero-width. */
+function normalizeVi(s) {
+  return String(s == null ? '' : s)
+    .normalize('NFC')
+    .replace(/[\u200B-\u200D\uFEFF\u00AD\u2060]/g, '');
+}
+
+/** Tách grapheme sau NFC. */
+function viChars(s) {
+  s = normalizeVi(s);
+  try {
+    if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+      var seg = new Intl.Segmenter('vi', { granularity: 'grapheme' });
+      return Array.from(seg.segment(s), function (x) { return x.segment; });
+    }
+  } catch (e) {}
+  return Array.from(s);
+}
+
+function viLen(s) { return viChars(s).length; }
+
+/* ══════════ TELEX ENGINE (chế độ E: Unikey không bỏ dấu → game tự ghép để chấm) ══════════
+ * telexCompose(raw, style): ghép dấu Telex từ chuỗi gõ thô. Idempotent với chữ đã có dấu (chế độ V).
+ * effectiveTyped(target, typed): chuỗi "hiệu lực" dùng để chấm:
+ *   - tiền tố NGẮN NHẤT của chuỗi gõ mà ghép Telex ra đúng từ đích → thân từ = từ đích, phần còn lại = DƯ
+ *     (trả về target + 'x' * số dư) → luồng 1 / luồng 2 hoạt động như nhau ở cả E lẫn V.
+ *   - không khớp → chọn (thô / Telex kiểu cũ / kiểu mới) cho điểm tốt nhất; hoà → giữ thô. */
+var TELEX_TONE_KEYS = { s: 1, f: 2, r: 3, x: 4, j: 5 };
+var TELEX_TONE_MARK = { 1: '\u0301', 2: '\u0300', 3: '\u0309', 4: '\u0303', 5: '\u0323' };
+var TELEX_MOD_MARK = { breve: '\u0306', circ: '\u0302', horn: '\u031B' };
+
+function _txParse(ch) {
+  var lower = ch.toLowerCase();
+  var up = ch !== lower;
+  if (lower === '\u0111') return { b: 'd', m: 'stroke', t: 0, u: up, lit: false };
+  var nfd = lower.normalize('NFD');
+  var b = nfd.charAt(0);
+  if (nfd.length > 1 && /^[a-z]$/.test(b)) {
+    var m = '', t = 0;
+    for (var i = 1; i < nfd.length; i++) {
+      var c = nfd.charAt(i);
+      if (c === '\u0306') m = 'breve';
+      else if (c === '\u0302') m = 'circ';
+      else if (c === '\u031B') m = 'horn';
+      else if (c === '\u0301') t = 1;
+      else if (c === '\u0300') t = 2;
+      else if (c === '\u0309') t = 3;
+      else if (c === '\u0303') t = 4;
+      else if (c === '\u0323') t = 5;
+      else return { b: ch, m: '', t: 0, u: false, lit: true };
+    }
+    return { b: b, m: m, t: t, u: up, lit: false };
+  }
+  return { b: lower, m: '', t: 0, u: up, lit: !/^[a-z]$/.test(lower) };
+}
+function _txIsV(it) { return !it.lit && it.m !== 'stroke' && 'aeiouy'.indexOf(it.b) >= 0; }
+function _txStr(it, tone) {
+  if (it.lit) return it.b;
+  if (it.b === 'd' && it.m === 'stroke') return it.u ? '\u0110' : '\u0111';
+  var s = it.b + (it.m ? TELEX_MOD_MARK[it.m] : '') + (tone ? TELEX_TONE_MARK[tone] : '');
+  s = s.normalize('NFC');
+  return it.u ? s.toUpperCase() : s;
+}
+/** Cụm nguyên âm cuối [s,e] (loại u của "qu", i của "gi" khi còn nguyên âm sau). */
+function _txNucleus(items) {
+  var e = -1, i;
+  for (i = items.length - 1; i >= 0; i--) { if (_txIsV(items[i])) { e = i; break; } }
+  if (e < 0) return null;
+  var s = e;
+  while (s > 0 && _txIsV(items[s - 1])) s--;
+  if (e > s && s > 0) {
+    if (items[s].b === 'u' && items[s].m === '' && items[s - 1].b === 'q') s++;
+    else if (items[s].b === 'i' && items[s].m === '' && items[s - 1].b === 'g') s++;
+  }
+  return [s, e];
+}
+function _txTonePos(items, s, e, style) {
+  var n = e - s + 1;
+  if (n === 1) return s;
+  var mod = -1, i;
+  for (i = s; i <= e; i++) { if (items[i].m && items[i].m !== 'stroke') mod = i; }
+  if (mod >= 0) return mod;
+  var hasFinal = (items.length - 1 > e);
+  if (n === 2) {
+    if (hasFinal) return s + 1;
+    var pair = items[s].b + items[s + 1].b;
+    if (pair === 'oa' || pair === 'oe' || pair === 'uy') return style === 'new' ? s + 1 : s;
+    return s;
+  }
+  return s + 1;
+}
+/** Vị trí nguyên âm cuối cùng nếu sau nó chỉ còn ≤ 2 phụ âm (phụ âm cuối). */
+function _txLastVowelIdx(items) {
+  var i = items.length - 1, tail = 0;
+  while (i >= 0 && !_txIsV(items[i])) { if (items[i].lit) return -1; tail++; i--; }
+  if (i < 0 || tail > 2) return -1;
+  return i;
+}
+function telexCompose(raw, style) {
+  var chars = viChars(raw);
+  var items = [];
+  var wTone = 0, toneBlocked = false;
+  function lit(ch) { var p = _txParse(ch); items.push(p); }
+  for (var ci = 0; ci < chars.length; ci++) {
+    var ch = chars[ci];
+    if (!/^[A-Za-z]$/.test(ch)) { items.push(_txParse(ch)); continue; }
+    var lc = ch.toLowerCase();
+    var up = ch !== lc;
+    var done = false, last = items.length ? items[items.length - 1] : null, k, v;
+
+    // dấu thanh
+    if ((TELEX_TONE_KEYS[lc] || lc === 'z') && !toneBlocked) {
+      var nuc = _txNucleus(items);
+      if (nuc) {
+        var cur = wTone;
+        if (!cur) { for (k = nuc[0]; k <= nuc[1]; k++) { if (items[k].t) cur = items[k].t; } }
+        if (lc === 'z') {
+          if (cur) { for (k = 0; k < items.length; k++) items[k].t = 0; wTone = 0; done = true; }
+        } else if (cur === TELEX_TONE_KEYS[lc]) {
+          for (k = 0; k < items.length; k++) items[k].t = 0;
+          wTone = 0; toneBlocked = true; lit(ch); done = true;
+        } else {
+          for (k = 0; k < items.length; k++) items[k].t = 0;
+          wTone = TELEX_TONE_KEYS[lc]; done = true;
+        }
+      }
+    }
+    // dd → đ
+    if (!done && lc === 'd' && last && !last.lit && last.b === 'd') {
+      if (last.m === '') { last.m = 'stroke'; done = true; }
+      else if (last.m === 'stroke') { last.m = ''; lit(ch); done = true; }
+    }
+    // aa ee oo → â ê ô
+    if (!done && (lc === 'a' || lc === 'e' || lc === 'o')) {
+      v = _txLastVowelIdx(items);
+      if (v >= 0 && items[v].b === lc) {
+        if (items[v].m === '') { items[v].m = 'circ'; done = true; }
+        else if (items[v].m === 'circ') { items[v].m = ''; lit(ch); done = true; }
+      }
+    }
+    // w → ă ơ ư (uow/uo+w → ươ)
+    if (!done && lc === 'w') {
+      v = _txLastVowelIdx(items);
+      if (v < 0) {
+        var hasV = false;
+        for (k = 0; k < items.length; k++) { if (_txIsV(items[k])) hasV = true; }
+        if (!hasV) { items.push({ b: 'u', m: 'horn', t: 0, u: up, lit: false }); done = true; }
+      } else {
+        var it = items[v];
+        if (it.b === 'o') {
+          if (it.m === 'horn') { it.m = ''; lit(ch); done = true; }
+          else {
+            var pv = v > 0 ? items[v - 1] : null;
+            if (pv && !pv.lit && pv.b === 'u' && pv.m === '' && !(v > 1 && items[v - 2].b === 'q')) pv.m = 'horn';
+            it.m = 'horn'; done = true;
+          }
+        } else if (it.b === 'a') {
+          if (it.m === 'breve') { it.m = ''; lit(ch); done = true; }
+          else { it.m = 'breve'; done = true; }
+        } else if (it.b === 'u') {
+          if (it.m === 'horn') { it.m = ''; lit(ch); done = true; }
+          else { it.m = 'horn'; done = true; }
+        }
+      }
+    }
+    if (!done) items.push({ b: lc, m: '', t: 0, u: up, lit: false });
+  }
+  // "ưo" + phụ âm cuối → "ươ" (truwong → trương, Unikey cũng tự sửa như vậy)
+  for (var ui = 0; ui + 2 < items.length; ui++) {
+    if (!items[ui].lit && items[ui].b === 'u' && items[ui].m === 'horn' &&
+        !items[ui + 1].lit && items[ui + 1].b === 'o' && items[ui + 1].m === '' && !_txIsV(items[ui + 2])) {
+      items[ui + 1].m = 'horn';
+    }
+  }
+  var idx = -1;
+  if (wTone) { var n2 = _txNucleus(items); if (n2) idx = _txTonePos(items, n2[0], n2[1], style); }
+  var out = '';
+  for (var i = 0; i < items.length; i++) {
+    var tone = wTone ? (i === idx ? wTone : 0) : items[i].t;
+    out += _txStr(items[i], tone);
+  }
+  return out.normalize('NFC');
+}
+
+function _evScore(tChars, s) {
+  var yc = viChars(s), right = 0, tl = tChars.length;
+  for (var i = 0; i < tl; i++) { if (yc[i] === tChars[i]) right++; }
+  return right - ((tl - right) + Math.max(0, yc.length - tl));
+}
+var _effCache = { t: null, y: null, r: '' };
+function effectiveTyped(target, typed) {
+  var tNorm = normalizeVi(target), y = normalizeVi(typed);
+  if (!y || !tNorm) return y;
+  if (_effCache.t === tNorm && _effCache.y === y) return _effCache.r;
+  var yc = viChars(y), tChars = viChars(tNorm), res = y, found = -1, k;
+  for (k = 1; k <= yc.length && found < 0; k++) {
+    var pre = yc.slice(0, k).join('');
+    if (pre === tNorm || telexCompose(pre, 'old') === tNorm || telexCompose(pre, 'new') === tNorm) found = k;
+  }
+  if (found > 0) {
+    res = tNorm + new Array(yc.length - found + 1).join('x');
+  } else {
+    var cands = [y, telexCompose(y, 'old'), telexCompose(y, 'new')];
+    var best = y, bs = _evScore(tChars, y);
+    for (k = 1; k < cands.length; k++) {
+      var sc = _evScore(tChars, cands[k]);
+      if (sc > bs) { bs = sc; best = cands[k]; }
+    }
+    res = best;
+  }
+  _effCache = { t: tNorm, y: y, r: res };
+  return res;
+}
+
+
+/**
+ * Unikey chế độ V: khi gõ DƯ sau từ có dấu, hay gửi Backspace + gõ lại cả từ
+ * → input.value bị lệch so với những gì user thấy đã gõ đúng.
+ * Chế độ E không qua Unikey → không lệch.
+ *
+ * Cách xử lý:
+ * - _mainChars: thân từ (luồng 1), đóng băng khi bắt đầu dư
+ * - Khi buffer DÀI HƠN target (có dư): KHÔNG đọc lại prefix từ buffer — giữ commit
+ * - Chấm đúng/sai chỉ trên commit/prefix; excess đếm sau
+ */
+/* ── HAI LUỒNG TÁCH BIỆT ─────────────────────────────────────────────
+ * LUỒNG 1 — THÂN TỪ: chỉ xét tLen grapheme đầu của buffer, chấm THEO VỊ TRÍ
+ *           (ký tự sai đỏ, ký tự sau vẫn xét độc lập). Khi buffer chưa dài hơn từ đích
+ *           thì cập nhật theo buffer (cho phép Backspace); khi bắt đầu gõ dư thì ĐÓNG BĂNG
+ *           thân từ → Unikey V có xoá/gõ lại cũng không làm lệch dấu/màu.
+ * LUỒNG 2 — DƯ: chỉ đếm số grapheme vượt tLen. Không đụng tới màu của thân từ;
+ *           mỗi ký tự dư được tính là 1 ký tự SAI cộng ẩn vào cuối khi chấm điểm. */
+var _commitTarget = '';
+var _mainChars = [];        // LUỒNG 1: thân từ (tối đa tLen grapheme, theo vị trí)
+var _excessCount = 0;       // LUỒNG 2: số grapheme dư
+var _holdTransient = false; // true = buffer co tạm do Unikey V xoá+gõ lại → giữ nguyên cả 2 luồng
+var _lastKeyAt = 0;         // thời điểm phím (không phải Backspace/Delete) gần nhất
+
+function clearTypedFreeze() {
+  _commitTarget = '';
+  _mainChars = [];
+  _excessCount = 0;
+  _holdTransient = false;
+}
+
+/** Đồng bộ 2 luồng từ buffer. Gọi mỗi input / keydown. */
+function updateTypedFreeze(target, typed) {
+  var tNorm = normalizeVi(target);
+  var tChars = viChars(tNorm);
+  var yChars = viChars(effectiveTyped(target, typed));
+
+  if (!tChars.length) { clearTypedFreeze(); return; }
+
+  if (_commitTarget !== tNorm) {
+    _commitTarget = tNorm;
+    _mainChars = [];
+    _excessCount = 0;
+  }
+  _holdTransient = false;
+
+  if (yChars.length <= tChars.length) {
+    // Unikey V: gõ dư xong nó gửi Backspace + gõ lại cả từ → buffer co tạm trong vài ms.
+    // Thân từ đã đủ + vừa có phím < 60ms → trạng thái tạm, GIỮ nguyên 2 luồng.
+    if (_mainChars.length >= tChars.length && yChars.length < tChars.length &&
+        (performance.now() - _lastKeyAt) < 60) {
+      _holdTransient = true;
+      return;
+    }
+    // Luồng 1 sống theo buffer; luồng 2 = 0
+    _mainChars = yChars.slice();
+    _excessCount = 0;
+    return;
+  }
+
+  // Có dư: luồng 2 đếm phần vượt; luồng 1 đóng băng (chỉ chụp lần đầu nếu chưa đủ thân từ)
+  _excessCount = yChars.length - tChars.length;
+  if (_mainChars.length < tChars.length) {
+    _mainChars = yChars.slice(0, tChars.length);
+  }
+}
+
+/** Tách thân từ (luồng 1) / dư (luồng 2) để chấm điểm. */
+function splitPrefixExcess(target, typed) {
+  var tNorm = normalizeVi(target);
+  var tChars = viChars(tNorm);
+  var yChars = viChars(effectiveTyped(target, typed));
+
+  if (_commitTarget !== tNorm) {
+    updateTypedFreeze(target, typed);
+  }
+
+  var prefixChars;
+  var excessLen = 0;
+
+  if (_holdTransient && _commitTarget === tNorm) {
+    prefixChars = _mainChars.slice(0, tChars.length);
+    excessLen = _excessCount;
+  } else if (yChars.length > tChars.length) {
+    prefixChars = (_mainChars.length >= tChars.length && _commitTarget === tNorm)
+      ? _mainChars.slice(0, tChars.length)
+      : yChars.slice(0, tChars.length);
+    excessLen = yChars.length - tChars.length;
+  } else {
+    prefixChars = yChars.slice();
+  }
+
+  // Chỉ cần SỐ LƯỢNG dư (không dùng nội dung để tô màu)
+  var excessChars = [];
+  for (var e = 0; e < excessLen; e++) excessChars.push('?');
+
+  return {
+    tChars: tChars,
+    prefixChars: prefixChars,
+    excessChars: excessChars,
+    yChars: yChars
+  };
+}
+
+/** Đủ từ đích = prefix/commit khớp 100% (bỏ qua excess). */
+function isTargetFullyMatched(target, typed) {
+  updateTypedFreeze(target, typed);
+  var parts = splitPrefixExcess(target, typed);
+  if (!parts.tChars.length) return false;
+  if (parts.prefixChars.length < parts.tChars.length) return false;
+  for (var i = 0; i < parts.tChars.length; i++) {
+    if (parts.prefixChars[i] !== parts.tChars[i]) return false;
+  }
+  return true;
+}
+
+/** Tô màu từ hiển thị: CHỈ theo prefix/commit — dư không đụng tới dấu. */
 function applyWordCharResult(span, target, typed) {
   if (!span) return;
-  const chars = span.querySelectorAll('.typing-char');
-  const tChars = Array.from(target || '');
-  const typedChars = Array.from(typed || '');
-  for (let i = 0; i < chars.length; i++) {
-    const el = chars[i];
+  var _sv = [_commitTarget, _mainChars.slice(), _excessCount, _holdTransient];
+  updateTypedFreeze(target, typed);
+  var chars = span.querySelectorAll('.typing-char');
+  var parts = splitPrefixExcess(target, typed);
+  var tChars = parts.tChars;
+  var prefixChars = parts.prefixChars;
+  for (var i = 0; i < chars.length; i++) {
+    var el = chars[i];
     el.classList.remove('typing-correct', 'typing-wrong', 'typing-extra', 'cursor-before', 'typing-cursor-end');
-    if (i < typedChars.length && typedChars[i] === tChars[i]) {
+    var expected = (i < tChars.length) ? tChars[i] : normalizeVi(el.textContent || '');
+    if (i < prefixChars.length && prefixChars[i] === expected) {
       el.classList.add('typing-correct');
     } else {
-      // Sai vị trí, thiếu, hoặc gõ thừa (vượt độ dài target) → đỏ
       el.classList.add('typing-wrong');
     }
   }
+  // Trả lại trạng thái commit của từ đang gõ (tô màu từ cũ không được ghi đè)
+  _commitTarget = _sv[0]; _mainChars = _sv[1]; _excessCount = _sv[2]; _holdTransient = _sv[3];
 }
 
 function renderAllWords() {
@@ -14984,7 +15747,7 @@ function renderAllWords() {
     const span = document.createElement('span');
     span.className = 'word' + (resultList[idx] ? ' ' + resultList[idx] : '');
     span.id = 'word-' + idx;
-    Array.from(word).forEach(ch => {
+    Array.from(normalizeVi(word)).forEach(ch => {
       const charSpan = document.createElement('span');
       charSpan.className = 'typing-char';
       charSpan.textContent = ch;
@@ -15042,6 +15805,62 @@ function pruneOldWords() {
 // không phải lúc nào cũng bắn keydown chuẩn cho phím cách — nhưng ký tự cách luôn xuất hiện
 // thật trong giá trị input, nên bắt ở đây đảm bảo gõ được trên cả bàn phím vật lý lẫn di động.
 /** Đổi trạng thái viền ô nhập mà không ghi đè className toàn bộ (mượt hơn) */
+/* Ô gõ: phần ký tự DƯ so với từ đích hiện chữ ĐỎ.
+   <input> không tô màu từng phần được → chồng một lớp overlay y hệt lên ô gõ (chữ thật của input
+   trong suốt, con trỏ vẫn là của input). Lớp này chỉ hiển thị, không bắt chuột/bàn phím. */
+(function setupInputExtraOverlay() {
+  let ov = null, lastText = null, lastGeo = '';
+  function frame() {
+    requestAnimationFrame(frame);
+    const inp = document.getElementById('game-hidden-input');
+    if (!inp || !inp.parentNode) return;
+    if (!ov) {
+      ov = document.createElement('div');
+      ov.id = 'game-input-overlay';
+      ov.setAttribute('aria-hidden', 'true');
+      inp.parentNode.appendChild(ov);
+      inp.classList.add('has-extra-overlay');
+    }
+    if (inp.offsetParent === null) return; // đang ẩn
+    const cs = getComputedStyle(inp);
+    const geo = [inp.offsetLeft, inp.offsetTop, inp.offsetWidth, inp.offsetHeight, cs.fontSize, cs.fontFamily, cs.letterSpacing, cs.paddingLeft, cs.paddingRight].join('|');
+    if (geo !== lastGeo) {
+      lastGeo = geo;
+      ov.style.left = inp.offsetLeft + 'px';
+      ov.style.top = inp.offsetTop + 'px';
+      ov.style.width = inp.offsetWidth + 'px';
+      ov.style.height = inp.offsetHeight + 'px';
+      ov.style.font = cs.font;
+      ov.style.letterSpacing = cs.letterSpacing;
+      ov.style.paddingLeft = cs.paddingLeft;
+      ov.style.paddingRight = cs.paddingRight;
+      ov.style.borderWidth = cs.borderTopWidth;
+    }
+    const typed = viChars(inp.value || '');
+    let tgt = '';
+    try { tgt = (typeof wordList !== 'undefined' && wordList[currentWordIndex]) || ''; } catch (e) {}
+    const tLen = viChars(tgt).length;
+    const exN = tLen ? Math.max(0, viChars(effectiveTyped(tgt, inp.value || '')).length - tLen) : 0;
+    const text = typed.join('') + '\u0001' + (tLen || 0) + '\u0001' + exN;
+    if (text === lastText) return;
+    lastText = text;
+    ov.textContent = '';
+    const wrap = document.createElement('span');
+    const cut = tLen ? Math.max(0, typed.length - Math.min(exN, typed.length)) : typed.length;
+    const head = typed.slice(0, cut).join('');
+    const extra = tLen ? typed.slice(cut).join('') : '';
+    wrap.appendChild(document.createTextNode(head));
+    if (extra) {
+      const x = document.createElement('span');
+      x.className = 'x';
+      x.textContent = extra;
+      wrap.appendChild(x);
+    }
+    ov.appendChild(wrap);
+  }
+  requestAnimationFrame(frame);
+})();
+
 function setTypingClass(inputEl, state) {
   if (!inputEl) return;
   // state: null | 'correct' | 'wrong'
@@ -15071,11 +15890,25 @@ function handleWordInputChange(e) {
   if (isPracticeMode && e.target.value) ensurePracticeTimerStarted();
   const inputEl = e.target;
   let val = inputEl.value;
+  try { noteInputMode(val, wordList[currentWordIndex]); } catch (err) {}
 
   // Có dấu cách trong ô nhập -> tách từ đã gõ ra và nộp ngay lập tức
   if (val.includes(' ')) {
     const spaceIdx = val.indexOf(' ');
-    const typedWord = val.slice(0, spaceIdx).trim();
+    // Ưu tiên giá trị bắt ở keydown Space (trước khi Unikey V xử lý lại từ có dấu)
+    const _capW = (typeof _spaceCaptureWord === 'string') ? _spaceCaptureWord : '';
+    const _postW = normalizeVi(val.slice(0, spaceIdx)).trim();
+    let typedWord = _capW !== '' ? _capW : _postW;
+    // Unikey V xoá + gõ lại nhiều ký tự (nhất là từ đuôi "ng") → bản chụp lúc nhấn Space có thể là
+    // trạng thái dở dang. Chọn bản nào khớp từ đích hơn; hoà → giữ bản chụp như cũ.
+    if (_capW !== '' && _postW !== '' && _postW !== _capW) {
+      const _tgW = wordList[currentWordIndex] || '';
+      if (_tgW) {
+        const _tcW = viChars(normalizeVi(_tgW));
+        if (_evScore(_tcW, effectiveTyped(_tgW, _postW)) > _evScore(_tcW, effectiveTyped(_tgW, _capW))) typedWord = _postW;
+      }
+    }
+    _spaceCaptureWord = '';
     let rest = val.slice(spaceIdx + 1).replace(/^\s+/, '');
     inputEl.value = rest;
     setTypingClass(inputEl, null);
@@ -15093,15 +15926,41 @@ function handleWordInputChange(e) {
   maybePlaySoundFromInput();
   const currentTarget = wordList[currentWordIndex];
   if (!val) {
+    clearTypedFreeze();
     setTypingClass(inputEl, null);
-  } else if (currentTarget && currentTarget.startsWith(val)) {
-    setTypingClass(inputEl, 'correct');
+  } else if (currentTarget) {
+    updateTypedFreeze(currentTarget, val);
+    const parts = splitPrefixExcess(currentTarget, val);
+    if (parts.excessChars.length > 0) {
+      // Có dư → viền wrong; màu chữ trên từ chỉ theo prefix
+      setTypingClass(inputEl, 'wrong');
+    } else {
+      let prefixOk = true;
+      for (let i = 0; i < parts.prefixChars.length; i++) {
+        if (parts.prefixChars[i] !== parts.tChars[i]) { prefixOk = false; break; }
+      }
+      setTypingClass(inputEl, prefixOk ? 'correct' : 'wrong');
+    }
   } else {
     setTypingClass(inputEl, 'wrong');
   }
   updateTypingCharacterFeedback(inputEl, currentTarget || '');
   updateTypingCursor();
   resetBarkTimeout();
+}
+
+/** Tự phát hiện chế độ Unikey: có chữ Việt có dấu trong ô = V (Unikey đã bỏ dấu); chuỗi thô mà game phải ghép Telex = E. */
+var _inputMode = '';
+function noteInputMode(val, target) {
+  var v = normalizeVi(val), mode = _inputMode;
+  if (!v) return;
+  if (/[^\u0000-\u007F]/.test(v)) mode = 'V';
+  else if (target && effectiveTyped(target, v) !== v && /[^\u0000-\u007F]/.test(normalizeVi(target)) &&
+           effectiveTyped(target, v).slice(0, viLen(target)) === normalizeVi(target)) mode = 'E';
+  if (mode === _inputMode) return;
+  _inputMode = mode;
+  var b = document.getElementById('tb-fix-build-badge');
+  if (b) b.textContent = 'fix v5 · ' + (mode === 'V' ? 'Unikey V' : 'Unikey E (Telex game)');
 }
 
 function resetBarkTimeout() {
@@ -15753,23 +16612,27 @@ async function checkBattleIntegrity() {
  *   - gõ "xyz"      → đúng 0, sai 3 → −3
  */
 function netCharsForWord(target, typed) {
-  target = target || '';
-  typed = typed || '';
-  if (!target) return 0;
-  if (typed === target) return target.length + 1; // đủ từ + khoảng trắng
-  // Gõ THỪA ký tự (vd: "xong" → "xongh"): cả từ sai — không cộng prefix như gần đúng
-  if (typed.length > target.length) {
-    return -Math.max(target.length, typed.length - target.length);
-  }
+  // Prefix chấm trước; dư trừ sau. Khớp exact (không dư) → +1 space.
+  const parts = splitPrefixExcess(target, typed);
+  const tChars = parts.tChars;
+  const prefixChars = parts.prefixChars;
+  if (!tChars.length) return 0;
+
   let correct = 0;
-  const lim = Math.min(target.length, typed.length);
-  for (let i = 0; i < lim; i++) {
-    if (typed[i] === target[i]) correct++;
-    else break;
+  for (let i = 0; i < tChars.length; i++) {
+    if (i < prefixChars.length && prefixChars[i] === tChars[i]) correct++;
+    else break; // dừng ở lỗi đầu tiên trong prefix (net WPM theo prefix liên tiếp)
   }
-  // Phần sai = max(phần target chưa đúng, phần gõ sai sau prefix)
-  const wrong = Math.max(target.length - correct, typed.length - correct);
-  return correct - wrong;
+  // Đếm lại right không break để net = right - (mismatch+missing+excess)
+  let right = 0;
+  for (let i = 0; i < tChars.length; i++) {
+    if (i < prefixChars.length && prefixChars[i] === tChars[i]) right++;
+  }
+  const wrong = (tChars.length - right) + parts.excessChars.length;
+  if (right === tChars.length && parts.excessChars.length === 0) {
+    return tChars.length + 1; // đủ từ + space
+  }
+  return right - wrong;
 }
 
 /** Rung nhẹ + particle + tone khi nộp từ đúng/sai */
@@ -15896,7 +16759,7 @@ function playHitSfx(ok) {
   } catch (e) {}
 }
 
-// ── Meow hit FX (hiện ở TẤT CẢ kiểu âm thanh, kể cả khi tắt âm thanh): ảnh meo thay particle burst ──
+// ── Meow hit FX: CHỈ khi kiểu âm = Meow (soundType 3). Không phụ thuộc công tắc Animation trong Cài đặt. ──
 const MEOW_HIT_OK = 'https://raw.githubusercontent.com/quanphamhong2k8-blip/animation-phimbattle/main/meomeo.png';
 const MEOW_HIT_BAD = 'https://raw.githubusercontent.com/quanphamhong2k8-blip/animation-phimbattle/main/meomeo-sad%20(2).png';
 const MEOW_HIT_MAX = 3;
@@ -15918,7 +16781,8 @@ function preloadMeowHitImages() {
 }
 
 function spawnMeowHitFx(ok, anchorEl) {
-  if (typeof battleFxEnabled !== 'undefined' && !battleFxEnabled) return;
+  // Chỉ gắn với kiểu âm Meow — không bị tắt bởi battleFxEnabled / Animation
+  if (typeof soundType === 'undefined' || soundType !== 3) return;
   try {
     if (_meowHitActive >= MEOW_HIT_MAX) return;
     preloadMeowHitImages();
@@ -16003,12 +16867,15 @@ function spawnHitRingOnly(ok, anchorEl) {
 }
 
 function feedbackWordHit(ok, anchorEl) {
-  // Animation: mèo + particle; Rung màn xử lý trong spawnSonicWave (mỗi 5 từ đúng)
+  // Particle/sóng: theo công tắc Animation. Icon mèo: chỉ khi âm Meow, không phụ thuộc Animation.
   // Âm hit theo soundEnabled
   if (typeof battleFxEnabled === 'undefined' || battleFxEnabled) {
-    spawnHitParticles(ok, anchorEl);
-    spawnMeowHitFx(ok, anchorEl);
+    // Meow mode: icon mèo thay particle; Soft/Mechanical: particle bình thường
+    if (typeof soundType === 'undefined' || soundType !== 3) {
+      spawnHitParticles(ok, anchorEl);
+    }
   }
+  spawnMeowHitFx(ok, anchorEl); // tự kiểm tra soundType === 3 bên trong
   playHitSfx(ok);
 }
 
@@ -16019,7 +16886,8 @@ function submitWord(typedWord) {
   if (isSubmitting) return;
   isSubmitting = true;
 
-  const currentTarget = wordList[currentWordIndex];
+  typedWord = normalizeVi(typedWord == null ? '' : typedWord);
+  const currentTarget = normalizeVi(wordList[currentWordIndex] || '');
   if (typedWord === '' || !currentTarget) {
     isSubmitting = false;
     return;
@@ -16027,13 +16895,25 @@ function submitWord(typedWord) {
 
   const currentSpan = document.getElementById('word-' + currentWordIndex);
 
-  // 1) Cập nhật giao diện + hàng đợi từ NGAY LẬP TỨC (không chờ mạng) để gõ luôn mượt
-  // Kết quả cuối: từng ký tự đúng → xanh, sai/thiếu → đỏ (không full xanh/đỏ cả từ)
-  typedResultList[currentWordIndex] = typedWord;
-  if (currentSpan) {
-    applyWordCharResult(currentSpan, currentTarget, typedWord);
+  // 1) Chấm prefix/commit trước (bỏ qua dư). Unikey V có thể đã làm lệch typedWord.
+  updateTypedFreeze(currentTarget, typedWord);
+  var _partsSubmit = splitPrefixExcess(currentTarget, typedWord);
+  var fullyMatched = isTargetFullyMatched(currentTarget, typedWord);
+  // Khi match: tô theo target chuẩn; giữ số dư để WPM trừ sau
+  var typedForScore = typedWord;
+  var _ex = _partsSubmit.excessChars.length;
+  if (fullyMatched) {
+    typedForScore = currentTarget + (_ex ? Array(_ex + 1).join('x') : '');
+  } else if (_ex) {
+    // Luồng 1 (thân từ đóng băng) + luồng 2 (dư → ký tự sai ẩn ở cuối): lưu đúng như đã hiển thị
+    typedForScore = _partsSubmit.prefixChars.join('') + Array(_ex + 1).join('x');
   }
-  if (typedWord === currentTarget) {
+  typedResultList[currentWordIndex] = typedForScore;
+  if (currentSpan) {
+    applyWordCharResult(currentSpan, currentTarget, typedForScore);
+  }
+  clearTypedFreeze();
+  if (fullyMatched) {
     resultList[currentWordIndex] = 'correct';
     if (currentSpan) {
       currentSpan.classList.remove('current');
@@ -16070,7 +16950,7 @@ function submitWord(typedWord) {
         const span = document.createElement('span');
         span.className = 'word';
         span.id = 'word-' + (base + i);
-        Array.from(extraWords[i]).forEach(ch => {
+        Array.from(normalizeVi(extraWords[i])).forEach(ch => {
           const charSpan = document.createElement('span');
           charSpan.className = 'typing-char';
           charSpan.textContent = ch;
@@ -16091,10 +16971,14 @@ function submitWord(typedWord) {
     if (practiceFinished) { isSubmitting = false; return; }
     ensurePracticeTimerStarted();
     // WPM luyện tập: cùng cơ chế thi đấu — prefix đúng cộng, phần sai/thiếu trừ
-    practiceTotalChars += netCharsForWord(currentTarget, typedWord);
-    if (typedWord === currentTarget) {
+    practiceTotalChars += netCharsForWord(currentTarget, typedForScore);
+    if (fullyMatched) {
       practiceCorrect++;
-      practiceCorrectChars += currentTarget.length + 1;
+      if (effectiveTyped(currentTarget, typedWord) === currentTarget) {
+        practiceCorrectChars += viLen(currentTarget) + 1;
+      } else {
+        practiceCorrectChars += viLen(currentTarget);
+      }
       if (_dom.practiceCorrect) _dom.practiceCorrect.textContent = practiceCorrect;
     } else {
       practiceWrong++;
@@ -16107,10 +16991,10 @@ function submitWord(typedWord) {
   }
 
   // Ký tự net cho WPM cuối trận: prefix đúng cộng, phần sai trừ (xem netCharsForWord)
-  matchTotalChars += netCharsForWord(currentTarget, typedWord);
+  matchTotalChars += netCharsForWord(currentTarget, typedForScore);
 
   // Dame + thống kê theo TỪNG KÝ TỰ (đúng/sai vị trí, thiếu, thừa)
-  const { right: rightChars, wrong: wrongChars } = countCharHits(currentTarget, typedWord);
+  const { right: rightChars, wrong: wrongChars } = countCharHits(currentTarget, typedForScore);
   const netDmg = rightChars * DMG_PER_CHAR - wrongChars * SELF_DMG_PER_CHAR;
 
   // Bảng kết quả cuối: đếm ký tự đúng / ký tự sai (không còn đếm theo từ)
@@ -16141,20 +17025,25 @@ const SELF_DMG_PER_CHAR = 1;     // mỗi chữ sai/thiếu/thừa → tự mấ
 
 /** Đếm số chữ đúng (cùng vị trí) và số chữ sai (lệch + thiếu + thừa) của từ đã nộp */
 function countCharHits(target, typed) {
-  target = target || '';
-  typed = typed || '';
-  const lim = Math.min(target.length, typed.length);
+  // 1) Chấm prefix như không có dư  2) Mỗi grapheme dư = 1 sai
+  const parts = splitPrefixExcess(target, typed);
+  const tChars = parts.tChars;
+  const prefixChars = parts.prefixChars;
   let right = 0;
-  for (let i = 0; i < lim; i++) {
-    if (typed[i] === target[i]) right++;
+  for (let i = 0; i < tChars.length; i++) {
+    if (i < prefixChars.length && prefixChars[i] === tChars[i]) right++;
   }
-  const wrong = Math.max(target.length, typed.length) - right;
+  const missingOrMismatch = tChars.length - right;
+  const excess = parts.excessChars.length;
+  const wrong = missingOrMismatch + excess;
   return { right, wrong };
 }
 
 // Phím Enter cũng nộp được từ — hữu ích khi bàn phím ảo trên điện thoại hiện nút
 // "Enter/Go/Xong" thay vì phím cách (một số bố cục IME hoặc trình duyệt di động).
 // keydown cũng phát âm thanh predictive (trước sự kiện input) → cảm giác gõ “sát tay”.
+// Unikey V: bắt nội dung ô TRƯỚC khi Unikey xử lý Space (hay làm lệch dấu)
+var _spaceCaptureWord = '';
 function handleWordKeydown(event) {
   if (typeof _battlePausedForSync !== 'undefined' && _battlePausedForSync) {
     event.preventDefault();
@@ -16171,12 +17060,27 @@ function handleWordKeydown(event) {
   // Predictive key-click: phát ngay khi phím xuống (trước khi ký tự vào ô)
   maybePlaySoundFromKeydown(event);
 
+  if (event.key !== 'Backspace' && event.key !== 'Delete') _lastKeyAt = performance.now();
+
+  // Unikey V: chốt commit TRƯỚC mọi phím (đặc biệt phím dư / Space) — lúc value còn sạch
+  try {
+    var inpPre = event.target || document.getElementById('game-hidden-input');
+    var tgPre = (typeof wordList !== 'undefined' && wordList[currentWordIndex]) || '';
+    if (inpPre && tgPre && typeof inpPre.value === 'string') {
+      updateTypedFreeze(tgPre, inpPre.value);
+      // Space: giữ bản value trước khi Unikey xác nhận từ
+      if (event.key === ' ' || event.code === 'Space') {
+        _spaceCaptureWord = normalizeVi(inpPre.value).trim();
+      }
+    }
+  } catch (e) { if (event.key === ' ' || event.code === 'Space') _spaceCaptureWord = ''; }
+
   if (event.key !== 'Enter') return;
   event.preventDefault();
   if (event.isComposing) return;
 
   const inputEl = document.getElementById('game-hidden-input');
-  const typedWord = inputEl.value.trim();
+  const typedWord = normalizeVi(inputEl.value).trim();
   inputEl.value = '';
   setTypingClass(inputEl, null);
   // Âm đã phát ở maybePlaySoundFromKeydown — không gọi lại
@@ -16359,9 +17263,9 @@ function fillResultStats(d, mergeOnly) {
   let oppW = Math.max(opp.wrong ?? 0, lastMatchResult?.oppWrong ?? 0);
 
   const el = id => document.getElementById(id);
-  if (el('res-me-correct')) el('res-me-correct').textContent = meC;
+  if (el('res-me-correct')) el('res-me-correct').textContent = Math.ceil(Number(meC || 0) - 1e-9);
   if (el('res-me-wrong')) el('res-me-wrong').textContent = meW;
-  if (el('res-opp-correct')) el('res-opp-correct').textContent = oppC;
+  if (el('res-opp-correct')) el('res-opp-correct').textContent = Math.ceil(Number(oppC || 0) - 1e-9);
   if (el('res-opp-wrong')) el('res-opp-wrong').textContent = oppW;
   // WPM: local / lastMatch / Firebase (cả hai bên)
   const meWpm = Math.max(lastMatchResult?.meWpm ?? 0, me.wpm ?? 0);
@@ -16404,12 +17308,12 @@ function renderPrepLastResult() {
       <div class="prep-last-result-grid">
         <div class="prep-last-result-side me">
           <div class="prep-last-result-side-label">Bạn</div>
-          <div class="prep-last-result-line ok"><span>KT đúng</span><span>${r.meCorrect}</span></div>
+          <div class="prep-last-result-line ok"><span>KT đúng</span><span>${Math.ceil(Number(r.meCorrect || 0) - 1e-9)}</span></div>
           <div class="prep-last-result-line bad"><span>KT sai</span><span>${r.meWrong}</span></div>
         </div>
         <div class="prep-last-result-side opp">
           <div class="prep-last-result-side-label">Đối thủ</div>
-          <div class="prep-last-result-line ok"><span>KT đúng</span><span>${r.oppCorrect}</span></div>
+          <div class="prep-last-result-line ok"><span>KT đúng</span><span>${Math.ceil(Number(r.oppCorrect || 0) - 1e-9)}</span></div>
           <div class="prep-last-result-line bad"><span>KT sai</span><span>${r.oppWrong}</span></div>
         </div>
       </div>
@@ -16499,34 +17403,145 @@ window.backLobby = async function() {
     Space: ' '
   };
 
+  /* Luôn hoạt động như chế độ E (Unikey/IME không ảnh hưởng):
+     - Chỉ dựa vào e.code (phím vật lý), KHÔNG dùng e.key (bị đổi thành â, ê, ơ... hoặc "Process" khi bật V)
+     - Lắng nghe ở pha capture trên window → không bị code của game chặn / làm mất sự kiện
+     - Bộ gõ V hay "nuốt" hoặc đổi keyup → thêm timer tự nhả phím để không bao giờ kẹt sáng */
+  const SKV_AUTO_RELEASE_MS = 180; // tự tắt sáng nếu không nhận được keyup
+  const skvTimers = new Map();
+
   function resolveKey(e) {
-    // Ưu tiên e.code (phím vật lý, không bị IME/Telex làm sai lệch)
-    if (e.code && CODE_TO_KEY[e.code] !== undefined) return CODE_TO_KEY[e.code];
-    // Fallback: layout lạ / trình duyệt không hỗ trợ code → dùng e.key
-    const k = (e.key || '').toLowerCase();
-    return k.length === 1 ? k : null;
+    return (e.code && CODE_TO_KEY[e.code] !== undefined) ? CODE_TO_KEY[e.code] : null;
   }
 
   function findSkvKeys(targetKey) {
     return document.querySelectorAll('#practice-keyboard-viz .skv-key[data-skv-key="' + targetKey + '"]');
   }
 
+  function skvRelease(targetKey) {
+    clearTimeout(skvTimers.get(targetKey));
+    skvTimers.delete(targetKey);
+    findSkvKeys(targetKey).forEach(k => k.classList.remove('active'));
+  }
+
+  function skvPress(targetKey) {
+    findSkvKeys(targetKey).forEach(k => k.classList.add('active'));
+    clearTimeout(skvTimers.get(targetKey));
+    skvTimers.set(targetKey, setTimeout(() => skvRelease(targetKey), SKV_AUTO_RELEASE_MS));
+  }
+
   window.addEventListener('keydown', (e) => {
     const targetKey = resolveKey(e);
     if (targetKey === null) return;
-    findSkvKeys(targetKey).forEach(k => k.classList.add('active'));
-  });
+    skvPress(targetKey); // giữ phím (e.repeat) sẽ tự gia hạn timer
+  }, true);
 
   window.addEventListener('keyup', (e) => {
     const targetKey = resolveKey(e);
     if (targetKey === null) return;
-    findSkvKeys(targetKey).forEach(k => k.classList.remove('active'));
-  });
+    skvRelease(targetKey);
+  }, true);
 
-  // Tránh phím bị "kẹt sáng" nếu người dùng chuyển tab/cửa sổ khi đang giữ phím
+  // Chuyển tab/cửa sổ khi đang giữ phím → tắt hết
   window.addEventListener('blur', () => {
+    skvTimers.forEach(t => clearTimeout(t));
+    skvTimers.clear();
     document.querySelectorAll('#practice-keyboard-viz .skv-key.active').forEach(k => k.classList.remove('active'));
   });
+
+  /* ------------------------------------------------------------
+     Gõ dấu tiếng Việt (Unikey/Telex bật V):
+     Unikey thường NUỐT phím vật lý (vd phím a thứ 2 trong "aa", phím s/f/r/x/j/w)
+     rồi tự gửi Backspace + ký tự có dấu → trình duyệt không thấy keydown của phím đó.
+     Cách xử lý: so sánh nội dung ô nhập trước/sau mỗi "đợt" thay đổi, suy ra phím
+     Telex đã bấm (â→a, ê→e, ô→o, ă/ơ/ư→w, đ→d, dấu sắc/huyền/hỏi/ngã/nặng→s/f/r/x/j)
+     rồi làm sáng phím đó. Chỉ ĐỌC dữ liệu, không can thiệp vào game.
+     ------------------------------------------------------------ */
+  const skvLastRealDown = {};
+  window.addEventListener('keydown', (e) => {
+    const k = resolveKey(e);
+    if (k !== null) skvLastRealDown[k] = performance.now();
+  }, true);
+
+  const TONE_KEY = { '\u0301': 's', '\u0300': 'f', '\u0309': 'r', '\u0303': 'x', '\u0323': 'j' };
+
+  function decomposeVi(ch) {
+    if (ch === '\u0111' || ch === '\u0110') return { base: 'd', mod: 'stroke', tone: null };
+    const n = ch.normalize('NFD');
+    let mod = null, tone = null;
+    for (let i = 1; i < n.length; i++) {
+      const c = n[i];
+      if (c === '\u0302') mod = 'circ';
+      else if (c === '\u0306') mod = 'breve';
+      else if (c === '\u031B') mod = 'horn';
+      else if (TONE_KEY[c]) tone = c;
+    }
+    return { base: n[0].toLowerCase(), mod, tone };
+  }
+
+  function inferTelexKey(removed, added) {
+    if (!added) return null;
+    if (added.length > removed.length) {
+      const d = decomposeVi(added[added.length - 1]);
+      if (d.mod === 'horn' || d.mod === 'breve') return 'w';
+      return d.base;
+    }
+    const n = Math.min(removed.length, added.length);
+    let toneKey = null;
+    for (let i = 0; i < n; i++) {
+      if (removed[i] === added[i]) continue;
+      const o = decomposeVi(removed[i]);
+      const d = decomposeVi(added[i]);
+      if (o.base !== d.base) continue;
+      if (o.mod !== d.mod && d.mod) {
+        if (d.mod === 'circ') return d.base;       // aa, ee, oo
+        if (d.mod === 'stroke') return 'd';        // dd
+        return 'w';                                // aw, ow, uw
+      }
+      if (o.tone !== d.tone && toneKey === null) {
+        toneKey = d.tone ? TONE_KEY[d.tone] : 'z';
+      }
+    }
+    return toneKey;
+  }
+
+  let burstStart = null, burstEnd = '', burstTimer = null, prevVal = '';
+
+  function skvFlushBurst() {
+    burstTimer = null;
+    const a = burstStart === null ? '' : burstStart;
+    const b = burstEnd;
+    burstStart = null;
+    prevVal = b;
+    let p = 0;
+    while (p < a.length && p < b.length && a[p] === b[p]) p++;
+    const key = inferTelexKey(a.slice(p), b.slice(p));
+    if (!key) return;
+    // Phím này vừa có keydown thật thì đã sáng rồi, không cần sáng thêm
+    if (performance.now() - (skvLastRealDown[key] || 0) < 120) return;
+    skvPress(key);
+  }
+
+  function isTextTarget(t) {
+    return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA');
+  }
+
+  window.addEventListener('beforeinput', (e) => {
+    if (!isTextTarget(e.target)) return;
+    if (burstStart === null) burstStart = e.target.value;
+  }, true);
+
+  window.addEventListener('input', (e) => {
+    if (!isTextTarget(e.target)) return;
+    if (burstStart === null) burstStart = prevVal; // trình duyệt không bắn beforeinput
+    burstEnd = e.target.value;                      // chụp ngay, trước khi game kịp reset ô nhập
+    clearTimeout(burstTimer);
+    burstTimer = setTimeout(skvFlushBurst, 25);     // gom Backspace + ký tự có dấu thành 1 đợt
+  }, true);
+
+  window.addEventListener('focusin', (e) => {
+    if (isTextTarget(e.target)) { prevVal = e.target.value; burstStart = null; }
+  }, true);
 })();
 </script>
 </body>
